@@ -14,36 +14,41 @@ import {
 import { Button, ButtonText } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Check, Globe, X } from 'lucide-react-native';
-import { useLocalization } from '@/hooks/useLocalization';
+import { useLanguageStore } from '@/store/languageStore';
+import i18n from '@/utils/i18n';
 
 interface LanguageSelectorProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onClose }) => {
-  const { currentLocale, changeLanguage, getSupportedLocales, t } = useLocalization();
-  const [selectedLocale, setSelectedLocale] = useState(currentLocale);
-  const supportedLocales = getSupportedLocales();
+const supportedLocales = [
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+];
 
-  const handleLanguageChange = (localeCode: string) => {
+export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onClose }) => {
+  const { language, handleLanguageChange } = useLanguageStore();
+  const [selectedLocale, setSelectedLocale] = useState(language);
+
+  const handleLanguageChangeLocal = (localeCode: string) => {
     setSelectedLocale(localeCode);
   };
 
   const handleConfirm = () => {
-    if (selectedLocale !== currentLocale) {
+    if (selectedLocale !== language) {
       Alert.alert(
-        t('settings.languageSelection'),
+        'Language Selection',
         'Changing language will restart the app to apply changes properly.',
         [
           {
-            text: t('common.cancel'),
+            text: 'Cancel',
             style: 'cancel',
           },
           {
-            text: t('common.confirm'),
+            text: 'Confirm',
             onPress: () => {
-              changeLanguage(selectedLocale);
+              handleLanguageChange(selectedLocale);
               onClose();
             },
           },
@@ -62,7 +67,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onCl
           <HStack className="items-center justify-between">
             <HStack className="items-center">
               <Icon as={Globe} size="sm" className="text-primary-600 mr-2" />
-              <Text className="text-lg font-bold">{t('settings.languageSelection')}</Text>
+              <Text className="text-lg font-bold">Language Selection</Text>
             </HStack>
             <ModalCloseButton>
               <Icon as={X} size="sm" />
@@ -75,7 +80,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onCl
             {supportedLocales.map((locale) => (
               <Pressable
                 key={locale.code}
-                onPress={() => handleLanguageChange(locale.code)}
+                onPress={() => handleLanguageChangeLocal(locale.code)}
                 className={`p-3 rounded-lg border ${
                   selectedLocale === locale.code
                     ? 'border-primary-500 bg-primary-50'
@@ -109,10 +114,10 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onCl
           
           <HStack className="gap-3">
             <Button variant="outline" onPress={onClose} className="flex-1">
-              <ButtonText>{t('common.cancel')}</ButtonText>
+              <ButtonText>Cancel</ButtonText>
             </Button>
             <Button onPress={handleConfirm} className="flex-1">
-              <ButtonText>{t('common.confirm')}</ButtonText>
+              <ButtonText>Confirm</ButtonText>
             </Button>
           </HStack>
         </ModalBody>

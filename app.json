@@ -13,8 +13,16 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-       "ios": {
-      "supportsTablet": true
+    "locales": {
+      "en": "./locales/en.json",
+      "ar": "./locales/ar.json"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["en", "ar"]
+      }
     },
     "android": {
       "adaptiveIcon": {

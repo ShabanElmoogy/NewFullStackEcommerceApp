@@ -10,6 +10,9 @@ module.exports = {
   ],
   presets: [require('nativewind/preset')],
   important: 'html',
+  plugins: [
+    require('tailwindcss-rtl'),
+  ],
   safelist: [
     {
       pattern:

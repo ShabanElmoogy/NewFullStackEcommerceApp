@@ -1,7 +1,7 @@
 import '@/global.css';
 import { router, usePathname } from 'expo-router';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   Menu,
@@ -15,7 +15,7 @@ import {
   ChevronRight,
   Package,
 } from 'lucide-react-native';
-import { Pressable, View, Image, ScrollView, Platform } from 'react-native';
+import { Pressable, View, Image, ScrollView, Platform, I18nManager } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { Drawer } from 'expo-router/drawer';
@@ -24,6 +24,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../store/authStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCart } from '@/store/cartStore';
+import { useLanguageStore } from '@/store/languageStore';
 
 const queryClient = new QueryClient();
 
@@ -204,46 +205,73 @@ function DrawerHeaderRight() {
 
 
 // -------------------
+// RTL Wrapper Component
+// -------------------
+function RTLWrapper({ children }: { children: React.ReactNode }) {
+  const { isRTL, key, initializeLanguage } = useLanguageStore();
+
+  useEffect(() => {
+    initializeLanguage();
+  }, []);
+
+  useEffect(() => {
+    // Force RTL layout direction for native platforms
+    if (Platform.OS !== 'web') {
+      I18nManager.forceRTL(isRTL);
+    }
+  }, [isRTL]);
+
+  return (
+    <View key={key} style={{ flex: 1, direction: isRTL ? 'rtl' : 'ltr' }}>
+      {children}
+    </View>
+  );
+}
+
+// -------------------
 // Root Layout
 // -------------------
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaView className="flex-1 bg-background-0" edges={['right', 'bottom']}>
-        <GluestackUIProvider mode="light">
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <Drawer
-              drawerContent={(props) => <CustomDrawerContent {...props} />}
-              screenOptions={({ navigation }) => ({
-                headerLeft: () => (
-                  <Pressable onPress={() => navigation.openDrawer()} className="ml-4 p-2" android_ripple={{ color: 'rgba(0,0,0,0.1)' }}>
-                    <Menu className="text-content-primary" size={24} />
-                  </Pressable>
-                ),
-                headerRight: () => <DrawerHeaderRight />,
-                headerTitleAlign: 'center',
-                headerTitleStyle: { fontWeight: 'bold', fontSize: 18 },
-                drawerStyle: {
-                  width: Platform.OS === 'web' ? 320 : '85%',
-                  maxWidth: 360,
-                  backgroundColor: 'rgb(var(--color-background-50))'
-                },
-                drawerType: Platform.OS === 'web' ? 'slide' : 'front',
-                overlayColor: Platform.OS === 'web' ? 'transparent' : 'rgba(0,0,0,0.5)',
-                swipeEdgeWidth: Platform.OS === 'web' ? 0 : undefined,
-                keyboardDismissMode: 'on-drag',
-                sceneContainerStyle: { backgroundColor: 'rgb(var(--color-background-0))' },
-              })}
-            >
-              <Drawer.Screen name="index" options={{ title: 'Home' }} />
-              <Drawer.Screen name="products" options={{ title: 'Products' }} />
-              <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
-              <Drawer.Screen name="cart" options={{ title: 'Cart' }} />
-              <Drawer.Screen name="wishlist" options={{ title: 'Wishlist' }} />
-            </Drawer>
-          </GestureHandlerRootView>
-        </GluestackUIProvider>
-      </SafeAreaView>
+      <RTLWrapper>
+        <SafeAreaView className="flex-1 bg-background-0" edges={['right', 'bottom']}>
+          <GluestackUIProvider mode="light">
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Drawer
+                drawerContent={(props) => <CustomDrawerContent {...props} />}
+                screenOptions={({ navigation }) => ({
+                  headerLeft: () => (
+                    <Pressable onPress={() => navigation.openDrawer()} className="ml-4 p-2" android_ripple={{ color: 'rgba(0,0,0,0.1)' }}>
+                      <Menu className="text-content-primary" size={24} />
+                    </Pressable>
+                  ),
+                  headerRight: () => <DrawerHeaderRight />,
+                  headerTitleAlign: 'center',
+                  headerTitleStyle: { fontWeight: 'bold', fontSize: 18 },
+                  drawerStyle: {
+                    width: Platform.OS === 'web' ? 320 : '85%',
+                    maxWidth: 360,
+                    backgroundColor: 'rgb(var(--color-background-50))'
+                  },
+                  drawerType: Platform.OS === 'web' ? 'slide' : 'front',
+                  overlayColor: Platform.OS === 'web' ? 'transparent' : 'rgba(0,0,0,0.5)',
+                  swipeEdgeWidth: Platform.OS === 'web' ? 0 : undefined,
+                  keyboardDismissMode: 'on-drag',
+                  sceneContainerStyle: { backgroundColor: 'rgb(var(--color-background-0))' },
+                })}
+              >
+                <Drawer.Screen name="index" options={{ title: 'Home' }} />
+                <Drawer.Screen name="products" options={{ title: 'Products' }} />
+                <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
+                <Drawer.Screen name="cart" options={{ title: 'Cart' }} />
+                <Drawer.Screen name="wishlist" options={{ title: 'Wishlist' }} />
+                <Drawer.Screen name="rtl-test" options={{ title: 'RTL Test' }} />
+              </Drawer>
+            </GestureHandlerRootView>
+          </GluestackUIProvider>
+        </SafeAreaView>
+      </RTLWrapper>
     </QueryClientProvider>
   );
 }

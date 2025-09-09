@@ -35,6 +35,7 @@ import {
 } from 'lucide-react-native';
 import { useProducts } from '@/hooks/useProducts';
 import ProductItem from '../components/ProductListItem';
+import { LanguageToggleButton } from '@/components/LanguageToggleButton';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -301,6 +302,9 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id.toString()}
         />
       </View>
+
+      {/* Language Toggle Button for Testing */}
+      <LanguageToggleButton />
 
       {/* Quick Actions */}
       <QuickActions />

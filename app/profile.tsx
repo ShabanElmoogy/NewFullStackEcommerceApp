@@ -30,7 +30,9 @@ import {
 
 import { useAuth } from '@/store/authStore';
 import { useSettings } from '@/store/settingsStore';
-import { useLocalization } from '@/hooks/useLocalization'; // ✅ استدعاء الهُوك
+import { useLanguageStore } from '@/store/languageStore';
+import { RTLDemo } from '@/components/RTLDemo';
+import i18n from '@/utils/i18n';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -90,7 +92,8 @@ export default function ProfileScreen() {
     setAppNotifications,
   } = useSettings();
 
-  const { t, changeLanguage, currentLocale } = useLocalization(); // ✅ تفعيل الهُوك
+  const { language, toggleLanguage } = useLanguageStore();
+  const t = (key: string) => i18n.t(key);
 
   const version = useMemo(() => {
     // Expo 53: Constants.expoConfig is available; fallback just in case
@@ -164,8 +167,8 @@ export default function ProfileScreen() {
           <RowItem
             icon={Globe}
             label={t('profile.language')}
-            value={currentLocale.toUpperCase()}
-            onPress={() => changeLanguage(currentLocale === 'en' ? 'ar' : 'en')}
+            value={language.toUpperCase()}
+            onPress={toggleLanguage}
             last
           />
         </Section>
