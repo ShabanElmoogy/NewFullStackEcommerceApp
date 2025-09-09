@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
-import { Menu, ShoppingCart, Heart } from 'lucide-react-native';
+import { Menu, ShoppingCart, Heart, Globe } from 'lucide-react-native';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCart } from '@/store/cartStore';
 import { useLanguageStore } from '@/store/languageStore';
@@ -27,10 +27,18 @@ export function DrawerHeaderLeft({ navigation }: DrawerHeaderLeftProps) {
 export function DrawerHeaderRight() {
   const wishlistCount = useWishlist((state) => state.totalItems());
   const cartCount = useCart((state) => state.totalQuantity());
-  const { isRTL } = useLanguageStore();
+  const { isRTL, language, toggleLanguage } = useLanguageStore();
 
   return (
     <HStack className="mr-4 flex-row">
+      <Pressable onPress={toggleLanguage} className="p-2">
+        <HStack className="items-center">
+          <Globe className="text-typography-700" size={22} />
+          <Text className="text-typography-700 text-xs font-bold ms-1">
+            {language?.toUpperCase()}
+          </Text>
+        </HStack>
+      </Pressable>
       <Pressable onPress={() => router.push('/wishlist')} className="p-2">
         <View>
           <Heart className="text-typography-700" size={24} />
