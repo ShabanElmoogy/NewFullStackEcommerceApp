@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { I18nManager, Platform } from 'react-native';
-import i18n, { getLanguage, setLanguage } from '../utils/i18n';
+import i18n, { getLanguage, setLanguage, getDeviceLanguage } from '../utils/i18n';
 
 interface LanguageState {
   language: string;
@@ -12,9 +12,9 @@ interface LanguageState {
 }
 
 export const useLanguageStore = create<LanguageState>((set, get) => ({
-  language: 'en',
+  language: getDeviceLanguage(), // Initialize with device language
   key: 0,
-  isRTL: false,
+  isRTL: getDeviceLanguage() === 'ar', // Set RTL based on device language
 
   initializeLanguage: async () => {
     const lang = await getLanguage();

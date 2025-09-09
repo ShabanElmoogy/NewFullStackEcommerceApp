@@ -14,6 +14,7 @@ import WishlistButton from "./WishlistButton";
 import { useCart } from "@/store/cartStore";
 import { useToast } from "./ui/toast";
 import { CustomToast } from "./CustomToast";
+import { useLanguageStore } from "@/store/languageStore";
 import { 
   ShoppingCart, 
   Star, 
@@ -42,6 +43,7 @@ export default function ProductItem({ product }: ProductItemProps) {
   const { name, price, image, description, rating = 4.5, reviewCount = 0, discount, isNew, isTrending, stock = 10 } = product;
   const addToCart = useCart((state) => state.addProduct);
   const toast = useToast();
+  const { isRTL } = useLanguageStore();
 
   const discountedPrice = discount ? price * (1 - discount / 100) : price;
   const isLowStock = stock < 5;
@@ -67,7 +69,13 @@ export default function ProductItem({ product }: ProductItemProps) {
     <View className="flex-1">
       <Card className="flex-1 relative overflow-hidden bg-background-0 border border-outline-100 shadow-sm">
         {/* Product Badges */}
-        <View className="absolute top-2 left-2 z-20 flex-row gap-1">
+        <View 
+          className="absolute top-2 z-20 flex-row gap-1"
+          style={{
+            left: isRTL ? undefined : 8,
+            right: isRTL ? 8 : undefined
+          }}
+        >
           {isNew && (
             <Badge className="bg-success-500">
               <BadgeText className="text-white text-xs font-semibold">NEW</BadgeText>
@@ -75,7 +83,7 @@ export default function ProductItem({ product }: ProductItemProps) {
           )}
           {isTrending && (
             <Badge className="bg-warning-500">
-              <Icon as={TrendingUp} size="xs" className="text-white mr-1" />
+              <Icon as={TrendingUp} size="xs" className={`text-white ${isRTL ? 'ml-1' : 'mr-1'}`} />
               <BadgeText className="text-white text-xs font-semibold">HOT</BadgeText>
             </Badge>
           )}
@@ -87,7 +95,13 @@ export default function ProductItem({ product }: ProductItemProps) {
         </View>
 
         {/* Wishlist Button */}
-        <View className="absolute top-2 right-2 z-20">
+        <View 
+          className="absolute top-2 z-20"
+          style={{
+            right: isRTL ? undefined : 8,
+            left: isRTL ? 8 : undefined
+          }}
+        >
           <WishlistButton 
             product={product} 
             size="sm" 
@@ -96,7 +110,13 @@ export default function ProductItem({ product }: ProductItemProps) {
         </View>
 
         {/* Quick View Button */}
-        <View className="absolute top-2 right-12 z-20">
+        <View 
+          className="absolute top-2 z-20"
+          style={{
+            right: isRTL ? undefined : 48,
+            left: isRTL ? 48 : undefined
+          }}
+        >
           <Link href={`/product/${product.id}`} asChild>
             <Pressable className="w-8 h-8 bg-background-0/90 rounded-full items-center justify-center border border-outline-200 active:scale-95">
               <Icon as={Eye} size="xs" className="text-typography-700" />
@@ -125,9 +145,15 @@ export default function ProductItem({ product }: ProductItemProps) {
 
               {/* Low Stock Warning */}
               {isLowStock && !isOutOfStock && (
-                <View className="absolute bottom-2 left-2">
+                <View 
+                  className="absolute bottom-2"
+                  style={{
+                    left: isRTL ? undefined : 8,
+                    right: isRTL ? 8 : undefined
+                  }}
+                >
                   <Badge className="bg-warning-500">
-                    <Icon as={Zap} size="xs" className="text-white mr-1" />
+                    <Icon as={Zap} size="xs" className={`text-white ${isRTL ? 'ml-1' : 'mr-1'}`} />
                     <BadgeText className="text-white text-xs">Only {stock} left</BadgeText>
                   </Badge>
                 </View>
@@ -219,7 +245,7 @@ export default function ProductItem({ product }: ProductItemProps) {
             <Icon 
               as={ShoppingCart} 
               size="xs" 
-              className={`mr-2 ${isOutOfStock ? 'text-typography-400' : 'text-white'}`} 
+              className={`${isRTL ? 'ml-2' : 'mr-2'} ${isOutOfStock ? 'text-typography-400' : 'text-white'}`} 
             />
             <ButtonText 
               className={`text-xs font-semibold ${
