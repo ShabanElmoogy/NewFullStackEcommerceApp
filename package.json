@@ -28,6 +28,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-updates": "^0.28.17",
     "i18n-js": "^4.5.1",
+    "i18next": "^25.5.2",
     "localforage": "^1.10.0",
     "lucide-react-native": "^0.510.0",
     "nativewind": "^4.1.23",

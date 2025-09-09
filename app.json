@@ -13,10 +13,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-   "extra": {
-      "supportsRTL": true
-    },
-    "ios": {
+       "ios": {
       "supportsTablet": true
     },
     "android": {

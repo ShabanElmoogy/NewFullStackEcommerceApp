@@ -15,7 +15,6 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Check, Globe, X } from 'lucide-react-native';
 import { useLocalization } from '@/hooks/useLocalization';
-import { useRTLStyles } from '@/hooks/useRTLStyles';
 
 interface LanguageSelectorProps {
   isOpen: boolean;
@@ -24,7 +23,6 @@ interface LanguageSelectorProps {
 
 export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onClose }) => {
   const { currentLocale, changeLanguage, getSupportedLocales, t } = useLocalization();
-  const { isRTL, flexRow, textLeft } = useRTLStyles();
   const [selectedLocale, setSelectedLocale] = useState(currentLocale);
   const supportedLocales = getSupportedLocales();
 
@@ -61,7 +59,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onCl
       <ModalBackdrop />
       <ModalContent className="max-w-md">
         <ModalHeader>
-          <HStack className={`items-center justify-between ${flexRow}`}>
+          <HStack className="items-center justify-between">
             <HStack className="items-center">
               <Icon as={Globe} size="sm" className="text-primary-600 mr-2" />
               <Text className="text-lg font-bold">{t('settings.languageSelection')}</Text>
@@ -84,21 +82,21 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onCl
                     : 'border-outline-200 bg-background-0'
                 }`}
               >
-                <HStack className={`items-center justify-between ${flexRow}`}>
+                <HStack className="items-center justify-between">
                   <VStack>
                     <Text 
-                      className={`font-semibold ${textLeft} ${
+                      className={`font-semibold text-left ${
                         selectedLocale === locale.code ? 'text-primary-700' : 'text-typography-900'
                       }`}
                     >
                       {locale.nativeName}
                     </Text>
                     <Text 
-                      className={`text-sm ${textLeft} ${
+                      className={`text-sm text-left ${
                         selectedLocale === locale.code ? 'text-primary-600' : 'text-typography-600'
                       }`}
                     >
-                      {locale.name} {locale.isRTL ? '(RTL)' : '(LTR)'}
+                      {locale.name}
                     </Text>
                   </VStack>
                   {selectedLocale === locale.code && (
@@ -109,7 +107,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ isOpen, onCl
             ))}
           </VStack>
           
-          <HStack className={`gap-3 ${flexRow}`}>
+          <HStack className="gap-3">
             <Button variant="outline" onPress={onClose} className="flex-1">
               <ButtonText>{t('common.cancel')}</ButtonText>
             </Button>

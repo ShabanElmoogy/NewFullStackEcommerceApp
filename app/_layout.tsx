@@ -24,7 +24,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../store/authStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCart } from '@/store/cartStore';
-import { RTLProvider } from '@/components/RTLProvider';
 
 const queryClient = new QueryClient();
 
@@ -209,44 +208,42 @@ function DrawerHeaderRight() {
 // -------------------
 export default function RootLayout() {
   return (
-    <RTLProvider>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaView className="flex-1 bg-background-0" edges={['right', 'bottom']}>
-          <GluestackUIProvider mode="light">
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <Drawer
-                drawerContent={(props) => <CustomDrawerContent {...props} />}
-                screenOptions={({ navigation }) => ({
-                  headerLeft: () => (
-                    <Pressable onPress={() => navigation.openDrawer()} className="ml-4 p-2" android_ripple={{ color: 'rgba(0,0,0,0.1)' }}>
-                      <Menu className="text-content-primary" size={24} />
-                    </Pressable>
-                  ),
-                  headerRight: () => <DrawerHeaderRight />,
-                  headerTitleAlign: 'center',
-                  headerTitleStyle: { fontWeight: 'bold', fontSize: 18 },
-                  drawerStyle: {
-                    width: Platform.OS === 'web' ? 320 : '85%',
-                    maxWidth: 360,
-                    backgroundColor: 'rgb(var(--color-background-50))'
-                  },
-                  drawerType: Platform.OS === 'web' ? 'slide' : 'front',
-                  overlayColor: Platform.OS === 'web' ? 'transparent' : 'rgba(0,0,0,0.5)',
-                  swipeEdgeWidth: Platform.OS === 'web' ? 0 : undefined,
-                  keyboardDismissMode: 'on-drag',
-                  sceneContainerStyle: { backgroundColor: 'rgb(var(--color-background-0))' },
-                })}
-              >
-                <Drawer.Screen name="index" options={{ title: 'Home' }} />
-                <Drawer.Screen name="products" options={{ title: 'Products' }} />
-                <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
-                <Drawer.Screen name="cart" options={{ title: 'Cart' }} />
-                <Drawer.Screen name="wishlist" options={{ title: 'Wishlist' }} />
-              </Drawer>
-            </GestureHandlerRootView>
-          </GluestackUIProvider>
-        </SafeAreaView>
-      </QueryClientProvider>
-    </RTLProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaView className="flex-1 bg-background-0" edges={['right', 'bottom']}>
+        <GluestackUIProvider mode="light">
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <Drawer
+              drawerContent={(props) => <CustomDrawerContent {...props} />}
+              screenOptions={({ navigation }) => ({
+                headerLeft: () => (
+                  <Pressable onPress={() => navigation.openDrawer()} className="ml-4 p-2" android_ripple={{ color: 'rgba(0,0,0,0.1)' }}>
+                    <Menu className="text-content-primary" size={24} />
+                  </Pressable>
+                ),
+                headerRight: () => <DrawerHeaderRight />,
+                headerTitleAlign: 'center',
+                headerTitleStyle: { fontWeight: 'bold', fontSize: 18 },
+                drawerStyle: {
+                  width: Platform.OS === 'web' ? 320 : '85%',
+                  maxWidth: 360,
+                  backgroundColor: 'rgb(var(--color-background-50))'
+                },
+                drawerType: Platform.OS === 'web' ? 'slide' : 'front',
+                overlayColor: Platform.OS === 'web' ? 'transparent' : 'rgba(0,0,0,0.5)',
+                swipeEdgeWidth: Platform.OS === 'web' ? 0 : undefined,
+                keyboardDismissMode: 'on-drag',
+                sceneContainerStyle: { backgroundColor: 'rgb(var(--color-background-0))' },
+              })}
+            >
+              <Drawer.Screen name="index" options={{ title: 'Home' }} />
+              <Drawer.Screen name="products" options={{ title: 'Products' }} />
+              <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
+              <Drawer.Screen name="cart" options={{ title: 'Cart' }} />
+              <Drawer.Screen name="wishlist" options={{ title: 'Wishlist' }} />
+            </Drawer>
+          </GestureHandlerRootView>
+        </GluestackUIProvider>
+      </SafeAreaView>
+    </QueryClientProvider>
   );
 }
