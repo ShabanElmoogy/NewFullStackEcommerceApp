@@ -16,16 +16,13 @@ export function DrawerNavigator() {
         headerRight: () => <DrawerHeaderRight />,
         headerTitleAlign: 'center',
         headerTitleStyle: { fontWeight: 'bold', fontSize: 18 },
-        
-
         // 👇 دي بتتحكم في الجهة
         drawerPosition: isRTL ? 'right' : 'left',
 
         drawerStyle: {
-          width: 390, // قياس ثابت للتجربة,
+          width: 390,
           maxWidth: 320,
           backgroundColor: 'rgb(var(--color-background-50))',
-          // ❌ متحطش left / right هنا
         },
 
         drawerType: Platform.OS === 'web' ? 'front' : 'front', // front أكثر استقرار في RTL
