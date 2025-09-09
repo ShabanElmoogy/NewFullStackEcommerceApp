@@ -10,12 +10,19 @@ This document explains how RTL support has been implemented in your React Native
 - **App Configuration** (`app.json`): Added locale support for iOS and Android
 - **Layout Wrapper** (`app/_layout.tsx`): RTL wrapper component that handles direction changes
 
-### 2. **Key Features**
+### 2. **RTL Drawer Navigation**
+- **Dynamic Drawer Position**: Drawer slides from right in RTL mode, left in LTR mode
+- **RTL-Aware Header Components**: Menu button and action buttons positioned correctly
+- **RTL Menu Items**: Icons, text, and chevrons properly aligned for RTL
+- **RTL Footer Actions**: Sign in/out buttons with proper icon positioning
+
+### 3. **Key Features**
 - ✅ **No App Restart Required**: Language and direction change instantly
 - ✅ **Cross-Platform Support**: Works on iOS, Android, and Web
 - ✅ **Dynamic Re-rendering**: Uses key-based re-rendering for instant updates
 - ✅ **TailwindCSS RTL Support**: Added RTL plugin for CSS classes
 - ✅ **Proper Text Alignment**: Automatic text alignment based on language direction
+- ✅ **RTL Drawer Navigation**: Drawer position and content adapt to RTL direction
 
 ## 🔧 How It Works
 
