@@ -1,6 +1,31 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true
-  }
+    "jsx": "react",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "customConditions": [
+      "browser",
+      "development"
+    ],
+    "target": "esnext",
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "types": [
+      "react"
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "tailwind.config": [
+        "./tailwind.config.js"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "extends": "expo/tsconfig.base"
 }

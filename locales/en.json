@@ -1,0 +1,51 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart",
+    "wishlist": "Wishlist",
+    "profile": "Profile",
+    "orders": "Orders",
+    "search": "Search"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password"
+  },
+  "profile": {
+    "editProfile": "Edit Profile",
+    "preferences": "Preferences",
+    "language": "Language",
+    "notifications": "Notifications",
+    "account": "Account",
+    "support": "Support",
+    "about": "About"
+  },
+  "products": {
+    "addToCart": "Add to Cart",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist"
+  },
+  "settings": {
+    "languageSelection": "Language Selection",
+    "leftToRight": "Left to Right",
+    "rightToLeft": "Right to Left"
+  }
+}
