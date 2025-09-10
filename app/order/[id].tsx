@@ -5,8 +5,9 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  Animated,
 } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, useRouter } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
@@ -39,6 +40,17 @@ import { useWishlist } from '@/store/wishlistStore';
 import { SafeToast } from '@/components/SafeToast';
 import { OrderTimeline } from '@/components/orders/OrderTimeline';
 import { OrderStatus } from '@/constants/orderStatus';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionHeader,
+  AccordionTrigger,
+  AccordionTitleText,
+  AccordionContent,
+  AccordionContentText,
+  AccordionIcon,
+} from '@/components/ui/accordion';
+import { ChevronDown } from 'lucide-react-native';
 
 // Status color mapping (same as orders screen)
 const getStatusColor = (status: string) => {
@@ -188,6 +200,11 @@ export default function OrderDetailScreen() {
   
   // Find the specific order from the orders list
   const order = orders?.find(o => o.id === orderId);
+
+  // Handle back navigation
+  const handleGoBack = () => {
+    router.replace('/orders');
+  };
 
   // Helper functions
   const toggleItemSelection = (itemId: number) => {
@@ -339,7 +356,7 @@ export default function OrderDetailScreen() {
         <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center', marginBottom: 24 }}>
           {error.message}
         </Text>
-        <Button onPress={() => router.back()}>
+        <Button onPress={handleGoBack}>
           <ButtonText>Go Back</ButtonText>
         </Button>
       </View>
@@ -356,7 +373,7 @@ export default function OrderDetailScreen() {
         <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center', marginBottom: 24 }}>
           The order you are looking for does not exist or has been removed.
         </Text>
-        <Button onPress={() => router.back()}>
+        <Button onPress={handleGoBack}>
           <ButtonText>Go Back</ButtonText>
         </Button>
       </View>
@@ -375,7 +392,7 @@ export default function OrderDetailScreen() {
       {/* Header */}
       <View style={{ paddingHorizontal: 16, paddingVertical: 20 }}>
         <HStack style={{ alignItems: 'center', marginBottom: 16 }}>
-          <Pressable onPress={() => router.back()} style={{ marginRight: 16, padding: 8 }}>
+          <Pressable onPress={handleGoBack} style={{ marginRight: 16, padding: 8 }}>
             <ArrowLeft color="#111827" size={24} />
           </Pressable>
           <VStack style={{ flex: 1 }}>
@@ -400,202 +417,250 @@ export default function OrderDetailScreen() {
         </HStack>
       </View>
 
-      {/* Order Timeline */}
+      {/* Collapsible Sections */}
       <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
-        <OrderTimeline
-          currentStatus={order.status as OrderStatus}
-          createdDate={order.createdOn}
-          updatedDate={order.updatedOn}
-        />
-      </View>
-
-      {/* Order Items */}
-      <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
-        <HStack style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <Text style={{ fontSize: 20, fontWeight: '800', color: '#111827' }}>
-            Items ({order.items?.length || 0})
-          </Text>
-          {order.items && order.items.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={toggleSelectionMode}
-            >
-              <ButtonText style={{ fontSize: 12 }}>
-                {selectionMode ? 'Cancel' : 'Select'}
-              </ButtonText>
-            </Button>
-          )}
-        </HStack>
-
-        {selectionMode && order.items && order.items.length > 0 && (
-          <HStack style={{ marginBottom: 16, gap: 8 }}>
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={selectAllItems}
-              style={{ flex: 1 }}
-            >
-              <ButtonText style={{ fontSize: 12 }}>Select All</ButtonText>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onPress={clearSelection}
-              style={{ flex: 1 }}
-            >
-              <ButtonText style={{ fontSize: 12 }}>Clear All</ButtonText>
-            </Button>
-          </HStack>
-        )}
-
-        {selectionMode && selectedItems.size > 0 && (
-          <View style={{ 
-            backgroundColor: '#EBF8FF', 
-            padding: 12, 
-            borderRadius: 8, 
-            marginBottom: 16,
+        <Accordion
+          type="multiple"
+          defaultValue={['tracking', 'details']}
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: 16,
             borderWidth: 1,
-            borderColor: '#3B82F6'
-          }}>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: '#1E40AF', textAlign: 'center' }}>
-              {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
-            </Text>
-          </View>
-        )}
+            borderColor: '#E5E7EB',
+          }}
+        >
+          {/* Order Tracking Section */}
+          <AccordionItem value="tracking">
+            <AccordionHeader>
+              <AccordionTrigger>
+                <HStack style={{ alignItems: 'center', flex: 1 }}>
+                  <Truck color="#3B82F6" size={20} style={{ marginRight: 12 }} />
+                  <AccordionTitleText style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>
+                    Order Tracking
+                  </AccordionTitleText>
+                </HStack>
+                <AccordionIcon as={ChevronDown} />
+              </AccordionTrigger>
+            </AccordionHeader>
+            <AccordionContent>
+              <View style={{ paddingHorizontal: 4, paddingBottom: 8 }}>
+                <OrderTimeline
+                  currentStatus={order.status as OrderStatus}
+                  createdDate={order.createdOn}
+                  updatedDate={order.updatedOn}
+                />
+              </View>
+            </AccordionContent>
+          </AccordionItem>
 
-        {order.items && order.items.length > 0 ? (
-          order.items.map((item, index) => (
-            <OrderItemDetail 
-              key={index} 
-              item={item}
-              selectionMode={selectionMode}
-              isSelected={selectedItems.has(item.id)}
-              onToggleSelect={() => toggleItemSelection(item.id)}
-            />
-          ))
-        ) : (
-          <View style={{ padding: 20, alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, color: '#6B7280', fontStyle: 'italic' }}>
-              No items found in this order
-            </Text>
-          </View>
-        )}
-      </View>
+          {/* Order Details Section */}
+          <AccordionItem value="details">
+            <AccordionHeader>
+              <AccordionTrigger>
+                <HStack style={{ alignItems: 'center', flex: 1 }}>
+                  <Package color="#3B82F6" size={20} style={{ marginRight: 12 }} />
+                  <AccordionTitleText style={{ fontSize: 18, fontWeight: '700', color: '#111827' }}>
+                    Order Details
+                  </AccordionTitleText>
+                </HStack>
+                <AccordionIcon as={ChevronDown} />
+              </AccordionTrigger>
+            </AccordionHeader>
+            <AccordionContent>
+              <VStack style={{ gap: 20, paddingHorizontal: 4, paddingBottom: 8 }}>
+                {/* Order Items */}
+                <VStack style={{ gap: 16 }}>
+                  <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>
+                      Items ({order.items?.length || 0})
+                    </Text>
+                    {order.items && order.items.length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onPress={toggleSelectionMode}
+                      >
+                        <ButtonText style={{ fontSize: 12 }}>
+                          {selectionMode ? 'Cancel' : 'Select'}
+                        </ButtonText>
+                      </Button>
+                    )}
+                  </HStack>
 
-      {/* Order Summary */}
-      <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
-        <InfoCard title="Order Summary">
-          <VStack style={{ gap: 12 }}>
-            <HStack style={{ justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 14, color: '#6B7280' }}>Subtotal</Text>
-              <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                ${subtotal.toFixed(2)}
-              </Text>
-            </HStack>
-            <HStack style={{ justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 14, color: '#6B7280' }}>Tax</Text>
-              <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                ${tax.toFixed(2)}
-              </Text>
-            </HStack>
-            <HStack style={{ justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 14, color: '#6B7280' }}>Shipping</Text>
-              <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
-              </Text>
-            </HStack>
-            <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 8 }} />
-            <HStack style={{ justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 18, fontWeight: '800', color: '#111827' }}>Total</Text>
-              <Text style={{ fontSize: 18, fontWeight: '800', color: '#111827' }}>
-                ${total.toFixed(2)}
-              </Text>
-            </HStack>
-          </VStack>
-        </InfoCard>
-      </View>
+                  {selectionMode && order.items && order.items.length > 0 && (
+                    <HStack style={{ gap: 8 }}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onPress={selectAllItems}
+                        style={{ flex: 1 }}
+                      >
+                        <ButtonText style={{ fontSize: 12 }}>Select All</ButtonText>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onPress={clearSelection}
+                        style={{ flex: 1 }}
+                      >
+                        <ButtonText style={{ fontSize: 12 }}>Clear All</ButtonText>
+                      </Button>
+                    </HStack>
+                  )}
 
-      {/* Customer Information */}
-      <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
-        <InfoCard title="Customer Information">
-          <VStack style={{ gap: 12 }}>
-            <HStack style={{ alignItems: 'center' }}>
-              <User color="#6B7280" size={20} style={{ marginRight: 12 }} />
-              <VStack>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                  {order.userName}
-                </Text>
-                <Text style={{ fontSize: 12, color: '#6B7280' }}>
-                  User ID: {order.userId}
-                </Text>
-              </VStack>
-            </HStack>
-          </VStack>
-        </InfoCard>
-      </View>
+                  {selectionMode && selectedItems.size > 0 && (
+                    <View style={{ 
+                      backgroundColor: '#EBF8FF', 
+                      padding: 12, 
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: '#3B82F6'
+                    }}>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#1E40AF', textAlign: 'center' }}>
+                        {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
+                      </Text>
+                    </View>
+                  )}
 
-      {/* Payment Information */}
-      {order.stripePaymentIntentId && order.stripePaymentIntentId !== 'string' && (
-        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
-          <InfoCard title="Payment Information">
-            <HStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
-              <HStack style={{ alignItems: 'center' }}>
-                <CreditCard color="#6B7280" size={20} style={{ marginRight: 12 }} />
-                <VStack>
-                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
-                    Payment ID
-                  </Text>
-                  <Text style={{ fontSize: 12, color: '#6B7280', fontFamily: 'monospace' }}>
-                    {order.stripePaymentIntentId.substring(0, 20)}...
-                  </Text>
+                  {order.items && order.items.length > 0 ? (
+                    order.items.map((item, index) => (
+                      <OrderItemDetail 
+                        key={index} 
+                        item={item}
+                        selectionMode={selectionMode}
+                        isSelected={selectedItems.has(item.id)}
+                        onToggleSelect={() => toggleItemSelection(item.id)}
+                      />
+                    ))
+                  ) : (
+                    <View style={{ padding: 20, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 14, color: '#6B7280', fontStyle: 'italic' }}>
+                        No items found in this order
+                      </Text>
+                    </View>
+                  )}
                 </VStack>
-              </HStack>
-              <Pressable style={{ padding: 8 }}>
-                <Copy color="#6B7280" size={16} />
-              </Pressable>
-            </HStack>
-          </InfoCard>
-        </View>
-      )}
 
-      {/* Order Actions */}
-      {order.items && order.items.length > 0 && (
-        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
-          <InfoCard title="Order Actions">
-            <VStack style={{ gap: 12 }}>
-              <Button
-                onPress={handleRepeatOrder}
-                style={{ backgroundColor: '#3B82F6' }}
-              >
-                <HStack style={{ alignItems: 'center', gap: 8 }}>
-                  <RotateCcw color="#FFFFFF" size={20} />
-                  <ButtonText style={{ color: '#FFFFFF' }}>
-                    {selectionMode && selectedItems.size > 0 
-                      ? `Repeat Selected Items (${selectedItems.size})` 
-                      : 'Repeat Entire Order'}
-                  </ButtonText>
-                </HStack>
-              </Button>
-              
-              <Button
-                variant="outline"
-                onPress={handleAddToWishlist}
-                style={{ borderColor: '#EC4899' }}
-              >
-                <HStack style={{ alignItems: 'center', gap: 8 }}>
-                  <Heart color="#EC4899" size={20} />
-                  <ButtonText style={{ color: '#EC4899' }}>
-                    {selectionMode && selectedItems.size > 0 
-                      ? `Add Selected to Wishlist (${selectedItems.size})` 
-                      : 'Add All to Wishlist'}
-                  </ButtonText>
-                </HStack>
-              </Button>
-            </VStack>
-          </InfoCard>
-        </View>
-      )}
+                {/* Order Summary */}
+                <VStack style={{ gap: 12 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>
+                    Order Summary
+                  </Text>
+                  <VStack style={{ gap: 8 }}>
+                    <HStack style={{ justifyContent: 'space-between' }}>
+                      <Text style={{ fontSize: 14, color: '#6B7280' }}>Subtotal</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+                        ${subtotal.toFixed(2)}
+                      </Text>
+                    </HStack>
+                    <HStack style={{ justifyContent: 'space-between' }}>
+                      <Text style={{ fontSize: 14, color: '#6B7280' }}>Tax</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+                        ${tax.toFixed(2)}
+                      </Text>
+                    </HStack>
+                    <HStack style={{ justifyContent: 'space-between' }}>
+                      <Text style={{ fontSize: 14, color: '#6B7280' }}>Shipping</Text>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+                        {shipping === 0 ? 'Free' : `${shipping.toFixed(2)}`}
+                      </Text>
+                    </HStack>
+                    <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 8 }} />
+                    <HStack style={{ justifyContent: 'space-between' }}>
+                      <Text style={{ fontSize: 16, fontWeight: '800', color: '#111827' }}>Total</Text>
+                      <Text style={{ fontSize: 16, fontWeight: '800', color: '#111827' }}>
+                        ${total.toFixed(2)}
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </VStack>
+
+                {/* Customer Information */}
+                <VStack style={{ gap: 12 }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>
+                    Customer Information
+                  </Text>
+                  <HStack style={{ alignItems: 'center' }}>
+                    <User color="#6B7280" size={20} style={{ marginRight: 12 }} />
+                    <VStack>
+                      <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+                        {order.userName}
+                      </Text>
+                      <Text style={{ fontSize: 12, color: '#6B7280' }}>
+                        User ID: {order.userId}
+                      </Text>
+                    </VStack>
+                  </HStack>
+                </VStack>
+
+                {/* Payment Information */}
+                {order.stripePaymentIntentId && order.stripePaymentIntentId !== 'string' && (
+                  <VStack style={{ gap: 12 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>
+                      Payment Information
+                    </Text>
+                    <HStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                      <HStack style={{ alignItems: 'center' }}>
+                        <CreditCard color="#6B7280" size={20} style={{ marginRight: 12 }} />
+                        <VStack>
+                          <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+                            Payment ID
+                          </Text>
+                          <Text style={{ fontSize: 12, color: '#6B7280', fontFamily: 'monospace' }}>
+                            {order.stripePaymentIntentId.substring(0, 20)}...
+                          </Text>
+                        </VStack>
+                      </HStack>
+                      <Pressable style={{ padding: 8 }}>
+                        <Copy color="#6B7280" size={16} />
+                      </Pressable>
+                    </HStack>
+                  </VStack>
+                )}
+
+                {/* Order Actions */}
+                {order.items && order.items.length > 0 && (
+                  <VStack style={{ gap: 12 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827' }}>
+                      Order Actions
+                    </Text>
+                    <VStack style={{ gap: 12 }}>
+                      <Button
+                        onPress={handleRepeatOrder}
+                        style={{ backgroundColor: '#3B82F6' }}
+                      >
+                        <HStack style={{ alignItems: 'center', gap: 8 }}>
+                          <RotateCcw color="#FFFFFF" size={20} />
+                          <ButtonText style={{ color: '#FFFFFF' }}>
+                            {selectionMode && selectedItems.size > 0 
+                              ? `Repeat Selected Items (${selectedItems.size})` 
+                              : 'Repeat Entire Order'}
+                          </ButtonText>
+                        </HStack>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onPress={handleAddToWishlist}
+                        style={{ borderColor: '#EC4899' }}
+                      >
+                        <HStack style={{ alignItems: 'center', gap: 8 }}>
+                          <Heart color="#EC4899" size={20} />
+                          <ButtonText style={{ color: '#EC4899' }}>
+                            {selectionMode && selectedItems.size > 0 
+                              ? `Add Selected to Wishlist (${selectedItems.size})` 
+                              : 'Add All to Wishlist'}
+                          </ButtonText>
+                        </HStack>
+                      </Button>
+                    </VStack>
+                  </VStack>
+                )}
+              </VStack>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </View>
 
       {/* General Actions */}
       <View style={{ paddingHorizontal: 16, marginBottom: 32 }}>

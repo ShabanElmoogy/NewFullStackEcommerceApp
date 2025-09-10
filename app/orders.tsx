@@ -28,6 +28,8 @@ import {
 import { useUserOrders } from '@/hooks/useOrders';
 import { useAuth } from '@/store/authStore';
 import { Order, OrderItem } from '@/api/orders';
+import { useOrdersFilter } from '@/hooks/useOrdersFilter';
+import { OrdersFilter, OrdersSearch } from '@/components/orders';
 
 // Status color mapping
 const getStatusColor = (status: string) => {
@@ -210,6 +212,18 @@ const EmptyState = () => (
 export default function OrdersScreen() {
   const { user, isAuthenticated } = useAuth();
   const { data: orders, isLoading, error, refetch } = useUserOrders();
+  
+  // Filter and search functionality
+  const {
+    filters,
+    setFilters,
+    filteredOrders,
+    filteredCount,
+    totalCount,
+    searchQuery,
+    setSearchQuery,
+    hasActiveFilters,
+  } = useOrdersFilter(orders);
 
   if (!isAuthenticated) {
     return (
@@ -254,6 +268,69 @@ export default function OrdersScreen() {
     return <EmptyState />;
   }
 
+  // Show empty state if no filtered results
+  if (filteredOrders.length === 0 && (hasActiveFilters || searchQuery.trim())) {
+    return (
+      <ScrollView
+        style={{ flex: 1, backgroundColor: '#F9FAFB' }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
+        }
+      >
+        {/* Header */}
+        <View style={{ paddingHorizontal: 16, paddingVertical: 20 }}>
+          <Text style={{ fontSize: 24, fontWeight: '800', color: '#111827', marginBottom: 4 }}>
+            My Orders
+          </Text>
+          <Text style={{ fontSize: 14, color: '#6B7280' }}>
+            {totalCount} total order{totalCount !== 1 ? 's' : ''}
+          </Text>
+        </View>
+
+        {/* Search */}
+        <OrdersSearch
+          onSearchChange={setSearchQuery}
+          value={searchQuery}
+        />
+
+        {/* Filter */}
+        <OrdersFilter
+          onFilterChange={setFilters}
+          activeFilters={filters}
+          orderCount={filteredCount}
+        />
+
+        {/* No Results */}
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32, paddingTop: 60 }}>
+          <Package color="#9CA3AF" size={80} style={{ marginBottom: 16 }} />
+          <Text style={{ fontSize: 20, fontWeight: '800', color: '#111827', marginBottom: 8, textAlign: 'center' }}>
+            No Orders Found
+          </Text>
+          <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center', marginBottom: 24 }}>
+            {searchQuery.trim() 
+              ? `No orders match "${searchQuery}"`
+              : "No orders match your current filters"
+            }
+          </Text>
+          <Button 
+            onPress={() => {
+              setSearchQuery('');
+              setFilters({
+                status: [],
+                dateRange: 'all',
+                sortBy: 'newest',
+              });
+            }} 
+            style={{ paddingHorizontal: 24 }}
+          >
+            <ButtonText>Clear Filters</ButtonText>
+          </Button>
+        </View>
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: '#F9FAFB' }}
@@ -268,12 +345,26 @@ export default function OrdersScreen() {
           My Orders
         </Text>
         <Text style={{ fontSize: 14, color: '#6B7280' }}>
-          {orders.length} order{orders.length !== 1 ? 's' : ''} found
+          {filteredCount} of {totalCount} order{totalCount !== 1 ? 's' : ''}
+          {hasActiveFilters || searchQuery.trim() ? ' (filtered)' : ''}
         </Text>
       </View>
 
+      {/* Search */}
+      <OrdersSearch
+        onSearchChange={setSearchQuery}
+        value={searchQuery}
+      />
+
+      {/* Filter */}
+      <OrdersFilter
+        onFilterChange={setFilters}
+        activeFilters={filters}
+        orderCount={filteredCount}
+      />
+
       {/* Orders List */}
-      {orders.map((order) => (
+      {filteredOrders.map((order) => (
         <OrderCard key={order.id} order={order} />
       ))}
 

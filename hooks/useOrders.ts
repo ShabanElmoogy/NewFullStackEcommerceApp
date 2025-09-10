@@ -5,7 +5,7 @@ import { useAuth } from '@/store/authStore';
 export function useUserOrders() {
   const { user, isAuthenticated } = useAuth();
   
-  return useQuery({
+  return useQuery<Order[]>({
     queryKey: ['orders', 'user', user?.id || user?.userId],
     queryFn: () => {
       console.log('useUserOrders: Fetching orders for user:', user);
@@ -30,7 +30,7 @@ export function useUserOrders() {
 export function useOrder(orderId: number) {
   const { isAuthenticated } = useAuth();
   
-  return useQuery({
+  return useQuery<Order>({
     queryKey: ['orders', orderId],
     queryFn: () => {
       console.log('useOrder: Fetching order details for ID:', orderId);
