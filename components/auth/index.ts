@@ -1,8 +1,11 @@
 export { LoginHeader } from './LoginHeader';
 export { EmailField } from './EmailField';
-export { PasswordField } from './PasswordField';
-export { SignInButton } from './SignInButton';
 export { FormDivider } from './FormDivider';
 export { SocialLogin } from './SocialLogin';
-export { SignUpLink } from './SignUpLink';
 export { LegalFooter } from './LegalFooter';
+export { LoginLink } from './LoginLink';
+export { RegisterHeader } from './RegisterHeader';
+export { RegisterForm } from './RegisterForm';
+export { ControlledInput } from './ControlledInput';
+export { ControlledPasswordInput } from './ControlledPasswordInput';
+export { ControlledCheckbox } from './ControlledCheckbox';

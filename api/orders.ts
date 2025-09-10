@@ -1,6 +1,5 @@
 import { useAuth } from "../store/authStore"; // adjust import path
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { ORDER_URLS } from '@/constants';
 
 export interface OrderItem {
   id: number;
@@ -50,7 +49,7 @@ export async function createOrder(items: any[]) {
 
   console.log('Creating order with data:', JSON.stringify(orderData, null, 2));
 
-  const res = await fetch(`${API_URL}/api/v1/Orders/Create`, {
+  const res = await fetch(ORDER_URLS.CREATE, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -91,7 +90,7 @@ export async function getUserOrders(): Promise<Order[]> {
 
   console.log('Fetching orders for user:', userId);
 
-  const res = await fetch(`${API_URL}/api/v1/Orders/GetByUserId/${userId}`, {
+  const res = await fetch(ORDER_URLS.GET_BY_USER_ID(userId), {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -131,7 +130,7 @@ export async function getOrderById(orderId: number): Promise<Order> {
 
   console.log('Fetching order details for ID:', orderId);
 
-  const res = await fetch(`${API_URL}/api/v1/Orders/${orderId}`, {
+  const res = await fetch(ORDER_URLS.GET_BY_ID(orderId), {
     method: "GET",
     headers: {
       Accept: "application/json",

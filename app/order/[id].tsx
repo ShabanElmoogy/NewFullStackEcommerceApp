@@ -30,12 +30,15 @@ import {
   RotateCcw,
   CheckSquare,
   Square,
+  Eye,
 } from 'lucide-react-native';
 import { useUserOrders } from '@/hooks/useOrders';
 import { OrderItem } from '@/api/orders';
 import { useCart } from '@/store/cartStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { SafeToast } from '@/components/SafeToast';
+import { OrderTimeline } from '@/components/orders/OrderTimeline';
+import { OrderStatus } from '@/constants/orderStatus';
 
 // Status color mapping (same as orders screen)
 const getStatusColor = (status: string) => {
@@ -395,6 +398,15 @@ export default function OrderDetailScreen() {
             </HStack>
           </Badge>
         </HStack>
+      </View>
+
+      {/* Order Timeline */}
+      <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
+        <OrderTimeline
+          currentStatus={order.status as OrderStatus}
+          createdDate={order.createdOn}
+          updatedDate={order.updatedOn}
+        />
       </View>
 
       {/* Order Items */}

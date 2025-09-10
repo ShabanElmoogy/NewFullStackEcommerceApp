@@ -1,20 +1,22 @@
 import React from 'react';
+import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
 import { Button, ButtonText } from '@/components/ui/button';
-import { GoogleIcon } from '@/components/icons/GoogleLogin'
-import { Icon } from '@/components/ui/icon';
+import { Divider } from '@/components/ui/divider';
 
-interface SocialLoginProps {
-  onPress?: () => void;
-}
-
-export function SocialLogin({ onPress }: SocialLoginProps) {
+export const SocialLogin = () => {
   return (
-    <Button variant="outline" className="h-12 rounded-xl border-black" style={{ borderColor: '#000000', borderWidth: 1 }} onPress={onPress}>
-      <HStack space="sm" className="items-center">
-       <Icon as={GoogleIcon} size="lg" />
-        <ButtonText className="text-black font-medium">Continue with Google</ButtonText>
-      </HStack>
-    </Button>
+    <>
+      {/* Social Sign Up Options */}
+      <VStack space="sm">
+        <Button variant="outline" className="h-12">
+          <ButtonText className="text-typography-700">Continue with Google</ButtonText>
+        </Button>
+        <Button variant="outline" className="h-12">
+          <ButtonText className="text-typography-700">Continue with Apple</ButtonText>
+        </Button>
+      </VStack>
+    </>
   );
-}
+};

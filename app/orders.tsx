@@ -23,6 +23,7 @@ import {
   CheckCircle,
   Truck,
   AlertCircle,
+  Eye,
 } from 'lucide-react-native';
 import { useUserOrders } from '@/hooks/useOrders';
 import { useAuth } from '@/store/authStore';

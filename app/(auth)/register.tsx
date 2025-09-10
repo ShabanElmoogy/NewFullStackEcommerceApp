@@ -1,24 +1,27 @@
 import React from 'react';
-import { View } from 'react-native';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
-import { Button, ButtonText } from '@/components/ui/button';
-import { useRouter } from 'expo-router';
+import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { RegisterHeader } from '@/components/auth/RegisterHeader';
+import { RegisterForm } from '@/components/auth/RegisterForm';
 
 export default function RegisterScreen() {
-  const router = useRouter();
-
   return (
-    <View className="flex-1">
-      <VStack className="flex-1 items-center justify-center p-6" space="lg">
-        <Text className="text-2xl font-bold">Register</Text>
-        <Text className="text-typography-600 text-center">
-          Registration screen placeholder. Implement your sign-up form here.
-        </Text>
-        <Button onPress={() => router.replace('/(auth)/login')}>
-          <ButtonText>Go to Login</ButtonText>
-        </Button>
-      </VStack>
-    </View>
+    <KeyboardAvoidingView 
+      className="flex-1 bg-background-0" 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <ScrollView 
+        className="flex-1" 
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-1 px-6 pt-12 pb-6">
+          {/* Header */}
+          <RegisterHeader />
+
+          {/* Form */}
+          <RegisterForm />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

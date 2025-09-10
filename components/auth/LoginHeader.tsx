@@ -11,8 +11,8 @@ export function LoginHeader() {
         backgroundColor: '#000000',
         marginHorizontal: -24,
         marginTop: -50,
-        paddingTop: 80,
-        paddingBottom: 40,
+        paddingTop: 60,
+        paddingBottom: 20,
         paddingHorizontal: 24,
         marginBottom: 40,
       }}

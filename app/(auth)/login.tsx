@@ -1,42 +1,29 @@
+import React, { useRef } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { useState, useRef } from 'react';
-import React from 'react';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Pressable } from '@/components/ui/pressable';
 import { useAuth } from '@/store/authStore';
 import { Redirect, useRouter } from 'expo-router';
 import { View, ScrollView, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
-import {
-  LoginHeader,
-  EmailField,
-  PasswordField,
-  SignInButton,
-  FormDivider,
-  SocialLogin,
-  SignUpLink,
-  LegalFooter,
-} from '@/components/auth';
-import { useLogin } from '@/hooks/useLogin';
+import { useLoginForm } from '@/hooks/useLoginForm';
+import { LoginFormData } from '@/utils/validation/loginSchema';
+import { ControlledInput, ControlledPasswordInput, LoginHeader, FormDivider, SocialLogin, LegalFooter } from '@/components/auth';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const scrollViewRef = useRef<ScrollView | null>(null);
-
   const router = useRouter();
+  
   const isLoggedIn = useAuth(s => !!s.user);
   const returnUrl = useAuth(s => s.returnUrl);
   const clearReturnUrl = useAuth(s => s.clearReturnUrl);
   
-  const { handleLogin, isLoading, error } = useLogin();
+  const { control, handleSubmit, isValid, isLoading } = useLoginForm();
 
   const handlePasswordFocus = () => {
     setTimeout(() => {
       scrollViewRef.current?.scrollTo({ y: 200, animated: true });
     }, 100);
-  };
-
-  const onSignIn = () => {
-    handleLogin(email, password);
   };
 
   if (isLoggedIn) {
@@ -64,6 +51,7 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled">
             
           <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}>
+            
             <LoginHeader />
 
             <View
@@ -80,20 +68,52 @@ export default function LoginScreen() {
               }}
             >
               <VStack className="gap-6">
-                <EmailField value={email} onChangeText={setEmail} errorText={error ? 'Please enter a valid email address' : null} />
-                <PasswordField value={password} onChangeText={setPassword} onFocus={handlePasswordFocus} errorText={error ? 'Password is required' : null} />
+                {/* Email Field - Using Reusable Controlled Component */}
+                <ControlledInput<LoginFormData>
+                  name="email"
+                  control={control}
+                  label="Email"
+                  placeholder="Enter your user name"
+                  autoComplete="email"
+                  showLabel={false}
+                />
+
+                {/* Password Field - Using Reusable Controlled Component */}
+                <ControlledPasswordInput<LoginFormData>
+                  name="password"
+                  control={control}
+                  label="Password"
+                  placeholder="Enter your password"
+                  showLabel={false}
+                  onFocus={handlePasswordFocus}
+                />
 
                 <View className="items-end">
                   <Text className="text-black font-medium text-sm underline">Forgot Password?</Text>
                 </View>
 
-                <SignInButton onPress={onSignIn} loading={isLoading} />
+                {/* Sign In Button - Using Reusable Button Component */}
+                <Button
+                  className="bg-black rounded-xl h-14"
+                  onPress={handleSubmit}
+                  isDisabled={!isValid || isLoading}
+                >
+                  <ButtonText className="text-white font-semibold text-base">
+                    {isLoading ? 'Signing In...' : 'Sign In'}
+                  </ButtonText>
+                </Button>
 
                 <FormDivider />
 
                 <SocialLogin />
 
-                <SignUpLink onPress={() => router.push('/signup')} />
+                {/* Sign Up Link - Using Reusable Components */}
+                <View className="flex-row justify-center items-center">
+                  <Text className="text-gray-600 text-base">Don't have an account? </Text>
+                  <Pressable onPress={() => router.push('/register')}>
+                    <Text className="text-black font-semibold text-base underline">Sign Up</Text>
+                  </Pressable>
+                </View>
               </VStack>
             </View>
 

@@ -1,7 +1,7 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+import { AUTH_URLS } from '@/constants';
 
 export async function login(userName: string, password: string) {
-  const res = await fetch(`${API_URL}/api/v1/Auth/Login`, {
+  const res = await fetch(AUTH_URLS.LOGIN, {
     method: 'POST',
     headers: {
       Accept: "application/json",
