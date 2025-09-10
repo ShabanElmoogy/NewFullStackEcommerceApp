@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { getUserOrders, getOrderById, Order } from '@/api/orders';
 import { useAuth } from '@/store/authStore';
 
 export function useUserOrders() {
   const { user, isAuthenticated } = useAuth();
   
-  return useQuery<Order[]>({
+  const query = useQuery<Order[]>({
     queryKey: ['orders', 'user', user?.id || user?.userId],
     queryFn: () => {
       console.log('useUserOrders: Fetching orders for user:', user);
@@ -18,19 +19,28 @@ export function useUserOrders() {
       console.log('useUserOrders: Retry attempt', failureCount, 'Error:', error);
       return failureCount < 3;
     },
-    onError: (error) => {
-      console.error('useUserOrders: Query failed:', error);
-    },
-    onSuccess: (data) => {
-      console.log('useUserOrders: Query successful, orders count:', data?.length);
-    }
   });
+
+  // Handle success/error side effects
+  useEffect(() => {
+    if (query.error) {
+      console.error('useUserOrders: Query failed:', query.error);
+    }
+  }, [query.error]);
+
+  useEffect(() => {
+    if (query.isSuccess && query.data) {
+      console.log('useUserOrders: Query successful, orders count:', query.data.length);
+    }
+  }, [query.isSuccess, query.data]);
+
+  return query;
 }
 
 export function useOrder(orderId: number) {
   const { isAuthenticated } = useAuth();
   
-  return useQuery<Order>({
+  const query = useQuery<Order>({
     queryKey: ['orders', orderId],
     queryFn: () => {
       console.log('useOrder: Fetching order details for ID:', orderId);
@@ -42,12 +52,21 @@ export function useOrder(orderId: number) {
     retry: (failureCount, error) => {
       console.log('useOrder: Retry attempt', failureCount, 'Error:', error);
       return failureCount < 3;
-    },
-    onError: (error) => {
-      console.error('useOrder: Query failed:', error);
-    },
-    onSuccess: (data) => {
-      console.log('useOrder: Query successful, order data:', data);
     }
   });
+
+  // Handle success/error side effects
+  useEffect(() => {
+    if (query.error) {
+      console.error('useOrder: Query failed:', query.error);
+    }
+  }, [query.error]);
+
+  useEffect(() => {
+    if (query.isSuccess && query.data) {
+      console.log('useOrder: Query successful, order data:', query.data);
+    }
+  }, [query.isSuccess, query.data]);
+
+  return query;
 }
