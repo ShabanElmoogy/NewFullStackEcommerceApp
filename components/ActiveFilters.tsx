@@ -29,7 +29,9 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
     const sortLabels = {
       'price-low': 'Price: Low to High',
       'price-high': 'Price: High to Low',
-      'newest': 'Newest First'
+      'newest': 'Newest First',
+      'rating': 'Highest Rated',
+      'popularity': 'Most Popular'
     };
     activeFilters.push({
       key: 'sortBy' as keyof FilterOptions,
@@ -38,10 +40,51 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
     });
   }
 
+  if (filters.categories && filters.categories.length > 0) {
+    activeFilters.push({
+      key: 'categories' as keyof FilterOptions,
+      label: `Categories: ${filters.categories.join(', ')}`,
+      value: filters.categories
+    });
+  }
+
+  if (filters.brands && filters.brands.length > 0) {
+    activeFilters.push({
+      key: 'brands' as keyof FilterOptions,
+      label: `Brands: ${filters.brands.join(', ')}`,
+      value: filters.brands
+    });
+  }
+
+  if (filters.minRating && filters.minRating > 0) {
+    activeFilters.push({
+      key: 'minRating' as keyof FilterOptions,
+      label: `Rating: ${filters.minRating}+ stars`,
+      value: filters.minRating
+    });
+  }
+
+  if (filters.inStock !== null) {
+    const stockLabel = filters.inStock ? 'In Stock Only' : 'Out of Stock Only';
+    activeFilters.push({
+      key: 'inStock' as keyof FilterOptions,
+      label: stockLabel,
+      value: filters.inStock
+    });
+  }
+
+  if (filters.onSale) {
+    activeFilters.push({
+      key: 'onSale' as keyof FilterOptions,
+      label: 'On Sale',
+      value: filters.onSale
+    });
+  }
+
   if (filters.minPrice) {
     activeFilters.push({
       key: 'minPrice' as keyof FilterOptions,
-      label: `Min: $${filters.minPrice}`,
+      label: `Min: ${filters.minPrice}`,
       value: filters.minPrice
     });
   }
@@ -49,7 +92,7 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
   if (filters.maxPrice) {
     activeFilters.push({
       key: 'maxPrice' as keyof FilterOptions,
-      label: `Max: $${filters.maxPrice}`,
+      label: `Max: ${filters.maxPrice}`,
       value: filters.maxPrice
     });
   }
