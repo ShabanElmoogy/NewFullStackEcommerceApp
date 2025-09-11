@@ -7,10 +7,10 @@ import { Icon } from '@/components/ui/icon';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Badge, BadgeText } from '@/components/ui/badge';
 import { Image } from '@/components/ui/image';
-import { 
-  TrendingUp, 
-  Star, 
-  ShoppingBag, 
+import {
+  TrendingUp,
+  Star,
+  ShoppingBag,
   Heart,
   Scale,
   Gift,
@@ -56,9 +56,9 @@ import { useCart } from '@/store/cartStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCompareStore } from '@/store/compareStore';
 import { Link, router } from 'expo-router';
-import Animated, { 
-  useAnimatedStyle, 
-  withSpring, 
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
   useSharedValue,
   withTiming,
   withRepeat,
@@ -85,6 +85,7 @@ export default function HomeScreen() {
   // State for dynamic content
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeCategory, setActiveCategory] = useState(0);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   // Animation values
   const sparkleScale = useSharedValue(1);
@@ -192,17 +193,11 @@ export default function HomeScreen() {
     { name: 'Gaming', icon: Gamepad2, color: '#EF4444', items: '534+', image: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=300&h=200&fit=crop' }
   ];
 
-  const quickActions = [
-    { title: 'Search Products', subtitle: 'Find anything', icon: Search, href: '/search', color: '#10B981', bgColor: '#ECFDF5' },
-    { title: 'Categories', subtitle: 'Browse by type', icon: Grid3X3, href: '/products', color: '#3B82F6', bgColor: '#EFF6FF' },
-    { title: 'Flash Deals', subtitle: 'Limited time', icon: Zap, href: '/products', color: '#F59E0B', bgColor: '#FFFBEB' },
-    { title: 'Compare', subtitle: `${compareCount} selected`, icon: Scale, href: '/compare', color: '#8B5CF6', bgColor: '#F3E8FF', disabled: compareCount < 2, badge: compareCount }
-  ];
 
   return (
     <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
+
       <Animated.ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 120 }}
@@ -215,7 +210,7 @@ export default function HomeScreen() {
           entering={FadeInDown.duration(600)}
           style={{
             backgroundColor: 'white',
-            paddingTop: insets.top + 15,
+            paddingTop: insets.top,
             paddingHorizontal: 20,
             paddingBottom: 25,
             borderBottomLeftRadius: 30,
@@ -239,7 +234,7 @@ export default function HomeScreen() {
                 Ready to shop?
               </Text>
             </VStack>
-            
+
             <HStack space="sm">
               <Pressable
                 onPress={() => router.push('/cart')}
@@ -427,168 +422,372 @@ export default function HomeScreen() {
           </HStack>
         </Animated.View>
 
-        {/* Hero Banner */}
+        {/* Hero Banner Carousel */}
         <Animated.View
           entering={FadeInUp.delay(500)}
-          className="px-5 mt-6"
+          style={{ marginTop: 24, marginBottom: 24 }}
         >
-          <View
-            style={{
-              backgroundColor: '#1E293B',
-              borderRadius: 24,
-              padding: 24,
-              position: 'relative',
-              overflow: 'hidden',
-              minHeight: 180
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={screenWidth - 32}
+            decelerationRate="fast"
+            contentContainerStyle={{ paddingHorizontal: 16 }}
+            onScroll={(event) => {
+              const slideSize = screenWidth - 16; // This should match snapToInterval
+              const index = Math.round(event.nativeEvent.contentOffset.x / slideSize);
+              setActiveSlide(Math.max(0, Math.min(index, 2))); // Ensure index is between 0-2
             }}
+            scrollEventThrottle={16}
           >
-            {/* Animated Background Elements */}
-            <Animated.View
-              style={[
-                sparkleAnimatedStyle,
-                {
-                  position: 'absolute',
-                  top: -30,
-                  right: -30,
-                  width: 120,
-                  height: 120,
-                  backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                  borderRadius: 60,
-                }
-              ]}
-            />
-            <View
+            {/* Slide 1 - Summer Sale */}
+            <Pressable
+              onPress={() => router.push('/products')}
               style={{
-                position: 'absolute',
-                bottom: -40,
-                left: -40,
-                width: 100,
-                height: 100,
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderRadius: 50,
+                width: screenWidth - 32,
+                height: 220,
+                marginRight: 16,
+                borderRadius: 20,
+                overflow: 'hidden',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.15,
+                shadowRadius: 16,
+                elevation: 8,
               }}
-            />
+            >
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop&crop=center' }}
+                className="w-full h-full absolute inset-0"
+                resizeMode="cover"
+              />
 
-            <HStack className="items-center justify-between">
-              <VStack className="flex-1">
-                <HStack className="items-center mb-3">
+              {/* Gradient Overlay */}
+              <View style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%)',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                padding: 24,
+                justifyContent: 'flex-end'
+              }}>
+                {/* Icon Badge */}
+                <View style={{
+                  position: 'absolute',
+                  top: 20,
+                  left: 20,
+                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: 25,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255, 255, 255, 0.2)'
+                }}>
                   <Animated.View style={sparkleAnimatedStyle}>
-                    <Icon as={Sparkles} size="sm" className="text-yellow-400 mr-2" />
+                    <Icon as={Sparkles} size="lg" className="text-white" />
                   </Animated.View>
-                  <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500">
-                    <BadgeText className="text-white font-bold text-xs">
-                      MEGA SALE
-                    </BadgeText>
-                  </Badge>
-                </HStack>
-                
-                <Text className="text-white font-bold text-3xl mb-2 leading-tight">
-                  Up to 70% Off
-                </Text>
-                <Text className="text-slate-300 text-sm mb-6 leading-relaxed">
-                  Summer collection clearance. Limited time offer on premium brands!
-                </Text>
-                
-                <Link href="/products" asChild>
-                  <Button
+                </View>
+
+                {/* Content */}
+                <VStack style={{ gap: 8 }}>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 2 },
+                    textShadowRadius: 4
+                  }}>
+                    Summer Sale
+                  </Text>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: 18,
+                    fontWeight: '600',
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2
+                  }}>
+                    Up to 70% Off
+                  </Text>
+                  <Text style={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: 14,
+                    marginBottom: 16,
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2
+                  }}>
+                    Get the best deals on fashion items
+                  </Text>
+
+                  {/* CTA Button */}
+                  <Pressable
                     style={{
                       backgroundColor: 'white',
-                      borderRadius: 16,
                       paddingHorizontal: 24,
                       paddingVertical: 12,
-                      alignSelf: 'flex-start'
+                      borderRadius: 25,
+                      alignSelf: 'flex-start',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 8,
+                      elevation: 4
                     }}
                   >
-                    <HStack className="items-center">
-                      <ButtonText style={{ color: '#1E293B', fontWeight: 'bold', marginRight: 8 }}>
-                        Shop Now
-                      </ButtonText>
-                      <Icon as={ArrowRight} size="sm" style={{ color: '#1E293B' }} />
-                    </HStack>
-                  </Button>
-                </Link>
-              </VStack>
-
-              <View className="w-28 h-28 bg-white/10 rounded-full items-center justify-center ml-4">
-                <Icon as={Percent} size="xl" className="text-white" />
+                    <Text style={{
+                      color: '#1F2937',
+                      fontWeight: 'bold',
+                      fontSize: 16
+                    }}>
+                      Shop Now
+                    </Text>
+                  </Pressable>
+                </VStack>
               </View>
-            </HStack>
+            </Pressable>
+
+            {/* Slide 2 - New Arrivals */}
+            <Pressable
+              onPress={() => router.push('/products')}
+              style={{
+                width: screenWidth - 32,
+                height: 220,
+                marginRight: 16,
+                borderRadius: 20,
+                overflow: 'hidden',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.15,
+                shadowRadius: 16,
+                elevation: 8,
+              }}
+            >
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=600&fit=crop&crop=center' }}
+                className="w-full h-full absolute inset-0"
+                resizeMode="cover"
+              />
+
+              {/* Gradient Overlay */}
+              <View style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                padding: 24,
+                justifyContent: 'flex-end'
+              }}>
+                {/* Icon Badge */}
+                <View style={{
+                  position: 'absolute',
+                  top: 20,
+                  left: 20,
+                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: 25,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255, 255, 255, 0.2)'
+                }}>
+                  <Icon as={Star} size="lg" className="text-white" />
+                </View>
+
+                {/* Content */}
+                <VStack style={{ gap: 8 }}>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 2 },
+                    textShadowRadius: 4
+                  }}>
+                    New Arrivals
+                  </Text>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: 18,
+                    fontWeight: '600',
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2
+                  }}>
+                    Fresh Collection
+                  </Text>
+                  <Text style={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: 14,
+                    marginBottom: 16,
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2
+                  }}>
+                    Discover the latest trends
+                  </Text>
+
+                  {/* CTA Button */}
+                  <Pressable
+                    style={{
+                      backgroundColor: 'white',
+                      paddingHorizontal: 24,
+                      paddingVertical: 12,
+                      borderRadius: 25,
+                      alignSelf: 'flex-start',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 8,
+                      elevation: 4
+                    }}
+                  >
+                    <Text style={{
+                      color: '#1F2937',
+                      fontWeight: 'bold',
+                      fontSize: 16
+                    }}>
+                      Explore
+                    </Text>
+                  </Pressable>
+                </VStack>
+              </View>
+            </Pressable>
+
+            {/* Slide 3 - Tech Deals */}
+            <Pressable
+              onPress={() => router.push('/products')}
+              style={{
+                width: screenWidth - 32,
+                height: 220,
+                borderRadius: 20,
+                overflow: 'hidden',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.15,
+                shadowRadius: 16,
+                elevation: 8,
+              }}
+            >
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1200&h=600&fit=crop&crop=center' }}
+                className="w-full h-full absolute inset-0"
+                resizeMode="cover"
+              />
+
+              {/* Gradient Overlay */}
+              <View style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                padding: 24,
+                justifyContent: 'flex-end'
+              }}>
+                {/* Icon Badge */}
+                <View style={{
+                  position: 'absolute',
+                  top: 20,
+                  left: 20,
+                  backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: 25,
+                  padding: 12,
+                  borderWidth: 1,
+                  borderColor: 'rgba(255, 255, 255, 0.2)'
+                }}>
+                  <Icon as={Crown} size="lg" className="text-white" />
+                </View>
+
+                {/* Content */}
+                <VStack style={{ gap: 8 }}>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 2 },
+                    textShadowRadius: 4
+                  }}>
+                    Tech Deals
+                  </Text>
+                  <Text style={{
+                    color: 'white',
+                    fontSize: 18,
+                    fontWeight: '600',
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2
+                  }}>
+                    Smart Savings
+                  </Text>
+                  <Text style={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: 14,
+                    marginBottom: 16,
+                    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                    textShadowOffset: { width: 0, height: 1 },
+                    textShadowRadius: 2
+                  }}>
+                    Latest gadgets at best prices
+                  </Text>
+
+                  {/* CTA Button */}
+                  <Pressable
+                    style={{
+                      backgroundColor: 'white',
+                      paddingHorizontal: 24,
+                      paddingVertical: 12,
+                      borderRadius: 25,
+                      alignSelf: 'flex-start',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 8,
+                      elevation: 4
+                    }}
+                  >
+                    <Text style={{
+                      color: '#1F2937',
+                      fontWeight: 'bold',
+                      fontSize: 16
+                    }}>
+                      Browse
+                    </Text>
+                  </Pressable>
+                </VStack>
+              </View>
+            </Pressable>
+          </ScrollView>
+          
+          {/* Pagination Dots */}
+          <View style={{ 
+            flexDirection: 'row', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            marginTop: 16,
+            gap: 8
+          }}>
+            {[0, 1, 2].map((index) => (
+              <Animated.View
+                key={index}
+                style={{
+                  width: activeSlide === index ? 24 : 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: activeSlide === index ? '#3B82F6' : '#D1D5DB',
+                }}
+              />
+            ))}
           </View>
-        </Animated.View>
-
-        {/* Quick Actions */}
-        <Animated.View
-          entering={FadeInUp.delay(600)}
-          className="px-5 mt-8"
-        >
-          <VStack space="md">
-            <HStack className="items-center justify-between">
-              <Text className="text-xl font-bold text-gray-900">
-                Quick Actions
-              </Text>
-              <Badge className="bg-blue-50">
-                <Icon as={Zap} size="xs" className="text-blue-600 mr-1" />
-                <BadgeText className="text-blue-600 font-semibold">Fast</BadgeText>
-              </Badge>
-            </HStack>
-
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-              {quickActions.map((action, index) => (
-                <AnimatedPressable
-                  key={index}
-                  entering={FadeInUp.delay(700 + index * 100)}
-                  onPress={() => !action.disabled && router.push(action.href)}
-                  style={{
-                    width: (screenWidth - 52) / 2,
-                    backgroundColor: 'white',
-                    borderRadius: 20,
-                    padding: 20,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.08,
-                    shadowRadius: 12,
-                    elevation: 4,
-                    opacity: action.disabled ? 0.6 : 1,
-                  }}
-                  disabled={action.disabled}
-                >
-                  <VStack space="sm">
-                    <HStack className="items-center justify-between">
-                      <View
-                        style={{
-                          width: 52,
-                          height: 52,
-                          backgroundColor: action.bgColor,
-                          borderRadius: 16,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Icon as={action.icon} size="lg" style={{ color: action.color }} />
-                      </View>
-                      
-                      {action.badge && action.badge > 0 && (
-                        <View className="bg-red-500 rounded-full px-2 py-1 min-w-6 items-center">
-                          <Text className="text-white text-xs font-bold">
-                            {action.badge}
-                          </Text>
-                        </View>
-                      )}
-                    </HStack>
-                    
-                    <VStack>
-                      <Text className="font-bold text-gray-900 text-base">
-                        {action.title}
-                      </Text>
-                      <Text className="text-gray-500 text-sm">
-                        {action.subtitle}
-                      </Text>
-                    </VStack>
-                  </VStack>
-                </AnimatedPressable>
-              ))}
-            </View>
-          </VStack>
         </Animated.View>
 
         {/* Flash Sale */}
@@ -619,7 +818,7 @@ export default function HomeScreen() {
                 }
               ]}
             />
-            
+
             <HStack className="items-center justify-between">
               <VStack className="flex-1">
                 <HStack className="items-center mb-2">
@@ -628,14 +827,14 @@ export default function HomeScreen() {
                     FLASH SALE
                   </Text>
                 </HStack>
-                
+
                 <Text className="text-white font-bold text-2xl mb-2">
                   24 Hours Only!
                 </Text>
                 <Text className="text-red-100 text-sm mb-4">
                   Extra 25% off on electronics & gadgets
                 </Text>
-                
+
                 <Link href="/products" asChild>
                   <Button className="bg-white self-start rounded-xl px-6 py-3">
                     <HStack className="items-center">
@@ -725,7 +924,7 @@ export default function HomeScreen() {
                         <Icon as={category.icon} size="sm" className="text-white" />
                       </View>
                     </View>
-                    
+
                     <VStack className="p-4">
                       <Text className="font-bold text-gray-900 text-sm" numberOfLines={1}>
                         {category.name}
@@ -790,7 +989,7 @@ export default function HomeScreen() {
                           resizeMode="cover"
                         />
                       </View>
-                      
+
                       {/* Badges */}
                       <View style={{ position: 'absolute', top: 12, left: 12 }}>
                         <Badge style={{ backgroundColor: product.badgeColor }}>
@@ -799,7 +998,7 @@ export default function HomeScreen() {
                           </BadgeText>
                         </Badge>
                       </View>
-                      
+
                       <View style={{ position: 'absolute', top: 12, right: 12 }}>
                         <Badge className="bg-red-500">
                           <BadgeText className="text-white font-bold text-xs">
@@ -830,12 +1029,12 @@ export default function HomeScreen() {
                         <Icon as={Heart} size="sm" className="text-gray-600" />
                       </Pressable>
                     </View>
-                    
+
                     <VStack className="p-4" space="sm">
                       <Text className="font-bold text-gray-900 text-base" numberOfLines={2}>
                         {product.name}
                       </Text>
-                      
+
                       <HStack className="items-center">
                         <Icon as={Star} size="xs" className="text-yellow-500 fill-current mr-1" />
                         <Text className="text-yellow-600 font-semibold text-sm mr-2">
@@ -845,7 +1044,7 @@ export default function HomeScreen() {
                           ({product.reviews.toLocaleString()})
                         </Text>
                       </HStack>
-                      
+
                       <HStack className="items-center justify-between">
                         <VStack>
                           <Text className="font-bold text-blue-600 text-lg">
@@ -855,7 +1054,7 @@ export default function HomeScreen() {
                             ${product.originalPrice}
                           </Text>
                         </VStack>
-                        
+
                         <Pressable
                           style={{
                             backgroundColor: '#3B82F6',
@@ -922,7 +1121,7 @@ export default function HomeScreen() {
                     >
                       <Icon as={feature.icon} size="lg" style={{ color: feature.color }} />
                     </View>
-                    
+
                     <VStack className="items-center">
                       <Text className="font-bold text-gray-900 text-base text-center">
                         {feature.title}
@@ -1022,7 +1221,7 @@ export default function HomeScreen() {
                 borderRadius: 80,
               }}
             />
-            
+
             <VStack space="md">
               <HStack className="items-center mb-2">
                 <Icon as={Bell} size="lg" className="text-blue-400 mr-3" />
@@ -1030,11 +1229,11 @@ export default function HomeScreen() {
                   Stay in the Loop
                 </Text>
               </HStack>
-              
+
               <Text className="text-gray-300 text-sm mb-6 leading-relaxed">
                 Get exclusive deals, new arrivals, and special offers delivered straight to your inbox.
               </Text>
-              
+
               <HStack space="sm">
                 <View
                   style={{
@@ -1049,7 +1248,7 @@ export default function HomeScreen() {
                     Enter your email address
                   </Text>
                 </View>
-                
+
                 <Button className="bg-blue-600 rounded-2xl px-8 py-3">
                   <ButtonText className="text-white font-semibold">
                     Subscribe

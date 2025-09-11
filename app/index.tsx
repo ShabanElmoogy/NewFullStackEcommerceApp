@@ -222,27 +222,6 @@ const SectionHeader = ({ title, subtitle, onSeeAll }: { title: string; subtitle?
   </HStack>
 );
 
-// Modern Quick Actions Component
-const QuickActions = () => (
-  <HStack className="px-4 mb-6 space-x-3">
-    <Pressable
-      onPress={() => router.push('/search')}
-      className="flex-1 bg-surface-secondary border border-border-subtle p-4 rounded-xl flex-row items-center justify-center active:bg-surface-tertiary"
-    >
-      <Search className="text-content-secondary mr-2" size={20} />
-      <Text className="text-content-primary text-sm font-semibold">Search</Text>
-    </Pressable>
-    
-    <Pressable
-      onPress={() => router.push('/products')}
-      className="flex-1 bg-surface-secondary border border-border-subtle p-4 rounded-xl flex-row items-center justify-center active:bg-surface-tertiary"
-    >
-      <Grid3X3 className="text-content-secondary mr-2" size={20} />
-      <Text className="text-content-primary text-sm font-semibold">Browse All</Text>
-    </Pressable>
-  </HStack>
-);
-
 // Modern Deals Banner Component
 const DealsBanner = () => (
   <View className="mx-4 mb-6">
@@ -317,9 +296,6 @@ export default function HomeScreen() {
       <View className="px-4 mb-6">
         <CompareTestButton />
       </View>
-
-      {/* Quick Actions */}
-      <QuickActions />
 
       {/* Categories */}
       <SectionHeader 
