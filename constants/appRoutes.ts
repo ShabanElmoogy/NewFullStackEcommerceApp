@@ -46,9 +46,19 @@ export const ORDER_URLS = {
 export const CATEGORY_URLS = {
   GET_ALL: `${API_URL}/Categories/GetAll`,
   GET_BY_ID: (id: string | number) => `${API_URL}/Categories/GetById/${id}`,
-  CREATE: `${API_URL}/Categories/Create`,
-  UPDATE: (id: string | number) => `${API_URL}/Categories/Update/${id}`,
+  CREATE: `${API_URL}/Categories/Add`,
+  UPDATE: `${API_URL}/Categories/Update`,
   DELETE: (id: string | number) => `${API_URL}/Categories/Delete/${id}`,
+} as const;
+
+// SubCategories URLs
+export const SUBCATEGORY_URLS = {
+  GET_ALL: `${API_URL}/Subcategories/GetAll`,
+  GET_BY_ID: (id: string | number) => `${API_URL}/Subcategories/GetById/${id}`,
+  GET_BY_CATEGORY: (categoryId: string | number) => `${API_URL}/Subcategories/GetAllRelatedToCategory?CategoryId=${categoryId}`,
+  CREATE: `${API_URL}/Subcategories/Add`,
+  UPDATE: `${API_URL}/Subcategories/Update`,
+  DELETE: (id: string | number) => `${API_URL}/Subcategories/Delete/${id}`,
 } as const;
 
 // User/Profile URLs

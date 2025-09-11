@@ -34,8 +34,10 @@ import {
   Crown,
 } from 'lucide-react-native';
 import { useProducts } from '@/hooks/useProducts';
+import { useCategories } from '@/hooks/useCategories';
 import ProductItem from '../components/ProductListItem';
 import { LanguageToggleButton } from '@/components/LanguageToggleButton';
+import { transformCategoriesToDisplay } from '@/utils/categoryUtils';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -276,12 +278,16 @@ const DealsBanner = () => (
 );
 
 export default function HomeScreen() {
-  const { data, isLoading, error } = useProducts();
+  const { data: productsData, isLoading: productsLoading, error: productsError } = useProducts();
+  const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useCategories();
   
   // Handle case where data might be an object with products array or direct array
-  const products = Array.isArray(data) ? data : (data && data.products ? data.products : []);
+  const products = Array.isArray(productsData) ? productsData : (productsData && productsData.products ? productsData.products : []);
   const featuredProducts = products.slice(0, 6);
   const trendingProducts = products.slice(6, 12);
+  
+  // Transform categories for display - only use real API data
+  const displayCategories = categoriesData ? transformCategoriesToDisplay(categoriesData, 'en') : [];
 
   return (
     <ScrollView
@@ -315,14 +321,32 @@ export default function HomeScreen() {
         subtitle="Find what you're looking for"
         onSeeAll={() => router.push('/products')}
       />
-      <FlatList
-        data={categories}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 8, marginBottom: 32 }}
-        renderItem={({ item }) => <CategoryItem category={item} />}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {categoriesLoading ? (
+        <View className="h-24 justify-center items-center mb-8">
+          <ActivityIndicator size="small" className="text-interactive-primary" />
+        </View>
+      ) : categoriesError ? (
+        <View className="h-24 justify-center items-center mb-8">
+          <Text className="text-content-secondary text-sm">
+            Unable to load categories
+          </Text>
+        </View>
+      ) : displayCategories.length === 0 ? (
+        <View className="h-24 justify-center items-center mb-8">
+          <Text className="text-content-secondary text-sm">
+            No categories available
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={displayCategories}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 8, marginBottom: 32 }}
+          renderItem={({ item }) => <CategoryItem category={item} />}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
 
       {/* Deals Banner */}
       <DealsBanner />
@@ -333,7 +357,7 @@ export default function HomeScreen() {
         subtitle="Hand-picked just for you"
         onSeeAll={() => router.push('/products')}
       />
-      {isLoading ? (
+      {productsLoading ? (
         <View className="h-48 justify-center items-center">
           <ActivityIndicator size="large" className="text-interactive-primary" />
         </View>
@@ -358,7 +382,7 @@ export default function HomeScreen() {
         subtitle="What's popular today"
         onSeeAll={() => router.push('/products')}
       />
-      {isLoading ? (
+      {productsLoading ? (
         <View className="h-48 justify-center items-center">
           <ActivityIndicator size="large" className="text-interactive-primary" />
         </View>

@@ -25,6 +25,9 @@ import {
   CheckCircle,
 } from 'lucide-react-native';
 import { Switch } from './ui/switch';
+import { useCategories } from '@/hooks/useCategories';
+import { useSubCategories } from '@/hooks/useSubCategories';
+import { getCategoriesForFilter, getSubCategoriesForFilter } from '@/utils/categoryUtils';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -75,6 +78,14 @@ const brandOptions = [
 
 export default function ProductFilter({ onFilterChange, activeFilters, productCount }: ProductFilterProps) {
   const [isVisible, setIsVisible] = useState(false);
+  
+  // Fetch real category and subcategory data
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
+  const { data: subCategoriesData, isLoading: subCategoriesLoading } = useSubCategories();
+  
+  // Transform categories for filter options - only use real API data
+  const realCategoryOptions = categoriesData ? getCategoriesForFilter(categoriesData, 'en') : [];
+  const realSubCategoryOptions = subCategoriesData ? getSubCategoriesForFilter(subCategoriesData, 'en') : [];
   
   // Default filter values to prevent undefined errors
   const defaultFilters: FilterOptions = {
@@ -287,44 +298,54 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
               <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
                 Categories
               </Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {categoryOptions.map((option) => {
-                  const isSelected = localFilters.categories && localFilters.categories.includes(option.value);
-                  const IconComponent = option.icon;
-                  
-                  return (
-                    <Pressable
-                      key={option.value}
-                      onPress={() => toggleCategory(option.value)}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        borderRadius: 20,
-                        borderWidth: 1,
-                        borderColor: isSelected ? option.color : '#E5E7EB',
-                        backgroundColor: isSelected ? `${option.color}15` : '#FFFFFF',
-                      }}
-                    >
-                      <IconComponent
-                        color={isSelected ? option.color : '#6B7280'}
-                        size={16}
-                        style={{ marginRight: 6 }}
-                      />
-                      <Text
+              {categoriesLoading ? (
+                <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ color: '#6B7280', fontSize: 14 }}>Loading categories...</Text>
+                </View>
+              ) : realCategoryOptions.length === 0 ? (
+                <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text style={{ color: '#6B7280', fontSize: 14 }}>No categories available</Text>
+                </View>
+              ) : (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                  {realCategoryOptions.map((option) => {
+                    const isSelected = localFilters.categories && localFilters.categories.includes(option.value);
+                    const IconComponent = option.icon;
+                    
+                    return (
+                      <Pressable
+                        key={option.value}
+                        onPress={() => toggleCategory(option.value)}
                         style={{
-                          fontSize: 14,
-                          fontWeight: isSelected ? '600' : '500',
-                          color: isSelected ? option.color : '#6B7280',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          paddingHorizontal: 12,
+                          paddingVertical: 8,
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          borderColor: isSelected ? '#3B82F6' : '#E5E7EB',
+                          backgroundColor: isSelected ? '#EBF8FF' : '#FFFFFF',
                         }}
                       >
-                        {option.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
+                        <IconComponent
+                          color={isSelected ? '#3B82F6' : '#6B7280'}
+                          size={16}
+                          style={{ marginRight: 6 }}
+                        />
+                        <Text
+                          style={{
+                            fontSize: 14,
+                            fontWeight: isSelected ? '600' : '500',
+                            color: isSelected ? '#3B82F6' : '#6B7280',
+                          }}
+                        >
+                          {option.label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
             </View>
 
             {/* Brands Filter */}

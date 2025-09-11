@@ -10,5 +10,5 @@ export * from './appRoutes';
 export * from './orderStatus';
 
 // Re-export commonly used constants
-export { APP_URLS, AUTH_URLS, PRODUCT_URLS, ORDER_URLS, BASE_URLS } from './appRoutes';
+export { APP_URLS, AUTH_URLS, PRODUCT_URLS, ORDER_URLS, CATEGORY_URLS, SUBCATEGORY_URLS, BASE_URLS } from './appRoutes';
 export { ORDER_STATUS, ORDER_TIMELINE_STEPS, ORDER_STATUS_COLORS } from './orderStatus';

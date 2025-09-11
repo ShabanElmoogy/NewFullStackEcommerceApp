@@ -7,8 +7,27 @@ export interface Product {
   price: number;
   image: string;
   description: string;
-  createdAt?: string;
-  category?: string;
+  createdOn?: string;
+  updatedOn?: string;
+  isDeleted?: boolean;
+  // API returns flattened category structure
+  categoryId?: number | null;
+  categoryNameAr?: string | null;
+  categoryNameEn?: string | null;
+  subCategoryId?: number | null;
+  subCategoryNameAr?: string | null;
+  subCategoryNameEn?: string | null;
+  // Legacy support for nested structure
+  category?: {
+    id: number;
+    nameAr: string;
+    nameEn: string;
+  } | string;
+  subCategory?: {
+    id: number;
+    nameAr: string;
+    nameEn: string;
+  };
   brand?: string;
   rating?: number;
   reviewCount?: number;
@@ -16,7 +35,7 @@ export interface Product {
   stockQuantity?: number;
   onSale?: boolean;
   originalPrice?: number;
-  popularity?: number; // Could be based on views, purchases, etc.
+  popularity?: number;
 }
 
 export function useProductFilter(products: Product[], filters: FilterOptions) {
@@ -30,19 +49,78 @@ export function useProductFilter(products: Product[], filters: FilterOptions) {
     // Search filter
     if (filters.searchQuery.trim()) {
       const query = filters.searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(product =>
-        product.name?.toLowerCase().includes(query) ||
-        product.description?.toLowerCase().includes(query) ||
-        product.category?.toLowerCase().includes(query) ||
-        product.brand?.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter(product => {
+        // Check name and description
+        const nameMatch = product.name?.toLowerCase().includes(query);
+        const descriptionMatch = product.description?.toLowerCase().includes(query);
+        const brandMatch = product.brand?.toLowerCase().includes(query);
+        
+        // Check flattened category structure
+        const categoryMatchFlat = product.categoryNameEn?.toLowerCase().includes(query) ||
+                                 product.categoryNameAr?.toLowerCase().includes(query);
+        
+        const subCategoryMatchFlat = product.subCategoryNameEn?.toLowerCase().includes(query) ||
+                                    product.subCategoryNameAr?.toLowerCase().includes(query);
+        
+        // Check legacy nested category structure
+        let categoryMatchNested = false;
+        if (product.category) {
+          if (typeof product.category === 'object') {
+            categoryMatchNested = product.category.nameEn?.toLowerCase().includes(query) ||
+                                 product.category.nameAr?.toLowerCase().includes(query);
+          } else if (typeof product.category === 'string') {
+            categoryMatchNested = product.category.toLowerCase().includes(query);
+          }
+        }
+        
+        // Check legacy nested subcategory structure
+        let subCategoryMatchNested = false;
+        if (product.subCategory) {
+          subCategoryMatchNested = product.subCategory.nameEn?.toLowerCase().includes(query) ||
+                                  product.subCategory.nameAr?.toLowerCase().includes(query);
+        }
+        
+        return nameMatch || descriptionMatch || brandMatch || 
+               categoryMatchFlat || subCategoryMatchFlat ||
+               categoryMatchNested || subCategoryMatchNested;
+      });
     }
 
     // Category filter
     if (filters.categories && filters.categories.length > 0) {
-      filtered = filtered.filter(product =>
-        product.category && filters.categories.includes(product.category)
-      );
+      filtered = filtered.filter(product => {
+        // Check flattened API structure first (categoryId field)
+        if (product.categoryId !== null && product.categoryId !== undefined) {
+          const matches = filters.categories.some(filterCategoryId => {
+            // Try both string and integer comparison
+            return filterCategoryId === product.categoryId!.toString() || 
+                   parseInt(filterCategoryId) === product.categoryId!;
+          });
+          
+          return matches;
+        }
+        
+        // Fallback to legacy nested structure
+        if (product.category) {
+          if (typeof product.category === 'object' && product.category.id !== undefined) {
+            // Legacy nested format: category is an object with id
+            const categoryId = product.category.id;
+            
+            const matches = filters.categories.some(filterCategoryId => {
+              return filterCategoryId === categoryId.toString() || 
+                     parseInt(filterCategoryId) === categoryId;
+            });
+            
+            return matches;
+          } else if (typeof product.category === 'string') {
+            // Legacy string format
+            const matches = filters.categories.includes(product.category);
+            return matches;
+          }
+        }
+        
+        return false;
+      });
     }
 
     // Brand filter
