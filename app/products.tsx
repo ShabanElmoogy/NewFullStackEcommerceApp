@@ -16,8 +16,8 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useFilterPersistence } from '@/hooks/useFilterPersistence';
+import { useViewModePersistence } from '@/hooks/useViewModePersistence';
 import { Text } from '../components/ui/text';
-import { VStack } from '../components/ui/vstack';
 import { HStack } from '../components/ui/hstack';
 import { Badge, BadgeText } from '../components/ui/badge';
 import { Button, ButtonText } from '../components/ui/button';
@@ -39,7 +39,6 @@ import {
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Use persistent filters
   const { 
@@ -51,8 +50,16 @@ export default function ProductsScreen() {
     defaultFilters 
   } = useFilterPersistence();
 
-  // Compute columns based on window width
-  const numOfColumns = useNumColumns();
+  // Use persistent view mode
+  const {
+    viewMode,
+    isLoaded: viewModeLoaded,
+    updateViewMode
+  } = useViewModePersistence();
+
+  // Compute columns based on window width and view mode
+  const baseNumColumns = useNumColumns();
+  const numOfColumns = viewMode === 'list' ? 1 : baseNumColumns;
 
   const { data, isLoading, error, refetch } = useProducts();
 
@@ -138,7 +145,7 @@ export default function ProductsScreen() {
   const isSearching = filters && filters.searchQuery && filters.searchQuery.trim() !== '';
 
   // Loading state
-  if (isLoading || !filtersLoaded) {
+  if (isLoading || !filtersLoaded || !viewModeLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#3B82F6" />
@@ -210,7 +217,7 @@ export default function ProductsScreen() {
             
             <View style={styles.viewToggle}>
               <Pressable
-                onPress={() => setViewMode('grid')}
+                onPress={() => updateViewMode('grid')}
                 style={[styles.viewButton, viewMode === 'grid' && styles.viewButtonActive]}
               >
                 <GridIcon 
@@ -219,7 +226,7 @@ export default function ProductsScreen() {
                 />
               </Pressable>
               <Pressable
-                onPress={() => setViewMode('list')}
+                onPress={() => updateViewMode('list')}
                 style={[styles.viewButton, viewMode === 'list' && styles.viewButtonActive]}
               >
                 <ListIcon 
@@ -236,16 +243,14 @@ export default function ProductsScreen() {
       {hasResults ? (
         <FlatList
           data={filteredProducts}
-          key={`${numOfColumns}-${viewMode}`}
-          numColumns={viewMode === 'grid' ? numOfColumns : 1}
+          key={`${viewMode}-${baseNumColumns}`}
+          numColumns={numOfColumns}
           style={styles.productsList}
           contentContainerStyle={styles.productsListContent}
-          columnWrapperStyle={viewMode === 'grid' && numOfColumns > 1 ? styles.columnWrapper : undefined}
+          columnWrapperStyle={numOfColumns > 1 ? styles.columnWrapper : null}
           ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
           renderItem={({ item }) => (
-            <View style={viewMode === 'grid' ? styles.gridItem : styles.listItem}>
-              <ProductItem product={item} />
-            </View>
+            <ProductItem product={item} viewMode={viewMode} />
           )}
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -256,10 +261,10 @@ export default function ProductsScreen() {
               tintColor="#3B82F6"
             />
           }
-          removeClippedSubviews={true}
+          removeClippedSubviews={false}
           maxToRenderPerBatch={10}
           windowSize={10}
-          initialNumToRender={8}
+          initialNumToRender={6}
         />
       ) : (
         <ScrollView 
@@ -493,12 +498,6 @@ const styles = {
   },
   itemSeparator: {
     height: 16,
-  },
-  gridItem: {
-    flex: 1,
-  },
-  listItem: {
-    width: '100%' as const,
   },
   emptyStateContainer: {
     flex: 1,
