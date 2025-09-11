@@ -262,15 +262,25 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
             </Pressable>
           </HStack>
 
-          <View style={{ flex: 1, position: 'relative' }}>
+          <View style={{ flex: 1 }}>
             <ScrollView 
               ref={scrollViewRef}
               style={{ flex: 1 }} 
+              contentContainerStyle={{ 
+                paddingBottom: 20,
+                flexGrow: 1 
+              }}
               showsVerticalScrollIndicator={true}
-              indicatorStyle="default"
-              scrollIndicatorInsets={{ right: 1 }}
+              indicatorStyle="black"
+              scrollIndicatorInsets={{ right: 3 }}
               onScroll={handleScroll}
               scrollEventThrottle={16}
+              bounces={true}
+              alwaysBounceVertical={true}
+              keyboardShouldPersistTaps="handled"
+              nestedScrollEnabled={true}
+              persistentScrollbar={true}
+              fadingEdgeLength={0}
             >
             {/* Categories Filter */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
