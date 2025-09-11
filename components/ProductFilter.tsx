@@ -216,8 +216,6 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
           shadowOpacity: 0.05,
           shadowRadius: 4,
           elevation: 2,
-          marginHorizontal: 16,
-          marginBottom: 16,
         }}
       >
         <SlidersHorizontal color="#6B7280" size={20} style={{ marginRight: 8 }} />

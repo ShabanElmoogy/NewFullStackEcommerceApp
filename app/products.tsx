@@ -173,15 +173,41 @@ export default function ProductsScreen() {
           value={filters?.searchQuery || ''}
         />
 
-        {/* Filter & Sort Row */}
-        <View style={styles.filterSortRow}>
+        {/* Filter Row */}
+        <View style={styles.filterRow}>
           <ProductFilter
             onFilterChange={handleFilterChange}
             activeFilters={filters}
             productCount={filteredCount}
           />
-          
-          {hasResults && (
+        </View>
+
+        {/* Active Filters */}
+        {hasActiveFiltersOrSearch && (
+          <ActiveFilters
+            filters={filters}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAll={handleClearAllFilters}
+          />
+        )}
+
+        {/* Results Summary & View Toggle */}
+        {hasResults && (
+          <View style={styles.resultsSummary}>
+            <View style={styles.resultsLeft}>
+              <Text style={styles.resultsText}>
+                {isSearching 
+                  ? `${filteredCount} results for "${filters?.searchQuery || ''}"`
+                  : `${filteredCount} of ${totalCount} products`
+                }
+              </Text>
+              {filteredCount !== totalCount && (
+                <Badge style={styles.filteredBadge}>
+                  <BadgeText style={styles.filteredBadgeText}>Filtered</BadgeText>
+                </Badge>
+              )}
+            </View>
+            
             <View style={styles.viewToggle}>
               <Pressable
                 onPress={() => setViewMode('grid')}
@@ -202,32 +228,6 @@ export default function ProductsScreen() {
                 />
               </Pressable>
             </View>
-          )}
-        </View>
-
-        {/* Active Filters */}
-        {hasActiveFiltersOrSearch && (
-          <ActiveFilters
-            filters={filters}
-            onRemoveFilter={handleRemoveFilter}
-            onClearAll={handleClearAllFilters}
-          />
-        )}
-
-        {/* Results Summary */}
-        {hasResults && (
-          <View style={styles.resultsSummary}>
-            <Text style={styles.resultsText}>
-              {isSearching 
-                ? `${filteredCount} results for "${filters?.searchQuery || ''}"`
-                : `${filteredCount} of ${totalCount} products`
-              }
-            </Text>
-            {filteredCount !== totalCount && (
-              <Badge style={styles.filteredBadge}>
-                <BadgeText style={styles.filteredBadgeText}>Filtered</BadgeText>
-              </Badge>
-            )}
           </View>
         )}
       </View>
@@ -429,12 +429,15 @@ const styles = {
     borderBottomColor: '#F1F5F9',
     paddingBottom: 8,
   },
-  filterSortRow: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
+  filterRow: {
     paddingHorizontal: 16,
     marginTop: 8,
+  },
+  resultsLeft: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    flex: 1,
+    gap: 8,
   },
   viewToggle: {
     flexDirection: 'row' as const,

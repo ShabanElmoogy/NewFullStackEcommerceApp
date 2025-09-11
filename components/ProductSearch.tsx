@@ -33,7 +33,7 @@ export default function ProductSearch({
   };
 
   return (
-    <View style={{ paddingHorizontal: 16, marginBottom: 12 }}>
+    <View style={{ paddingHorizontal: 16, marginBottom: 12,marginTop : 15 }}>
       <HStack
         style={{
           alignItems: 'center',
