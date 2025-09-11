@@ -11,6 +11,7 @@ import { Text } from "./ui/text";
 import { Link } from "expo-router";
 import { Pressable, View } from "react-native";
 import WishlistButton from "./WishlistButton";
+import CompareButton from "./CompareButton";
 import { useCart } from "@/store/cartStore";
 import { useToast } from "./ui/toast";
 import { CustomToast } from "./CustomToast";
@@ -272,12 +273,27 @@ export default function ProductItem({ product, viewMode = 'grid' }: ProductItemP
           />
         </View>
 
-        {/* Quick View Button */}
+        {/* Compare Button */}
         <View 
           className="absolute top-2 z-20"
           style={{
             right: isRTL ? undefined : 48,
             left: isRTL ? 48 : undefined
+          }}
+        >
+          <CompareButton 
+            product={product} 
+            size="sm" 
+            variant="icon"
+          />
+        </View>
+
+        {/* Quick View Button */}
+        <View 
+          className="absolute top-2 z-20"
+          style={{
+            right: isRTL ? undefined : 88,
+            left: isRTL ? 88 : undefined
           }}
         >
           <Link href={`/product/${product.id}`} asChild>

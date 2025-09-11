@@ -12,6 +12,7 @@ import ProductItem from '../components/ProductListItem';
 import ProductFilter, { FilterOptions } from '../components/ProductFilter';
 import ProductSearch from '../components/ProductSearch';
 import ActiveFilters from '../components/ActiveFilters';
+import CompareFloatingBar from '../components/CompareFloatingBar';
 import React, { useState, useCallback, useMemo } from 'react';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
@@ -290,6 +291,9 @@ export default function ProductsScreen() {
           )}
         </ScrollView>
       )}
+
+      {/* Compare Floating Bar */}
+      <CompareFloatingBar />
     </View>
   );
 }

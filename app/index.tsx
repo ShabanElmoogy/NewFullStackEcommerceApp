@@ -37,6 +37,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
 import ProductItem from '../components/ProductListItem';
 import { LanguageToggleButton } from '@/components/LanguageToggleButton';
+import CompareTestButton from '@/components/CompareTestButton';
 import { transformCategoriesToDisplay } from '@/utils/categoryUtils';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -311,6 +312,11 @@ export default function HomeScreen() {
 
       {/* Language Toggle Button for Testing */}
       <LanguageToggleButton />
+
+      {/* Compare Test Button for Testing */}
+      <View className="px-4 mb-6">
+        <CompareTestButton />
+      </View>
 
       {/* Quick Actions */}
       <QuickActions />

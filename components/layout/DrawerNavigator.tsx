@@ -36,6 +36,7 @@ export function DrawerNavigator() {
     >
       <Drawer.Screen name="index" options={{ title: 'Home' }} />
       <Drawer.Screen name="products" options={{ title: 'Products' }} />
+      <Drawer.Screen name="compare" options={{ title: 'Compare Products' }} />
       <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
       <Drawer.Screen name="cart" options={{ title: 'Cart' }} />
       <Drawer.Screen name="wishlist" options={{ title: 'Wishlist' }} />

@@ -12,10 +12,12 @@ import {
   User,
   LogOut,
   ChevronRight,
+  Scale,
 } from 'lucide-react-native';
 import { useAuth } from '@/store/authStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCart } from '@/store/cartStore';
+import { useCompareStore } from '@/store/compareStore';
 import { useLanguageStore } from '@/store/languageStore';
 
 interface CustomDrawerContentProps {
@@ -27,6 +29,7 @@ export function CustomDrawerContent(props: CustomDrawerContentProps) {
   const pathname = usePathname();
   const wishlistCount = useWishlist((state) => state.totalItems());
   const cartCount = useCart((state) => state.totalQuantity());
+  const compareCount = useCompareStore((state) => state.getCompareCount());
 
   const handleNavigation = (route: string) => {
     props.navigation.closeDrawer();
@@ -47,6 +50,7 @@ export function CustomDrawerContent(props: CustomDrawerContentProps) {
   const menuItems = [
     { label: 'Home', icon: Home, route: '/' },
     { label: 'Products', icon: Store, route: '/products' },
+    { label: 'Compare', icon: Scale, route: '/compare' },
     { label: 'Search', icon: Search, route: '/search' },
     { label: 'Orders', icon: Package, route: '/orders' },
     { label: 'Wishlist', icon: Heart, route: '/wishlist' },
@@ -57,7 +61,9 @@ export function CustomDrawerContent(props: CustomDrawerContentProps) {
   const renderMenuItem = (item: any, index: number) => {
     const isActive = pathname === item.route;
     const count =
-      item.route === '/cart' ? cartCount : item.route === '/wishlist' ? wishlistCount : 0;
+      item.route === '/cart' ? cartCount : 
+      item.route === '/wishlist' ? wishlistCount : 
+      item.route === '/compare' ? compareCount : 0;
     const { isRTL } = useLanguageStore();
 
     return (
