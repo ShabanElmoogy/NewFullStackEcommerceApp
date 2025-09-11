@@ -6,7 +6,7 @@ import { Icon } from '@/components/ui/icon';
 import { Button, ButtonText } from '@/components/ui/button';
 import { useCompareStore } from '@/store/compareStore';
 import { Scale, X, ArrowRight } from 'lucide-react-native';
-import { router } from 'expo-router';
+import { Link } from 'expo-router';
 import Animated, { 
   useAnimatedStyle, 
   withSpring, 
@@ -41,10 +41,7 @@ export default function CompareFloatingBar() {
     };
   });
 
-  const handleCompare = () => {
-    router.push('/compare');
-  };
-
+  
   const handleClear = () => {
     clearCompare();
   };
@@ -91,18 +88,19 @@ export default function CompareFloatingBar() {
               <Icon as={X} size="sm" className="text-gray-600" />
             </Pressable>
 
-            <Button
-              onPress={handleCompare}
-              className="bg-blue-500 px-6 py-3 rounded-xl active:bg-blue-600"
-              disabled={compareCount < 2}
-            >
-              <HStack className="items-center" space="xs">
-                <ButtonText className="text-white font-semibold">
-                  Compare
-                </ButtonText>
-                <Icon as={ArrowRight} size="sm" className="text-white" />
-              </HStack>
-            </Button>
+            <Link href="/compare" asChild>
+              <Button
+                className="bg-blue-500 px-6 py-3 rounded-xl active:bg-blue-600"
+                disabled={compareCount < 2}
+              >
+                <HStack className="items-center" space="xs">
+                  <ButtonText className="text-white font-semibold">
+                    Compare
+                  </ButtonText>
+                  <Icon as={ArrowRight} size="sm" className="text-white" />
+                </HStack>
+              </Button>
+            </Link>
           </HStack>
         </HStack>
 
