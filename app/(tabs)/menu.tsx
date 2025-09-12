@@ -28,6 +28,8 @@ import {
   Sun,
   Smartphone
 } from 'lucide-react-native';
+import StatsCards from '@/components/home/StatsCards';
+import { useCompareStore } from '@/store/compareStore';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
@@ -157,6 +159,7 @@ export default function MenuScreen() {
   const insets = useSafeAreaInsets();
   const { user, isAuthenticated, logout } = useAuth();
   const cartCount = useCart((state) => state.totalQuantity());
+  const compareCount = useCompareStore((state) => state.getCompareCount());
   const wishlistCount = useWishlist((state) => state.totalItems());
   const { isRTL, toggleLanguage } = useLanguageStore();
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -317,6 +320,7 @@ export default function MenuScreen() {
     },
   ];
 
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <ScrollView
@@ -324,24 +328,24 @@ export default function MenuScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {/* User Info and StatsCards in a single card */}
         <View
           style={{
-            paddingTop: insets.top + 20,
-            paddingHorizontal: 20,
-            paddingBottom: 20,
+            marginTop: insets.top,
+            marginHorizontal: 16,
+            marginBottom: 16,
             backgroundColor: 'white',
-            borderBottomLeftRadius: 24,
-            borderBottomRightRadius: 24,
+            borderRadius: 24,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
             shadowRadius: 8,
             elevation: 5,
+            padding: 20,
           }}
         >
           {isAuthenticated && user ? (
-            <HStack className="items-center">
+            <HStack className="items-center mb-4">
               <View className="w-16 h-16 bg-blue-100 rounded-full items-center justify-center mr-4">
                 {user.avatar ? (
                   <View className="w-16 h-16 rounded-full overflow-hidden">
@@ -358,7 +362,6 @@ export default function MenuScreen() {
                   </Text>
                 )}
               </View>
-              
               <VStack className="flex-1">
                 <Text className="text-xl font-bold text-gray-900">
                   {user.name || user.username || 'User'}
@@ -374,7 +377,7 @@ export default function MenuScreen() {
               </VStack>
             </HStack>
           ) : (
-            <VStack className="items-center">
+            <VStack className="items-center mb-4">
               <View className="w-20 h-20 bg-gray-100 rounded-full items-center justify-center mb-4">
                 <Icon as={User} size="xl" className="text-gray-400" />
               </View>
@@ -390,6 +393,7 @@ export default function MenuScreen() {
               </Link>
             </VStack>
           )}
+          <StatsCards cartCount={cartCount} compareCount={compareCount} onNavigate={router.push} />
         </View>
 
         {/* Account Section */}

@@ -26,7 +26,7 @@ interface HomePageProps {
 export default function HomePage({ onNavigate }: HomePageProps) {
   const cartCount = useCart((state) => state.totalQuantity());
   const wishlistCount = useWishlist((state) => state.totalItems());
-  const compareCount = useCompareStore((state) => state.getCompareCount());
+  // const compareCount = useCompareStore((state) => state.getCompareCount());
 
   // State for dynamic content
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -83,12 +83,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
         <SearchBar onNavigate={handleNavigation} />
 
-        <StatsCards
-          cartCount={cartCount}
-          compareCount={compareCount}
-          onNavigate={handleNavigation}
-        />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+
 
         <HeroCarousel onNavigate={handleNavigation} />
         <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />

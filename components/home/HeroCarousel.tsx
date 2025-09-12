@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import { View, ScrollView, Pressable, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
+import { Pressable } from '@/components/ui/pressable';
 import { Sparkles, Star, Crown } from 'lucide-react-native';
-import Animated, { FadeInUp, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
-
-const { width: screenWidth } = Dimensions.get('window');
+import Animated, { 
+  FadeInUp, 
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle, 
+  useSharedValue, 
+  withRepeat, 
+  withSequence, 
+  withTiming
+} from 'react-native-reanimated';
 
 interface HeroCarouselProps {
   onNavigate: (route: string) => void;
@@ -15,7 +24,7 @@ interface HeroCarouselProps {
 
 const slides = [
   {
-    id: 1,
+    id: '1',
     title: 'Summer Sale',
     subtitle: 'Up to 70% Off',
     description: 'Get the best deals on fashion items',
@@ -24,7 +33,7 @@ const slides = [
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop&crop=center'
   },
   {
-    id: 2,
+    id: '2',
     title: 'New Arrivals',
     subtitle: 'Fresh Collection',
     description: 'Discover the latest trends',
@@ -33,7 +42,7 @@ const slides = [
     image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=600&fit=crop&crop=center'
   },
   {
-    id: 3,
+    id: '3',
     title: 'Tech Deals',
     subtitle: 'Smart Savings',
     description: 'Latest gadgets at best prices',
@@ -43,11 +52,13 @@ const slides = [
   }
 ];
 
+const AnimatedBox = Animated.createAnimatedComponent(Box);
+
 export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
   const [activeSlide, setActiveSlide] = useState(0);
   const sparkleScale = useSharedValue(1);
 
-  React.useEffect(() => {
+  useEffect(() => {
     sparkleScale.value = withRepeat(
       withSequence(
         withTiming(1.3, { duration: 800 }),
@@ -62,163 +73,101 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
     transform: [{ scale: sparkleScale.value }],
   }));
 
+  // Auto slide
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const goToSlide = (index: number) => {
+    setActiveSlide(index);
+  };
+
+  const currentSlide = slides[activeSlide];
+
   return (
-    <Animated.View
-      entering={FadeInUp.delay(500)}
-      style={{ marginTop: 24, marginBottom: 24 }}
-    >
-      <ScrollView
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={screenWidth - 32}
-        decelerationRate="fast"
-        contentContainerStyle={{ paddingHorizontal: 16 }}
-        onScroll={(event) => {
-          const slideSize = screenWidth - 16;
-          const index = Math.round(event.nativeEvent.contentOffset.x / slideSize);
-          setActiveSlide(Math.max(0, Math.min(index, 2)));
-        }}
-        scrollEventThrottle={16}
-      >
-        {slides.map((slide, index) => (
+    <AnimatedBox entering={FadeInUp.delay(300)} className="mt-6">
+      {/* Single Slide Display */}
+      <Box className="mx-4" style={{ height: 220 }}>
+        <AnimatedBox
+          key={`slide-${activeSlide}`}
+          entering={FadeIn.duration(500)}
+          exiting={FadeOut.duration(300)}
+        >
           <Pressable
-            key={slide.id}
             onPress={() => onNavigate('/products')}
-            style={{
-              width: screenWidth - 32,
-              height: 220,
-              marginRight: index < slides.length - 1 ? 16 : 0,
-              borderRadius: 20,
-              overflow: 'hidden',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.15,
-              shadowRadius: 16,
-              elevation: 8,
-            }}
+            className="w-full h-full rounded-3xl overflow-hidden bg-black"
+            style={{ height: 220 }}
           >
             <Image
-              source={{ uri: slide.image }}
-              className="w-full h-full absolute inset-0"
+              source={{ uri: currentSlide.image }}
+              className="w-full h-full absolute"
               resizeMode="cover"
+              alt={currentSlide.title}
             />
 
-            {/* Gradient Overlay */}
-            <View style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              padding: 24,
-              justifyContent: 'flex-end'
-            }}>
-              {/* Icon Badge */}
-              <View style={{
-                position: 'absolute',
-                top: 20,
-                left: 20,
-                backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: 25,
-                padding: 12,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.2)'
-              }}>
-                {slide.icon === Sparkles ? (
+            <Box className="flex-1 p-5 justify-end" 
+                 style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
+              
+              {/* Icon */}
+              <Box 
+                className="absolute top-5 left-5 rounded-full p-2.5"
+                style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+              >
+                {currentSlide.icon === Sparkles ? (
                   <Animated.View style={sparkleAnimatedStyle}>
-                    <Icon as={slide.icon} size="lg" className="text-white" />
+                    <Icon as={currentSlide.icon} size="xl" className="text-white" />
                   </Animated.View>
                 ) : (
-                  <Icon as={slide.icon} size="lg" className="text-white" />
+                  <Icon as={currentSlide.icon} size="xl" className="text-white" />
                 )}
-              </View>
+              </Box>
 
               {/* Content */}
-              <VStack style={{ gap: 8 }}>
-                <Text style={{
-                  color: 'white',
-                  fontSize: 28,
-                  fontWeight: 'bold',
-                  textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4
-                }}>
-                  {slide.title}
+              <VStack space="xs">
+                <Text className="text-white text-3xl font-bold">
+                  {currentSlide.title}
                 </Text>
-                <Text style={{
-                  color: 'white',
-                  fontSize: 18,
-                  fontWeight: '600',
-                  textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                  textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 2
-                }}>
-                  {slide.subtitle}
+                <Text className="text-white text-lg font-semibold">
+                  {currentSlide.subtitle}
                 </Text>
-                <Text style={{
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontSize: 14,
-                  marginBottom: 16,
-                  textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                  textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 2
-                }}>
-                  {slide.description}
+                <Text className="text-gray-100 text-sm mb-3">
+                  {currentSlide.description}
                 </Text>
 
-                {/* CTA Button */}
                 <Pressable
                   onPress={() => onNavigate('/products')}
-                  style={{
-                    backgroundColor: 'white',
-                    paddingHorizontal: 24,
-                    paddingVertical: 12,
-                    borderRadius: 25,
-                    alignSelf: 'flex-start',
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 8,
-                    elevation: 4
-                  }}
+                  className="bg-white px-5 py-2.5 rounded-full self-start"
                 >
-                  <Text style={{
-                    color: '#1F2937',
-                    fontWeight: 'bold',
-                    fontSize: 16
-                  }}>
-                    {slide.buttonText}
+                  <Text className="font-bold text-gray-800">
+                    {currentSlide.buttonText}
                   </Text>
                 </Pressable>
               </VStack>
-            </View>
+            </Box>
+          </Pressable>
+        </AnimatedBox>
+      </Box>
+
+      {/* Pagination Dots */}
+      <HStack space="sm" className="justify-center mt-3 py-2">
+        {slides.map((_, i) => (
+          <Pressable
+            key={i}
+            onPress={() => goToSlide(i)}
+          >
+            <Box
+              className={`h-2 rounded-sm mx-1 ${
+                activeSlide === i 
+                  ? 'w-5 bg-blue-500' 
+                  : 'w-2 bg-gray-300'
+              }`}
+            />
           </Pressable>
         ))}
-      </ScrollView>
-      
-      {/* Pagination Dots */}
-      <View style={{ 
-        flexDirection: 'row', 
-        justifyContent: 'center', 
-        alignItems: 'center',
-        marginTop: 16,
-        gap: 8
-      }}>
-        {slides.map((_, index) => (
-          <Animated.View
-            key={index}
-            style={{
-              width: activeSlide === index ? 24 : 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: activeSlide === index ? '#3B82F6' : '#D1D5DB',
-            }}
-          />
-        ))}
-      </View>
-    </Animated.View>
+      </HStack>
+    </AnimatedBox>
   );
 }

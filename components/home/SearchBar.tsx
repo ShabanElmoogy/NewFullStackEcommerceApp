@@ -34,6 +34,7 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
   const handleSearch = (searchQuery: string) => {
     if (!searchQuery.trim()) return;
     setSearchQuery(searchQuery.trim());
+    setSearchText(''); // Clear the input after search
     if (onNavigate) {
       onNavigate('/products');
     } else {
