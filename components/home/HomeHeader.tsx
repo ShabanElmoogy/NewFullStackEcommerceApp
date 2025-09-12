@@ -4,9 +4,8 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
-import { Search, Filter, ShoppingCart, Heart, Crown } from 'lucide-react-native';
+import { ShoppingCart, Heart, Crown } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 interface HomeHeaderProps {
@@ -17,9 +16,10 @@ interface HomeHeaderProps {
   };
   cartCount: number;
   wishlistCount: number;
+  onNavigate: (route: string) => void;
 }
 
-export default function HomeHeader({ greeting, cartCount, wishlistCount }: HomeHeaderProps) {
+export default function HomeHeader({ greeting, cartCount, wishlistCount, onNavigate }: HomeHeaderProps) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -27,9 +27,9 @@ export default function HomeHeader({ greeting, cartCount, wishlistCount }: HomeH
       entering={FadeInDown.duration(600)}
       style={{
         backgroundColor: 'white',
-        paddingTop: insets.top + 15,
+        paddingTop: insets.top + 10,
         paddingHorizontal: 20,
-        paddingBottom: 25,
+        paddingBottom: 8,
         borderBottomLeftRadius: 30,
         borderBottomRightRadius: 30,
         shadowColor: '#000',
@@ -54,7 +54,7 @@ export default function HomeHeader({ greeting, cartCount, wishlistCount }: HomeH
 
         <HStack space="sm">
           <Pressable
-            onPress={() => router.push('/cart')}
+            onPress={() => onNavigate('/cart')}
             style={{
               width: 44,
               height: 44,
@@ -87,7 +87,7 @@ export default function HomeHeader({ greeting, cartCount, wishlistCount }: HomeH
           </Pressable>
 
           <Pressable
-            onPress={() => router.push('/wishlist')}
+            onPress={() => onNavigate('/wishlist')}
             style={{
               width: 44,
               height: 44,
@@ -120,7 +120,7 @@ export default function HomeHeader({ greeting, cartCount, wishlistCount }: HomeH
           </Pressable>
 
           <Pressable
-            onPress={() => router.push('/profile')}
+            onPress={() => onNavigate('/profile')}
             style={{
               width: 44,
               height: 44,
@@ -134,28 +134,6 @@ export default function HomeHeader({ greeting, cartCount, wishlistCount }: HomeH
           </Pressable>
         </HStack>
       </HStack>
-
-      {/* Search Bar */}
-      <Pressable
-        onPress={() => router.push('/search')}
-        style={{
-          backgroundColor: '#F8FAFC',
-          borderRadius: 16,
-          paddingHorizontal: 16,
-          paddingVertical: 14,
-          marginBottom: 20,
-          borderWidth: 1,
-          borderColor: '#E2E8F0'
-        }}
-      >
-        <HStack className="items-center">
-          <Icon as={Search} size="md" className="text-gray-400 mr-3" />
-          <Text className="text-gray-500 flex-1">
-            Search for products, brands...
-          </Text>
-          <Icon as={Filter} size="sm" className="text-gray-400" />
-        </HStack>
-      </Pressable>
     </Animated.View>
   );
 }

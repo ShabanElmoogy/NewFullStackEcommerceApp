@@ -1,15 +1,24 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
-import { Button, ButtonText } from '@/components/ui/button';
 import { Flame, Clock, ArrowRight } from 'lucide-react-native';
-import { Link } from 'expo-router';
-import Animated, { FadeInLeft, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { 
+  FadeInLeft, 
+  useAnimatedStyle, 
+  useSharedValue, 
+  withRepeat, 
+  withSequence, 
+  withTiming 
+} from 'react-native-reanimated';
 
-export default function FlashSale() {
+interface FlashSaleProps {
+  onNavigate: (route: string) => void;
+}
+
+export default function FlashSale({ onNavigate }: FlashSaleProps) {
   const pulseScale = useSharedValue(1);
 
   React.useEffect(() => {
@@ -72,16 +81,23 @@ export default function FlashSale() {
               Extra 25% off on electronics & gadgets
             </Text>
 
-            <Link href="/products" asChild>
-              <Button className="bg-white self-start rounded-xl px-6 py-3">
-                <HStack className="items-center">
-                  <ButtonText className="text-red-600 font-bold mr-2">
-                    Shop Flash Sale
-                  </ButtonText>
-                  <Icon as={ArrowRight} size="sm" className="text-red-600" />
-                </HStack>
-              </Button>
-            </Link>
+            <Pressable
+              onPress={() => onNavigate('/products')}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 12,
+                paddingHorizontal: 24,
+                paddingVertical: 12,
+                alignSelf: 'flex-start'
+              }}
+            >
+              <HStack className="items-center">
+                <Text style={{ color: '#DC2626', fontWeight: 'bold', marginRight: 8 }}>
+                  Shop Flash Sale
+                </Text>
+                <Icon as={ArrowRight} size="sm" className="text-red-600" />
+              </HStack>
+            </Pressable>
           </VStack>
 
           <VStack className="items-center">

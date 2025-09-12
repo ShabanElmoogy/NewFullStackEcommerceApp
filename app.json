@@ -21,7 +21,10 @@
       "supportsTablet": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["en", "ar"]
+        "CFBundleLocalizations": [
+          "en",
+          "ar"
+        ]
       }
     },
     "android": {
@@ -35,7 +38,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-localization"
     ]
   }
 }

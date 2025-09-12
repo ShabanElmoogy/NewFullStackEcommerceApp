@@ -5,7 +5,6 @@ import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
 import { ShoppingBag, Package, Scale } from 'lucide-react-native';
-import { router } from 'expo-router';
 import Animated, { FadeInLeft, FadeInUp, FadeInRight } from 'react-native-reanimated';
 
 const AnimatedPressable = Animated.createAnimatedComponent(View);
@@ -13,88 +12,86 @@ const AnimatedPressable = Animated.createAnimatedComponent(View);
 interface StatsCardsProps {
   cartCount: number;
   compareCount: number;
+  onNavigate: (route: string) => void;
 }
 
-export default function StatsCards({ cartCount, compareCount }: StatsCardsProps) {
+export default function StatsCards({ cartCount, compareCount, onNavigate }: StatsCardsProps) {
+  const statsData = [
+    {
+      title: 'In Cart',
+      value: cartCount,
+      color: '#3B82F6',
+      bgColor: '#EFF6FF',
+      icon: ShoppingBag,
+      route: '/cart',
+      animation: FadeInLeft.delay(200)
+    },
+    {
+      title: 'Orders',
+      value: 12,
+      color: '#10B981',
+      bgColor: '#F0FDF4',
+      icon: Package,
+      route: '/orders',
+      animation: FadeInUp.delay(300)
+    },
+    {
+      title: 'Compare',
+      value: compareCount,
+      color: '#F59E0B',
+      bgColor: '#FEF3E2',
+      icon: Scale,
+      route: '/compare',
+      animation: FadeInRight.delay(400)
+    }
+  ];
+
   return (
-    <HStack className="justify-between" space="sm" style={{ paddingHorizontal: 20 }}>
-      <AnimatedPressable
-        entering={FadeInLeft.delay(200)}
-        onPress={() => router.push('/cart')}
-        style={{
-          flex: 1,
-          backgroundColor: '#EFF6FF',
-          borderRadius: 20,
-          padding: 16,
-          marginRight: 6
-        }}
-      >
-        <HStack className="items-center justify-between">
-          <VStack>
-            <Text className="text-2xl font-bold text-blue-600">
-              {cartCount}
-            </Text>
-            <Text className="text-xs text-gray-600 font-medium">
-              In Cart
-            </Text>
-          </VStack>
-          <View className="w-12 h-12 bg-blue-500 rounded-full items-center justify-center">
-            <Icon as={ShoppingBag} size="md" className="text-white" />
-          </View>
-        </HStack>
-      </AnimatedPressable>
-
-      <AnimatedPressable
-        entering={FadeInUp.delay(300)}
-        onPress={() => router.push('/orders')}
-        style={{
-          flex: 1,
-          backgroundColor: '#F0FDF4',
-          borderRadius: 20,
-          padding: 16,
-          marginHorizontal: 3
-        }}
-      >
-        <HStack className="items-center justify-between">
-          <VStack>
-            <Text className="text-2xl font-bold text-green-600">
-              12
-            </Text>
-            <Text className="text-xs text-gray-600 font-medium">
-              Orders
-            </Text>
-          </VStack>
-          <View className="w-12 h-12 bg-green-500 rounded-full items-center justify-center">
-            <Icon as={Package} size="md" className="text-white" />
-          </View>
-        </HStack>
-      </AnimatedPressable>
-
-      <AnimatedPressable
-        entering={FadeInRight.delay(400)}
-        onPress={() => router.push('/compare')}
-        style={{
-          flex: 1,
-          backgroundColor: '#FEF3E2',
-          borderRadius: 20,
-          padding: 16,
-          marginLeft: 6
-        }}
-      >
-        <HStack className="items-center justify-between">
-          <VStack>
-            <Text className="text-2xl font-bold text-orange-600">
-              {compareCount}
-            </Text>
-            <Text className="text-xs text-gray-600 font-medium">
-              Compare
-            </Text>
-          </VStack>
-          <View className="w-12 h-12 bg-orange-500 rounded-full items-center justify-center">
-            <Icon as={Scale} size="md" className="text-white" />
-          </View>
-        </HStack>
-      </AnimatedPressable>
-    </HStack>
+    <View className="px-5 mt-8">
+      <HStack className="justify-between" space="sm">
+        {statsData.map((stat, index) => (
+          <AnimatedPressable
+            key={stat.title}
+            entering={stat.animation}
+            style={{
+              flex: 1,
+              backgroundColor: stat.bgColor,
+              borderRadius: 20,
+              padding: 16,
+              marginHorizontal: index === 1 ? 3 : index === 0 ? 0 : 6,
+              marginRight: index === 0 ? 6 : 0,
+              marginLeft: index === 2 ? 6 : 0
+            }}
+          >
+            <HStack className="items-center justify-between">
+              <VStack>
+                <Text style={{ 
+                  fontSize: 24, 
+                  fontWeight: 'bold', 
+                  color: stat.color 
+                }}>
+                  {stat.value}
+                </Text>
+                <Text className="text-xs text-gray-600 font-medium">
+                  {stat.title}
+                </Text>
+              </VStack>
+              <View 
+                style={{
+                  width: 48,
+                  height: 48,
+                  backgroundColor: stat.color,
+                  borderRadius: 24,
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Icon as={stat.icon} size="md" className="text-white" />
+              </View>
+            </HStack>
+          </AnimatedPressable>
+        ))}
+      </HStack>
+    </View>
   );
 }
