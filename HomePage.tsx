@@ -8,6 +8,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native
 
 // Import separate components
 // import HomeHeader from './components/home/HomeHeader';
+import SearchBar from './components/home/SearchBar';
 import HeroCarousel from './components/home/HeroCarousel';
 import FlashSale from './components/home/FlashSale';
 import StatsCards from './components/home/StatsCards';
@@ -80,17 +81,22 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       >
         {/* GlobalHeader now renders the home header content */}
 
+        <SearchBar onNavigate={handleNavigation} />
+
         <StatsCards
           cartCount={cartCount}
           compareCount={compareCount}
           onNavigate={handleNavigation}
         />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         <HeroCarousel onNavigate={handleNavigation} />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         {/* <FlashSale onNavigate={handleNavigation} /> */}
 
         <CategoriesSection onNavigate={handleNavigation} />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         <CategoryProductsSection 
           onNavigate={handleNavigation}
@@ -104,12 +110,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             console.log('Add to wishlist:', product);
           }}
         />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         <TrendingProducts onNavigate={handleNavigation} />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         <WhyChooseUs />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         <AppStatistics />
+        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
 
         <Newsletter />
       </Animated.ScrollView>

@@ -1,11 +1,11 @@
 import React from 'react';
+import { View, Pressable, ScrollView } from 'react-native';
 import { HStack } from './ui/hstack';
 import { Badge, BadgeText } from './ui/badge';
 import { Button, ButtonText } from './ui/button';
-import { Icon } from './ui/icon';
-import { XIcon } from 'lucide-react-native';
+import { Text } from './ui/text';
+import { X } from 'lucide-react-native';
 import { FilterOptions } from './ProductFilter';
-import { ScrollView } from 'react-native';
 
 interface ActiveFiltersProps {
   filters: FilterOptions;
@@ -13,20 +13,28 @@ interface ActiveFiltersProps {
   onClearAll: () => void;
 }
 
-export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: ActiveFiltersProps) {
-  const activeFilters = [];
+interface ActiveFilter {
+  key: keyof FilterOptions;
+  label: string;
+  value: any;
+}
 
-  // Check for active filters
-  if (filters.searchQuery) {
+export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: ActiveFiltersProps) {
+  if (!filters) return null;
+
+  const activeFilters: ActiveFilter[] = [];
+
+  // Build active filters array
+  if (filters.searchQuery && filters.searchQuery.trim()) {
     activeFilters.push({
-      key: 'searchQuery' as keyof FilterOptions,
+      key: 'searchQuery',
       label: `Search: "${filters.searchQuery}"`,
       value: filters.searchQuery
     });
   }
 
-  if (filters.sortBy !== 'name') {
-    const sortLabels = {
+  if (filters.sortBy && filters.sortBy !== 'name') {
+    const sortLabels: Record<string, string> = {
       'price-low': 'Price: Low to High',
       'price-high': 'Price: High to Low',
       'newest': 'Newest First',
@@ -34,7 +42,7 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
       'popularity': 'Most Popular'
     };
     activeFilters.push({
-      key: 'sortBy' as keyof FilterOptions,
+      key: 'sortBy',
       label: sortLabels[filters.sortBy] || filters.sortBy,
       value: filters.sortBy
     });
@@ -42,7 +50,7 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
 
   if (filters.categories && filters.categories.length > 0) {
     activeFilters.push({
-      key: 'categories' as keyof FilterOptions,
+      key: 'categories',
       label: `Categories: ${filters.categories.join(', ')}`,
       value: filters.categories
     });
@@ -50,7 +58,7 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
 
   if (filters.brands && filters.brands.length > 0) {
     activeFilters.push({
-      key: 'brands' as keyof FilterOptions,
+      key: 'brands',
       label: `Brands: ${filters.brands.join(', ')}`,
       value: filters.brands
     });
@@ -58,7 +66,7 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
 
   if (filters.minRating && filters.minRating > 0) {
     activeFilters.push({
-      key: 'minRating' as keyof FilterOptions,
+      key: 'minRating',
       label: `Rating: ${filters.minRating}+ stars`,
       value: filters.minRating
     });
@@ -67,7 +75,7 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
   if (filters.inStock !== null) {
     const stockLabel = filters.inStock ? 'In Stock Only' : 'Out of Stock Only';
     activeFilters.push({
-      key: 'inStock' as keyof FilterOptions,
+      key: 'inStock',
       label: stockLabel,
       value: filters.inStock
     });
@@ -75,65 +83,118 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
 
   if (filters.onSale) {
     activeFilters.push({
-      key: 'onSale' as keyof FilterOptions,
+      key: 'onSale',
       label: 'On Sale',
       value: filters.onSale
     });
   }
 
-  if (filters.minPrice) {
+  if (filters.minPrice && filters.minPrice.trim()) {
     activeFilters.push({
-      key: 'minPrice' as keyof FilterOptions,
-      label: `Min: ${filters.minPrice}`,
+      key: 'minPrice',
+      label: `Min: $${filters.minPrice}`,
       value: filters.minPrice
     });
   }
 
-  if (filters.maxPrice) {
+  if (filters.maxPrice && filters.maxPrice.trim()) {
     activeFilters.push({
-      key: 'maxPrice' as keyof FilterOptions,
-      label: `Max: ${filters.maxPrice}`,
+      key: 'maxPrice',
+      label: `Max: $${filters.maxPrice}`,
       value: filters.maxPrice
     });
   }
 
+  // Don't render if no active filters
   if (activeFilters.length === 0) {
     return null;
   }
 
   return (
-    <ScrollView 
-      horizontal 
-      showsHorizontalScrollIndicator={false}
-      className="px-3 pb-2"
-      contentContainerStyle={{ paddingRight: 20 }}
-    >
-      <HStack space="sm" className="items-center">
-        {activeFilters.map((filter, index) => (
-          <Badge key={index} variant="solid" size="sm" className="bg-primary-500">
-            <BadgeText className="text-white mr-1">{filter.label}</BadgeText>
-            <Button
-              size="xs"
-              variant="link"
-              onPress={() => onRemoveFilter(filter.key)}
-              className="p-0 h-4 w-4 ml-1"
+    <View style={{ paddingVertical: 8 }}>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ 
+          paddingHorizontal: 16,
+          paddingRight: 32,
+        }}
+      >
+        <HStack space="sm" className="items-center">
+          {/* Active Filter Badges */}
+          {activeFilters.map((filter, index) => (
+            <View
+              key={`${filter.key}-${index}`}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#3B82F6',
+                borderRadius: 16,
+                paddingLeft: 12,
+                paddingRight: 4,
+                paddingVertical: 6,
+                marginRight: 8,
+              }}
             >
-              <Icon as={XIcon} size="xs" className="text-white" />
-            </Button>
-          </Badge>
-        ))}
-        
-        {activeFilters.length > 1 && (
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={onClearAll}
-            className="ml-2"
-          >
-            <ButtonText className="text-xs">Clear All</ButtonText>
-          </Button>
-        )}
-      </HStack>
-    </ScrollView>
+              <Text
+                style={{
+                  color: '#FFFFFF',
+                  fontSize: 12,
+                  fontWeight: '600',
+                  marginRight: 6,
+                }}
+              >
+                {filter.label}
+              </Text>
+              <Pressable
+                onPress={() => {
+                  console.log('Removing filter:', filter.key);
+                  onRemoveFilter(filter.key);
+                }}
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+              >
+                <X size={12} color="#FFFFFF" />
+              </Pressable>
+            </View>
+          ))}
+          
+          {/* Clear All Button */}
+          {activeFilters.length > 1 && (
+            <Pressable
+              onPress={() => {
+                console.log('Clearing all filters');
+                onClearAll();
+              }}
+              style={{
+                backgroundColor: '#F3F4F6',
+                borderRadius: 16,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderWidth: 1,
+                borderColor: '#E5E7EB',
+              }}
+            >
+              <Text
+                style={{
+                  color: '#374151',
+                  fontSize: 12,
+                  fontWeight: '600',
+                }}
+              >
+                Clear All
+              </Text>
+            </Pressable>
+          )}
+        </HStack>
+      </ScrollView>
+    </View>
   );
 }

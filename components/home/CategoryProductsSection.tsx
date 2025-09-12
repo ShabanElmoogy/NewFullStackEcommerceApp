@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, Dimensions, ImageBackground } from 'react-native';
+import { View, ScrollView, Pressable, Dimensions } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
-import { Button, ButtonText } from '@/components/ui/button';
+import { FlatList } from 'react-native'
 import { 
   Smartphone, 
   Shirt, 
@@ -13,7 +12,6 @@ import {
   Book, 
   Gamepad2,
   Sparkles,
-  TrendingUp,
   Gift,
 } from 'lucide-react-native';
 import Animated, { 
@@ -23,7 +21,6 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
-  SlideInDown,
   interpolate
 } from 'react-native-reanimated';
 import { useCategories } from '@/hooks/useCategories';
@@ -41,64 +38,64 @@ interface CategoryProductsSectionProps {
   onAddToWishlist?: (product: any) => void;
 }
 
-// Enhanced category configuration with gradients and colors
+// Enhanced category configuration with gradients and colorss
 const categoryConfig = {
-  'Mobiles': { 
-    icon: Smartphone, 
-    gradient: ['#667eea', '#764ba2'], 
+  'Mobiles': {
+    icon: Smartphone,
+    gradient: ['#667eea', '#764ba2'],
     color: '#667eea',
     bgColor: '#EEF2FF',
     emoji: '📱',
-    lightColor: '#E0E7FF'
+    lightColor: '#E0E7FF',
   },
-  'Fashion': { 
-    icon: Shirt, 
-    gradient: ['#f093fb', '#f5576c'], 
+  'Fashion': {
+    icon: Shirt,
+    gradient: ['#f093fb', '#f5576c'],
     color: '#f093fb',
     bgColor: '#FDF2F8',
     emoji: '👕',
-    lightColor: '#FCE7F3'
+    lightColor: '#FCE7F3',
   },
-  'Home': { 
-    icon: Home, 
-    gradient: ['#4facfe', '#00f2fe'], 
+  'Home': {
+    icon: Home,
+    gradient: ['#4facfe', '#00f2fe'],
     color: '#4facfe',
     bgColor: '#EFF6FF',
     emoji: '🏠',
-    lightColor: '#DBEAFE'
+    lightColor: '#DBEAFE',
   },
-  'Sports': { 
-    icon: Dumbbell, 
-    gradient: ['#43e97b', '#38f9d7'], 
+  'Sports': {
+    icon: Dumbbell,
+    gradient: ['#43e97b', '#38f9d7'],
     color: '#43e97b',
     bgColor: '#ECFDF5',
     emoji: '💪',
-    lightColor: '#D1FAE5'
+    lightColor: '#D1FAE5',
   },
-  'Books': { 
-    icon: Book, 
-    gradient: ['#fa709a', '#fee140'], 
+  'Books': {
+    icon: Book,
+    gradient: ['#fa709a', '#fee140'],
     color: '#fa709a',
     bgColor: '#FEF7CD',
     emoji: '📚',
-    lightColor: '#FEF3C7'
+    lightColor: '#FEF3C7',
   },
-  'Gaming': { 
-    icon: Gamepad2, 
-    gradient: ['#a8edea', '#fed6e3'], 
+  'Gaming': {
+    icon: Gamepad2,
+    gradient: ['#a8edea', '#fed6e3'],
     color: '#a8edea',
     bgColor: '#F0FDF4',
     emoji: '🎮',
-    lightColor: '#DCFCE7'
+    lightColor: '#DCFCE7',
   },
-  'default': { 
-    icon: Sparkles, 
-    gradient: ['#667eea', '#764ba2'], 
+  'default': {
+    icon: Sparkles,
+    gradient: ['#667eea', '#764ba2'],
     color: '#667eea',
     bgColor: '#F3F4F6',
     emoji: '✨',
-    lightColor: '#F9FAFB'
-  }
+    lightColor: '#F9FAFB',
+  },
 };
 
 export default function CategoryProductsSection({ 
@@ -248,81 +245,83 @@ export default function CategoryProductsSection({
           </VStack>
         </View>
 
-        {/* Categories Bar - simple pills */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20 }}
+        {/* All badges in one bordered bar, each badge is an icon with its own color */}
+        <View
+          style={{
+            borderWidth: 2,
+            borderColor: '#E5E7EB',
+            borderRadius: 32,
+            marginHorizontal: 16,
+            marginBottom: 8,
+            overflow: 'hidden',
+          }}
         >
-          <HStack className="py-3" space="md">
-            {/* All chip */}
-            <Pressable
-              onPress={() => setSelectedCategoryId(null)}
-              style={{
-                paddingHorizontal: 14,
-                paddingVertical: 8,
-                borderRadius: 18,
-                backgroundColor: selectedCategoryId === null ? '#E0EAFF' : '#F9FAFB',
-                borderWidth: 1,
-                borderColor: selectedCategoryId === null ? '#3B82F6' : '#E5E7EB',
-              }}
-            >
-              <Text
-                className="font-semibold"
-                style={{ color: selectedCategoryId === null ? '#1D4ED8' : '#374151' }}
-              >
-                All
-              </Text>
-            </Pressable>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12 }}
+          >
+          {/* All icon badge */}
+          <Pressable
+            onPress={() => setSelectedCategoryId(null)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 14,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: selectedCategoryId === null ? categoryConfig['Mobiles'].color : categoryConfig['Mobiles'].lightColor,
+              marginRight: 8,
+              opacity: selectedCategoryId === null ? 1 : 0.92,
+            }}
+          >
+            <Icon as={Sparkles} size="md" style={{ color: selectedCategoryId === null ? '#fff' : categoryConfig['Mobiles'].color, marginRight: 6 }} />
+            <Text style={{ color: selectedCategoryId === null ? '#fff' : categoryConfig['Mobiles'].color, fontWeight: '600', fontSize: 15 }}>All</Text>
+          </Pressable>
 
-            {categories?.filter(cat => !cat.isDeleted).map((category) => {
-              const isSelected = selectedCategoryId === category.id;
-              const config = getCategoryConfig(getCategoryName(category));
-              return (
-                <Pressable
-                  key={category.id}
-                  onPress={() => handleCategoryPress(category.id)}
-                  style={{
-                    paddingHorizontal: 14,
-                    paddingVertical: 8,
-                    borderRadius: 18,
-                    backgroundColor: isSelected ? config.lightColor : '#F9FAFB',
-                    borderWidth: 1,
-                    borderColor: isSelected ? config.color : '#E5E7EB',
-                  }}
-                >
-                  <HStack className="items-center" space="xs">
-                    <Icon as={config.icon} size="sm" style={{ color: config.color }} />
-                    <Text
-                      className="font-semibold"
-                      style={{ color: isSelected ? '#111827' : '#374151' }}
-                      numberOfLines={1}
-                    >
-                      {getCategoryName(category)}
-                    </Text>
-                  </HStack>
-                </Pressable>
-              );
-            })}
-          </HStack>
-        </ScrollView>
+          {categories?.filter(cat => !cat.isDeleted).map((category) => {
+            const isSelected = selectedCategoryId === category.id;
+            const config = getCategoryConfig(getCategoryName(category));
+            return (
+              <Pressable
+                key={category.id}
+                onPress={() => handleCategoryPress(category.id)}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingHorizontal: 14,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: isSelected ? config.color : config.lightColor,
+                  marginRight: 8,
+                  opacity: isSelected ? 1 : 0.92,
+                }}
+              >
+                <Icon as={config.icon} size="md" style={{ color: isSelected ? '#fff' : config.color, marginRight: 6 }} />
+                <Text style={{ color: isSelected ? '#fff' : config.color, fontWeight: '600', fontSize: 15 }}>{getCategoryName(category)}</Text>
+              </Pressable>
+            );
+          })}
+          </ScrollView>
+        </View>
 
         {/* Enhanced Products Grid */}
         <View className="px-5">
           {productsToShow.length > 0 ? (
-            <ScrollView
+            <FlatList
+              data={productsToShow}
+              keyExtractor={item => item.id?.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingRight: 20 }}
-            >
-              <HStack space="md">
-                {productsToShow.map((product, index) => (
-                  <View key={product.id} style={{ width: screenWidth - 56 }}>
-                    <ProductCard product={product} viewMode="list" />
-                  </View>
-                ))}
-              </HStack>
-            </ScrollView>
+              renderItem={({ item }) => (
+                <View style={{ width: screenWidth - 56, marginRight: 16 }}>
+                  <ProductCard product={item} viewMode="list" />
+                </View>
+              )}
+            />
           ) : (
             <Animated.View 
               entering={FadeInUp.delay(1400)}
@@ -361,24 +360,27 @@ export default function CategoryProductsSection({
 
         {/* Enhanced Show More Button */}
         {productsToShow.length > 0 && (
-          <Animated.View 
-            entering={SlideInDown.delay(1600)}
-            className="px-5"
-          >
-            <Button
+          <View style={{ alignItems: 'center', marginTop: 16 }}>
+            <Pressable
               onPress={() => onNavigate('/products')}
-              className="bg-primary-600 rounded-xl py-10"
-              size="lg"
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#3B82F6',
+                borderRadius: 24,
+                paddingVertical: 14,
+                paddingHorizontal: 28,
+                minWidth: 180,
+                elevation: 2,
+              }}
             >
-              <HStack className="items-center" space="md">
-                <Icon as={Sparkles} size="md" className="text-white" />
-                <ButtonText className="text-white font-bold text-lg">
-                  Explore All Products
-                </ButtonText>
-                <Icon as={TrendingUp} size="md" className="text-white" />
-              </HStack>
-            </Button>
-          </Animated.View>
+              <Icon as={Sparkles} size="md" style={{ color: '#fff', marginRight: 10 }} />
+              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16, letterSpacing: 0.5 }}>
+                Explore All Products
+              </Text>
+            </Pressable>
+          </View>
         )}
       </VStack>
     </Animated.View>

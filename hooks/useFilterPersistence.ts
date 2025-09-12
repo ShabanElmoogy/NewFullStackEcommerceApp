@@ -73,7 +73,13 @@ export function useFilterPersistence() {
   };
 
   const updatePartialFilters = (partialFilters: Partial<FilterOptions>) => {
-    setFilters(prevFilters => ({ ...prevFilters, ...partialFilters }));
+    console.log('updatePartialFilters called with:', partialFilters);
+    setFilters(prevFilters => {
+      const newFilters = { ...prevFilters, ...partialFilters };
+      console.log('Previous filters:', prevFilters);
+      console.log('New filters after update:', newFilters);
+      return newFilters;
+    });
   };
 
   return {

@@ -6,14 +6,16 @@ import {
   RefreshControl, 
   StatusBar,
   Platform,
-  Pressable
+  Pressable,
+  KeyboardAvoidingView
 } from 'react-native';
 import ProductCard from '../components/ProductCard';
 import ProductFilter, { FilterOptions } from '../components/ProductFilter';
 import ProductSearch from '../components/ProductSearch';
 import ActiveFilters from '../components/ActiveFilters';
 import CompareFloatingBar from '../components/CompareFloatingBar';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useLocalSearchParams, router } from 'expo-router';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useFilterPersistence } from '@/hooks/useFilterPersistence';
@@ -40,6 +42,8 @@ import {
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [isUserClearing, setIsUserClearing] = useState(false);
+  const searchParams = useLocalSearchParams();
 
   // Use persistent filters
   const { 
@@ -50,6 +54,32 @@ export default function ProductsScreen() {
     clearSavedFilters,
     defaultFilters 
   } = useFilterPersistence();
+
+  // Handle URL search parameters - sync when URL changes
+  useEffect(() => {
+    if (!filtersLoaded) return;
+
+    const searchFromUrl = searchParams.search;
+    
+    if (searchFromUrl) {
+      const searchQuery = Array.isArray(searchFromUrl) 
+        ? searchFromUrl[0] 
+        : searchFromUrl;
+      
+      if (searchQuery && typeof searchQuery === 'string') {
+        const decodedQuery = decodeURIComponent(searchQuery);
+        // Only update if the query is different from current filter
+        if (filters?.searchQuery !== decodedQuery) {
+          updatePartialFilters({ searchQuery: decodedQuery });
+        }
+      }
+    } else {
+      // If no search param in URL, clear search query if it exists
+      if (filters?.searchQuery) {
+        updatePartialFilters({ searchQuery: '' });
+      }
+    }
+  }, [filtersLoaded, searchParams.search, filters?.searchQuery, updatePartialFilters]);
 
   // Use persistent view mode
   const {
@@ -85,9 +115,17 @@ export default function ProductsScreen() {
 
   const handleSearchChange = useCallback((searchQuery: string) => {
     updatePartialFilters({ searchQuery });
+    
+    // Set flag when user is clearing to prevent URL override
+    if (!searchQuery || searchQuery.trim() === '') {
+      setIsUserClearing(true);
+    }
   }, [updatePartialFilters]);
 
   const handleRemoveFilter = useCallback((key: keyof FilterOptions) => {
+    console.log('handleRemoveFilter called with key:', key);
+    console.log('Current filters before removal:', filters);
+    
     const resetValue: Partial<FilterOptions> = {};
     
     switch (key) {
@@ -118,10 +156,14 @@ export default function ProductsScreen() {
       case 'onSale':
         resetValue.onSale = false;
         break;
+      default:
+        console.warn('Unknown filter key:', key);
+        return;
     }
     
+    console.log('Reset value to apply:', resetValue);
     updatePartialFilters(resetValue);
-  }, [updatePartialFilters]);
+  }, [updatePartialFilters, filters]);
 
   const handleClearAllFilters = useCallback(() => {
     updateFilters(defaultFilters);
