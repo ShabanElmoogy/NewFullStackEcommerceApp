@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Pressable } from '@/components/ui/pressable';
 import { useAuth } from '@/store/authStore';
+import { useTheme } from '@/hooks/useTheme';
 import { Redirect, useRouter } from 'expo-router';
 import { View, ScrollView, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { useLoginForm } from '@/hooks/useLoginForm';
@@ -13,6 +14,7 @@ import { ControlledInput, ControlledPasswordInput, LoginHeader, FormDivider, Soc
 export default function LoginScreen() {
   const scrollViewRef = useRef<ScrollView | null>(null);
   const router = useRouter();
+  const { colors, isDark } = useTheme();
   
   const isLoggedIn = useAuth(s => !!s.user);
   const returnUrl = useAuth(s => s.returnUrl);
@@ -36,8 +38,11 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar 
+        barStyle={isDark ? "light-content" : "dark-content"} 
+        backgroundColor={colors.background} 
+      />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -47,7 +52,7 @@ export default function LoginScreen() {
           ref={scrollViewRef}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
           showsVerticalScrollIndicator={false}
-          style={{ backgroundColor: '#ffffff' }}
+          style={{ backgroundColor: colors.background }}
           keyboardShouldPersistTaps="handled">
             
           <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}>
@@ -56,15 +61,17 @@ export default function LoginScreen() {
 
             <View
               style={{
-                backgroundColor: 'white',
+                backgroundColor: colors.surface,
                 borderRadius: 20,
                 padding: 28,
-                shadowColor: '#000',
+                shadowColor: colors.shadow,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.1,
                 shadowRadius: 12,
                 elevation: 8,
                 marginBottom: 20,
+                borderWidth: 1,
+                borderColor: colors.border,
               }}
             >
               <VStack className="gap-6">
@@ -89,19 +96,37 @@ export default function LoginScreen() {
                 />
 
                 <View className="items-end">
-                  <Text className="text-black font-medium text-sm underline">Forgot Password?</Text>
+                  <Text style={{
+                    color: colors.primary,
+                    fontWeight: '500',
+                    fontSize: 14,
+                    textDecorationLine: 'underline'
+                  }}>
+                    Forgot Password?
+                  </Text>
                 </View>
 
                 {/* Sign In Button - Using Reusable Button Component */}
-                <Button
-                  className="bg-black rounded-xl h-14"
+                <Pressable
+                  style={{
+                    backgroundColor: colors.primary,
+                    borderRadius: 12,
+                    height: 56,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: (!isValid || isLoading) ? 0.6 : 1,
+                  }}
                   onPress={handleSubmit}
-                  isDisabled={!isValid || isLoading}
+                  disabled={!isValid || isLoading}
                 >
-                  <ButtonText className="text-white font-semibold text-base">
+                  <Text style={{
+                    color: colors.text,
+                    fontWeight: '600',
+                    fontSize: 16
+                  }}>
                     {isLoading ? 'Signing In...' : 'Sign In'}
-                  </ButtonText>
-                </Button>
+                  </Text>
+                </Pressable>
 
                 <FormDivider />
 
@@ -109,9 +134,21 @@ export default function LoginScreen() {
 
                 {/* Sign Up Link - Using Reusable Components */}
                 <View className="flex-row justify-center items-center">
-                  <Text className="text-gray-600 text-base">Don't have an account? </Text>
+                  <Text style={{
+                    color: colors.textSecondary,
+                    fontSize: 16
+                  }}>
+                    Don't have an account?{' '}
+                  </Text>
                   <Pressable onPress={() => router.push('/register')}>
-                    <Text className="text-black font-semibold text-base underline">Sign Up</Text>
+                    <Text style={{
+                      color: colors.primary,
+                      fontWeight: '600',
+                      fontSize: 16,
+                      textDecorationLine: 'underline'
+                    }}>
+                      Sign Up
+                    </Text>
                   </Pressable>
                 </View>
               </VStack>

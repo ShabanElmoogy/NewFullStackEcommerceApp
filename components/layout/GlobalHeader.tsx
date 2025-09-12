@@ -7,19 +7,24 @@ import { Globe, Heart, ShoppingCart } from 'lucide-react-native';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCart } from '@/store/cartStore';
 import { useLanguageStore } from '@/store/languageStore';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function GlobalHeader() {
   const wishlistCount = useWishlist((state) => state.totalItems());
   const cartCount = useCart((state) => state.totalQuantity());
   const { isRTL, language, toggleLanguage } = useLanguageStore();
   const pathname = usePathname();
+  const { colors, isDark } = useTheme();
 
   const isHome = pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index';
 
   return (
     <View
-      className="bg-background-0 border-b border-outline-100 mt-3"
+      className="mt-3"
       style={{
+        backgroundColor: colors.surface,
+        borderBottomWidth: 1,
+        borderColor: colors.border,
         paddingBottom: isHome ? 10 : 0,
       }}
     >
@@ -27,7 +32,7 @@ export default function GlobalHeader() {
       <HStack className="items-center justify-between px-4 py-3">
         {/* Left: Brand */}
         <Pressable onPress={() => router.push('/')} className="active:opacity-70">
-          <Text className="text-typography-900 text-xl font-extrabold">Shop</Text>
+          <Text style={{ color: colors.text, fontSize: 20, fontWeight: '800' }}>Shop</Text>
         </Pressable>
 
         {/* Right: Actions with colored icon chips */}
@@ -41,10 +46,10 @@ export default function GlobalHeader() {
                 borderRadius: 20,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#ECFDF5', // green tint
+                backgroundColor: (colors.success || '#10B981') + '20',
               }}
             >
-              <Globe size={20} color="#10B981" />
+              <Globe size={20} color={colors.success || '#10B981'} />
             </View>
           </Pressable>
 
@@ -57,17 +62,29 @@ export default function GlobalHeader() {
                 borderRadius: 20,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#FEF2F2', // red tint
+                backgroundColor: (colors.error || '#EF4444') + '20',
                 position: 'relative',
               }}
             >
-              <Heart size={20} color="#EF4444" />
+              <Heart size={20} color={colors.error || '#EF4444'} />
               {wishlistCount > 0 && (
                 <View
-                  className="absolute bg-error-500 rounded-lg px-1 min-w-4 items-center -top-1"
-                  style={{ right: isRTL ? undefined : -4, left: isRTL ? -4 : undefined }}
+                  style={{
+                    position: 'absolute',
+                    top: -6,
+                    right: isRTL ? undefined : -6,
+                    left: isRTL ? -6 : undefined,
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    backgroundColor: colors.error || '#EF4444',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.surface,
+                  }}
                 >
-                  <Text className="text-white text-2xs font-bold">{wishlistCount}</Text>
+                  <Text style={{ color: '#FFFFFF', fontSize: 10, fontWeight: 'bold' }}>{wishlistCount}</Text>
                 </View>
               )}
             </View>
@@ -82,17 +99,29 @@ export default function GlobalHeader() {
                 borderRadius: 20,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#EFF6FF', // blue tint
+                backgroundColor: (colors.primary || '#3B82F6') + '20',
                 position: 'relative',
               }}
             >
-              <ShoppingCart size={20} color="#3B82F6" />
+              <ShoppingCart size={20} color={colors.primary || '#3B82F6'} />
               {cartCount > 0 && (
                 <View
-                  className="absolute bg-error-500 rounded-lg px-1 min-w-4 items-center -top-1"
-                  style={{ right: isRTL ? undefined : -4, left: isRTL ? -4 : undefined }}
+                  style={{
+                    position: 'absolute',
+                    top: -6,
+                    right: isRTL ? undefined : -6,
+                    left: isRTL ? -6 : undefined,
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    backgroundColor: colors.error || '#EF4444',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.surface,
+                  }}
                 >
-                  <Text className="text-white text-2xs font-bold">{cartCount}</Text>
+                  <Text style={{ color: '#FFFFFF', fontSize: 10, fontWeight: 'bold' }}>{cartCount}</Text>
                 </View>
               )}
             </View>

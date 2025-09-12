@@ -3,6 +3,7 @@ import { Control, FieldPath, FieldValues } from 'react-hook-form';
 import { Pressable } from '@/components/ui/pressable';
 import { Icon } from '@/components/ui/icon';
 import { Eye, EyeOff, Lock } from 'lucide-react-native';
+import { useTheme } from '@/hooks/useTheme';
 import { ControlledInput } from './ControlledInput';
 
 interface ControlledPasswordInputProps<T extends FieldValues> {
@@ -25,6 +26,7 @@ export function ControlledPasswordInput<T extends FieldValues>({
   onFocus,
 }: ControlledPasswordInputProps<T>) {
   const [showPassword, setShowPassword] = useState(false);
+  const { colors } = useTheme();
 
   const togglePassword = () => setShowPassword(!showPassword);
 
@@ -46,7 +48,7 @@ export function ControlledPasswordInput<T extends FieldValues>({
           <Icon
             as={showPassword ? EyeOff : Eye}
             size="sm"
-            className="text-typography-400"
+            style={{ color: colors.textSecondary }}
           />
         </Pressable>
       }

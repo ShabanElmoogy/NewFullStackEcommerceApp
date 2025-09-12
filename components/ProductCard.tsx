@@ -16,6 +16,7 @@ import { useCart } from "@/store/cartStore";
 import { useToast } from "./ui/toast";
 import { CustomToast } from "./CustomToast";
 import { useLanguageStore } from "@/store/languageStore";
+import { useTheme } from "@/hooks/useTheme";
 import { 
   ShoppingCart, 
   Star, 
@@ -46,6 +47,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const addToCart = useCart((state) => state.addProduct);
   const toast = useToast();
   const { isRTL } = useLanguageStore();
+  const { colors } = useTheme();
 
   const discountedPrice = discount ? price * (1 - discount / 100) : price;
   const isLowStock = stock < 5;
@@ -70,61 +72,134 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   // Render list view (horizontal layout)
   if (viewMode === 'list') {
     return (
-      <Card className="relative overflow-hidden bg-background-0 border border-outline-100 shadow-sm">
+      <View style={{
+        backgroundColor: colors.surface,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: colors.border,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        overflow: 'hidden',
+        marginBottom: 12,
+      }}>
         <Link href={`/product/${product.id}`} asChild>
-          <Pressable className="active:opacity-95">
-            <HStack className="p-4" space="md">
+          <Pressable style={{ opacity: 1 }}>
+            <View style={{ padding: 16, flexDirection: 'row', gap: 16 }}>
               {/* Product Image Container */}
-              <View className="relative bg-background-50 rounded-lg overflow-hidden w-20 h-20 flex-shrink-0">
+              <View style={{
+                position: 'relative',
+                backgroundColor: colors.backgroundSecondary,
+                borderRadius: 8,
+                overflow: 'hidden',
+                width: 80,
+                height: 80,
+                flexShrink: 0
+              }}>
                 <Image
                   source={{ uri: image || 'https://via.placeholder.com/300x300?text=No+Image' }}
-                  className="w-full h-full"
+                  style={{ width: '100%', height: '100%' }}
                   alt={`${name} image`}
                   resizeMode="contain"
                 />
 
                 {/* Stock Status Overlay */}
                 {isOutOfStock && (
-                  <View className="absolute inset-0 bg-background-900/60 items-center justify-center">
-                    <Text className="text-white font-semibold text-xs">Out</Text>
+                  <View style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: colors.shadow + '99', // 60% opacity
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Text style={{
+                      color: colors.textInverse,
+                      fontWeight: '600',
+                      fontSize: 12
+                    }}>
+                      Out
+                    </Text>
                   </View>
                 )}
               </View>
 
               {/* Product Info */}
-              <VStack className="flex-1" space="xs">
+              <View style={{ flex: 1, gap: 8 }}>
                 {/* Product Name and Badges */}
-                <HStack className="items-start justify-between">
-                  <VStack className="flex-1" space="xs">
+                <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <View style={{ flex: 1, gap: 8 }}>
                     <Text 
-                      className="text-base font-semibold text-typography-900 leading-tight" 
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '600',
+                        color: colors.text,
+                        lineHeight: 20
+                      }}
                       numberOfLines={2}
                     >
                       {name}
                     </Text>
                     
                     {/* Badges */}
-                    <HStack className="flex-wrap" space="xs">
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                       {isNew && (
-                        <Badge className="bg-success-500">
-                          <BadgeText className="text-white text-xs font-semibold">NEW</BadgeText>
-                        </Badge>
+                        <View style={{
+                          backgroundColor: colors.success,
+                          borderRadius: 8,
+                          paddingHorizontal: 8,
+                          paddingVertical: 2
+                        }}>
+                          <Text style={{
+                            color: colors.textInverse,
+                            fontSize: 12,
+                            fontWeight: '600'
+                          }}>
+                            NEW
+                          </Text>
+                        </View>
                       )}
                       {isTrending && (
-                        <Badge className="bg-warning-500">
-                          <BadgeText className="text-white text-xs font-semibold">HOT</BadgeText>
-                        </Badge>
+                        <View style={{
+                          backgroundColor: colors.warning,
+                          borderRadius: 8,
+                          paddingHorizontal: 8,
+                          paddingVertical: 2
+                        }}>
+                          <Text style={{
+                            color: colors.textInverse,
+                            fontSize: 12,
+                            fontWeight: '600'
+                          }}>
+                            HOT
+                          </Text>
+                        </View>
                       )}
                       {discount && (
-                        <Badge className="bg-error-500">
-                          <BadgeText className="text-white text-xs font-semibold">-{discount}%</BadgeText>
-                        </Badge>
+                        <View style={{
+                          backgroundColor: colors.error,
+                          borderRadius: 8,
+                          paddingHorizontal: 8,
+                          paddingVertical: 2
+                        }}>
+                          <Text style={{
+                            color: colors.textInverse,
+                            fontSize: 12,
+                            fontWeight: '600'
+                          }}>
+                            -{discount}%
+                          </Text>
+                        </View>
                       )}
-                    </HStack>
-                  </VStack>
+                    </View>
+                  </View>
                   
                   {/* Actions: Wishlist + Compare */}
-                  <HStack space="xs">
+                  <View style={{ flexDirection: 'row', gap: 4 }}>
                     <WishlistButton 
                       product={product} 
                       size="sm" 
@@ -135,38 +210,41 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                       size="sm" 
                       variant="icon"
                     />
-                  </HStack>
-                </HStack>
+                  </View>
+                </View>
 
                 {/* Rating */}
                 {rating > 0 && (
-                  <HStack className="items-center" space="xs">
-                    <HStack space="xs">
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <View style={{ flexDirection: 'row', gap: 2 }}>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <Icon
                           key={star}
                           as={Star}
                           size="xs"
-                          className={
-                            star <= Math.floor(rating)
-                              ? 'text-yellow-500 fill-current'
-                              : star <= rating
-                              ? 'text-yellow-500'
-                              : 'text-typography-300'
-                          }
+                          style={{
+                            color: star <= Math.floor(rating) ? colors.warning : colors.textTertiary
+                          }}
                         />
                       ))}
-                    </HStack>
-                    <Text className="text-xs text-typography-500">
+                    </View>
+                    <Text style={{
+                      fontSize: 12,
+                      color: colors.textSecondary
+                    }}>
                       ({reviewCount})
                     </Text>
-                  </HStack>
+                  </View>
                 )}
 
                 {/* Description */}
                 {description && (
                   <Text 
-                    className="text-sm text-typography-600 leading-relaxed" 
+                    style={{
+                      fontSize: 14,
+                      color: colors.textSecondary,
+                      lineHeight: 18
+                    }}
                     numberOfLines={2}
                   >
                     {description}
@@ -174,64 +252,88 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                 )}
 
                 {/* Price and Actions */}
-                <HStack className="items-center justify-between mt-auto">
-                  <VStack space="xs">
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                  <View style={{ gap: 4 }}>
                     {discount ? (
-                      <HStack className="items-center" space="xs">
-                        <Heading size="md" className="text-primary-600 font-bold">
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <Text style={{
+                          fontSize: 18,
+                          fontWeight: 'bold',
+                          color: colors.primary
+                        }}>
                           ${discountedPrice.toFixed(2)}
-                        </Heading>
-                        <Text className="text-sm text-typography-400 line-through">
+                        </Text>
+                        <Text style={{
+                          fontSize: 14,
+                          color: colors.textTertiary,
+                          textDecorationLine: 'line-through'
+                        }}>
                           ${price.toFixed(2)}
                         </Text>
-                      </HStack>
+                      </View>
                     ) : (
-                      <Heading size="md" className="text-primary-600 font-bold">
+                      <Text style={{
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        color: colors.primary
+                      }}>
                         ${price.toFixed(2)}
-                      </Heading>
+                      </Text>
                     )}
                     
                     {/* Low Stock Warning */}
                     {isLowStock && !isOutOfStock && (
-                      <HStack className="items-center" space="xs">
-                        <Icon as={Zap} size="xs" className="text-warning-500" />
-                        <Text className="text-xs text-warning-600 font-medium">
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                        <Icon as={Zap} size="xs" style={{ color: colors.warning }} />
+                        <Text style={{
+                          fontSize: 12,
+                          color: colors.warning,
+                          fontWeight: '500'
+                        }}>
                           Only {stock} left
                         </Text>
-                      </HStack>
+                      </View>
                     )}
-                  </VStack>
+                  </View>
 
                   {/* Add to Cart Button */}
-                  <Button
-                    size="sm"
+                  <Pressable
                     onPress={handleAddToCart}
                     disabled={isOutOfStock}
-                    className={`${
-                      isOutOfStock 
-                        ? 'bg-background-300' 
-                        : 'bg-primary-600 active:bg-primary-700'
-                    } px-4 py-2`}
+                    style={{
+                      backgroundColor: isOutOfStock ? colors.backgroundSecondary : colors.primary,
+                      borderRadius: 8,
+                      paddingHorizontal: 16,
+                      paddingVertical: 8,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                      opacity: isOutOfStock ? 0.6 : 1
+                    }}
                   >
                     <Icon 
                       as={ShoppingCart} 
                       size="xs" 
-                      className={`${isRTL ? 'ml-2' : 'mr-2'} ${isOutOfStock ? 'text-typography-400' : 'text-white'}`} 
+                      style={{ 
+                        color: isOutOfStock ? colors.textTertiary : colors.text,
+                        marginRight: isRTL ? 0 : 4,
+                        marginLeft: isRTL ? 4 : 0
+                      }} 
                     />
-                    <ButtonText 
-                      className={`text-xs font-semibold ${
-                        isOutOfStock ? 'text-typography-400' : 'text-white'
-                      }`}
-                    >
+                    <Text style={{
+                      fontSize: 12,
+                      fontWeight: '600',
+                      color: isOutOfStock ? colors.textTertiary : colors.text
+                    }}>
                       {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-                    </ButtonText>
-                  </Button>
-                </HStack>
-              </VStack>
-            </HStack>
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
           </Pressable>
         </Link>
-      </Card>
+      </View>
     );
   }
 

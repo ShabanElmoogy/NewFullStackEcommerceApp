@@ -5,6 +5,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Filter } from 'lucide-react-native';
 import { router } from 'expo-router';
 import SimpleSearchInput from '@/components/ui/SimpleSearchInput';
+import { useTheme } from '@/hooks/useTheme';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -18,23 +19,21 @@ interface SearchBarProps {
 export default function SearchBar({ onNavigate }: SearchBarProps) {
   const [searchText, setSearchText] = useState('');
   const scaleAnimation = useSharedValue(1);
+  const { colors } = useTheme();
 
   const setSearchQuery = useSearchStore((state) => state.setSearchQuery);
-  // Handle search text changes (for real-time updates if needed)
+  const clearSearchQuery = useSearchStore((state) => state.clearSearchQuery);
+
   const handleSearchTextChange = (text: string) => {
     setSearchText(text);
     setSearchQuery(text);
-    // If the input is cleared, also clear Zustand searchQuery for immediate filter update
-    if (text === '') {
-      setSearchQuery('');
-    }
+    if (text === '') clearSearchQuery();
   };
 
-  // Handle actual search execution
   const handleSearch = (searchQuery: string) => {
     if (!searchQuery.trim()) return;
     setSearchQuery(searchQuery.trim());
-    setSearchText(''); // Clear the input after search
+    setSearchText('');
     if (onNavigate) {
       onNavigate('/products');
     } else {
@@ -42,29 +41,23 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
     }
   };
 
-  // Handle suggestion selection
   const handleSuggestionPress = (suggestion: string) => {
     setSearchText(suggestion);
     setSearchQuery(suggestion);
     handleSearch(suggestion);
   };
 
-  // Handle search input clear
-  const clearSearchQuery = useSearchStore((state) => state.clearSearchQuery);
   const handleClear = () => {
     setSearchText('');
     clearSearchQuery();
   };
 
-  // Handle filter button press
   const handleFilterPress = () => {
-    // Animate button press
     scaleAnimation.value = withSpring(0.95, { damping: 10, stiffness: 200 }, () => {
       scaleAnimation.value = withSpring(1, { damping: 10, stiffness: 200 });
     });
     
     const route = '/products?showFilters=true';
-    
     if (onNavigate) {
       onNavigate(route);
     } else {
@@ -77,7 +70,11 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
   }));
 
   return (
-    <View className="px-4 py-3 bg-white">
+    <View style={{
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      backgroundColor: colors.backgroundSecondary
+    }}>
       <HStack className="items-center" space="sm">
         {/* Search Input */}
         <SimpleSearchInput
@@ -88,7 +85,7 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
           onChangeText={handleSearchTextChange}
           onSearch={handleSearch}
           onClear={handleClear}
-          autoSearch={false} // Disable auto-search, only search on manual trigger
+          autoSearch={false}
           showSuggestions={true}
           suggestions={['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Beauty']}
           onSuggestionPress={handleSuggestionPress}
@@ -97,26 +94,23 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
 
         {/* Filter Button */}
         <Animated.View style={filterButtonStyle}>
-          <Pressable
-            onPress={handleFilterPress}
-            className="active:opacity-80"
-          >
-            <View
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: '#3B82F6',
-                alignItems: 'center',
-                justifyContent: 'center',
-                shadowColor: '#3B82F6',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 4,
-                elevation: 4,
-              }}
-            >
-              <Filter size={20} color="#FFFFFF" />
+          <Pressable onPress={handleFilterPress} style={{ opacity: 0.8 }}>
+            <View style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: colors.surface,
+              alignItems: 'center',
+              justifyContent: 'center',
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 3,
+              borderWidth: 1,
+              borderColor: colors.border
+            }}>
+              <Filter size={20} color={colors.textSecondary} />
             </View>
           </Pressable>
         </Animated.View>

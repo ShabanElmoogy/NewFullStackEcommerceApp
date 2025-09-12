@@ -5,6 +5,7 @@ import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
 import { Truck, Shield, Headphones, Award } from 'lucide-react-native';
+import { useTheme } from '@/hooks/useTheme';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -17,15 +18,21 @@ const features = [
 ];
 
 export default function WhyChooseUs() {
+  const { colors } = useTheme();
+
   return (
     <Animated.View
       entering={FadeInUp.delay(1300)}
-      className="px-5 mt-8"
+      style={{ paddingHorizontal: 20, marginTop: 32 }}
     >
       <VStack space="md">
         <HStack className="items-center justify-center mb-2">
-          <Icon as={Award} size="md" className="text-blue-600 mr-2" />
-          <Text className="text-xl font-bold text-gray-900">
+          <Icon as={Award} size="md" style={{ color: colors.primary, marginRight: 8 }} />
+          <Text style={{
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: colors.text
+          }}>
             Why Choose Us
           </Text>
         </HStack>
@@ -37,14 +44,16 @@ export default function WhyChooseUs() {
               entering={FadeInUp.delay(1400 + index * 100)}
               style={{
                 width: (screenWidth - 52) / 2,
-                backgroundColor: 'white',
+                backgroundColor: colors.surface,
                 borderRadius: 20,
                 padding: 20,
-                shadowColor: '#000',
+                shadowColor: colors.shadow,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.08,
                 shadowRadius: 12,
                 elevation: 4,
+                borderWidth: 1,
+                borderColor: colors.border,
               }}
             >
               <VStack space="sm" className="items-center">
@@ -52,7 +61,7 @@ export default function WhyChooseUs() {
                   style={{
                     width: 56,
                     height: 56,
-                    backgroundColor: `${feature.color}15`,
+                    backgroundColor: feature.color + '15',
                     borderRadius: 28,
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -62,10 +71,19 @@ export default function WhyChooseUs() {
                 </View>
 
                 <VStack className="items-center">
-                  <Text className="font-bold text-gray-900 text-base text-center">
+                  <Text style={{
+                    fontWeight: 'bold',
+                    color: colors.text,
+                    fontSize: 16,
+                    textAlign: 'center'
+                  }}>
                     {feature.title}
                   </Text>
-                  <Text className="text-gray-500 text-sm text-center">
+                  <Text style={{
+                    color: colors.textSecondary,
+                    fontSize: 14,
+                    textAlign: 'center'
+                  }}>
                     {feature.subtitle}
                   </Text>
                 </VStack>

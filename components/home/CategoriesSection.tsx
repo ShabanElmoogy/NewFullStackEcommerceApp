@@ -6,6 +6,7 @@ import { HStack } from '@/components/ui/hstack';
 import { Icon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { ChevronRight, Smartphone, Shirt, Home, Dumbbell, Book, Gamepad2 } from 'lucide-react-native';
+import { useTheme } from '@/hooks/useTheme';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -24,22 +25,32 @@ const categories = [
 ];
 
 export default function CategoriesSection({ onNavigate }: CategoriesSectionProps) {
+  const { colors } = useTheme();
+
   return (
     <Animated.View
       entering={FadeInUp.delay(900)}
-      className="px-5 mt-8"
+      style={{ paddingHorizontal: 20, marginTop: 32 }}
     >
       <VStack space="md">
         <HStack className="items-center justify-between">
-          <Text className="text-xl font-bold text-gray-900">
+          <Text style={{
+            fontSize: 20,
+            fontWeight: 'bold',
+            color: colors.text
+          }}>
             Shop by Category
           </Text>
           <Pressable onPress={() => onNavigate('/products')}>
             <HStack className="items-center">
-              <Text className="text-blue-600 font-semibold mr-1">
+              <Text style={{
+                color: colors.primary,
+                fontWeight: '600',
+                marginRight: 4
+              }}>
                 View All
               </Text>
-              <Icon as={ChevronRight} size="sm" className="text-blue-600" />
+              <Icon as={ChevronRight} size="sm" style={{ color: colors.primary }} />
             </HStack>
           </Pressable>
         </HStack>
@@ -53,17 +64,23 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
                 onPress={() => onNavigate('/products')}
                 style={{
                   width: 140,
-                  backgroundColor: 'white',
+                  backgroundColor: colors.surface,
                   borderRadius: 20,
                   overflow: 'hidden',
-                  shadowColor: '#000',
+                  shadowColor: colors.shadow,
                   shadowOffset: { width: 0, height: 6 },
                   shadowOpacity: 0.1,
                   shadowRadius: 16,
                   elevation: 6,
+                  borderWidth: 1,
+                  borderColor: colors.border,
                 }}
               >
-                <View style={{ height: 90, backgroundColor: '#F8FAFC', position: 'relative' }}>
+                <View style={{ 
+                  height: 90, 
+                  backgroundColor: colors.backgroundSecondary, 
+                  position: 'relative' 
+                }}>
                   <Image
                     source={{ uri: category.image }}
                     style={{ width: '100%', height: '100%' }}
@@ -83,15 +100,23 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
                       justifyContent: 'center',
                     }}
                   >
-                    <Icon as={category.icon} size="sm" className="text-white" />
+                    <Icon as={category.icon} size="sm" style={{ color: '#FFFFFF' }} />
                   </View>
                 </View>
 
-                <VStack className="p-4">
-                  <Text className="font-bold text-gray-900 text-sm" numberOfLines={1}>
+                <VStack style={{ padding: 16 }}>
+                  <Text style={{
+                    fontWeight: 'bold',
+                    color: colors.text,
+                    fontSize: 14
+                  }} numberOfLines={1}>
                     {category.name}
                   </Text>
-                  <Text className="text-gray-500 text-xs mt-1">
+                  <Text style={{
+                    color: colors.textSecondary,
+                    fontSize: 12,
+                    marginTop: 4
+                  }}>
                     {category.items} products
                   </Text>
                 </VStack>

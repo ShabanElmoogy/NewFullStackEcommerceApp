@@ -16,6 +16,7 @@ import { useCart } from '@/store/cartStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCompareStore } from '@/store/compareStore';
 import { useLanguageStore } from '@/store/languageStore';
+import { useTheme } from '@/hooks/useTheme';
 import Animated, { 
   useAnimatedStyle, 
   withSpring, 
@@ -55,6 +56,7 @@ const TabItem: React.FC<TabItemProps> = ({
   compareCount,
   isRTL
 }) => {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
   const translateY = useSharedValue(0);
   const iconScale = useSharedValue(1);
@@ -162,7 +164,7 @@ const TabItem: React.FC<TabItemProps> = ({
             left: 8,
             right: 8,
             bottom: 4,
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            backgroundColor: colors.primary + '20', // 20% opacity
             borderRadius: 16,
           }
         ]}
@@ -174,7 +176,7 @@ const TabItem: React.FC<TabItemProps> = ({
           <Icon
             as={IconComponent}
             size="md"
-            className={isFocused ? 'text-blue-600' : 'text-gray-500'}
+            style={{ color: isFocused ? colors.tabActive : colors.tabInactive }}
           />
         </Animated.View>
         
@@ -185,7 +187,7 @@ const TabItem: React.FC<TabItemProps> = ({
               position: 'absolute',
               top: -6,
               right: -8,
-              backgroundColor: '#EF4444',
+              backgroundColor: colors.error,
               borderRadius: 10,
               minWidth: 20,
               height: 20,
@@ -193,12 +195,12 @@ const TabItem: React.FC<TabItemProps> = ({
               justifyContent: 'center',
               paddingHorizontal: 4,
               borderWidth: 2,
-              borderColor: 'white',
+              borderColor: colors.tabBackground,
             }}
           >
             <Text
               style={{
-                color: 'white',
+                color: colors.textInverse,
                 fontSize: 11,
                 fontWeight: 'bold',
                 lineHeight: 16,
@@ -215,7 +217,7 @@ const TabItem: React.FC<TabItemProps> = ({
         style={{
           fontSize: 11,
           fontWeight: isFocused ? '600' : '500',
-          color: isFocused ? '#2563EB' : '#6B7280',
+          color: isFocused ? colors.tabActive : colors.tabInactive,
           textAlign: 'center',
         }}
         numberOfLines={1}
@@ -231,7 +233,7 @@ const TabItem: React.FC<TabItemProps> = ({
             bottom: -2,
             width: 4,
             height: 4,
-            backgroundColor: '#2563EB',
+            backgroundColor: colors.tabActive,
             borderRadius: 2,
           }}
         />
@@ -246,6 +248,7 @@ export const CustomTabBar: React.FC<TabBarProps> = ({ state, descriptors, naviga
   const wishlistCount = useWishlist((state) => state.totalItems());
   const compareCount = useCompareStore((state) => state.getCompareCount());
   const { isRTL } = useLanguageStore();
+  const { colors, isDark } = useTheme();
 
   return (
     <View
@@ -265,7 +268,7 @@ export const CustomTabBar: React.FC<TabBarProps> = ({ state, descriptors, naviga
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: colors.tabBackground + (isDark ? 'F0' : 'F5'), // 95% opacity
           backdropFilter: 'blur(20px)',
         }}
       />
@@ -274,7 +277,7 @@ export const CustomTabBar: React.FC<TabBarProps> = ({ state, descriptors, naviga
       <View
         style={{
           height: 1,
-          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+          backgroundColor: colors.border,
         }}
       />
 

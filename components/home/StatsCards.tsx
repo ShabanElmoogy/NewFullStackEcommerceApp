@@ -58,13 +58,17 @@ export default function StatsCards({ cartCount, compareCount, onNavigate }: Stat
               backgroundColor: stat.bgColor,
               borderRadius: 20,
               padding: 16,
+              position: 'relative',
               marginHorizontal: index === 1 ? 3 : index === 0 ? 0 : 6,
               marginRight: index === 0 ? 6 : 0,
               marginLeft: index === 2 ? 6 : 0
             }}
           >
+            <View style={{ position: 'absolute', top: 6, right: 6, opacity: 0.2, zIndex: 0, pointerEvents: 'none' }}>
+              <Icon as={stat.icon} size="xl" style={{ color: stat.color, width: 36, height: 36 }} />
+            </View>
             <HStack className="items-center justify-between">
-              <VStack>
+              <VStack style={{ zIndex: 1 }}>
                 <Text style={{ 
                   fontSize: 24, 
                   fontWeight: 'bold', 
@@ -76,18 +80,7 @@ export default function StatsCards({ cartCount, compareCount, onNavigate }: Stat
                   {stat.title}
                 </Text>
               </VStack>
-              <View 
-                style={{
-                  width: 48,
-                  height: 48,
-                  backgroundColor: stat.color,
-                  borderRadius: 24,
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <Icon as={stat.icon} size="md" className="text-white" />
-              </View>
+              
             </HStack>
           </AnimatedPressable>
         ))}

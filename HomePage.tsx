@@ -3,6 +3,7 @@ import { View, StatusBar } from 'react-native';
 import { useCart } from '@/store/cartStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCompareStore } from '@/store/compareStore';
+import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
@@ -27,6 +28,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const cartCount = useCart((state) => state.totalQuantity());
   const wishlistCount = useWishlist((state) => state.totalItems());
   // const compareCount = useCompareStore((state) => state.getCompareCount());
+  const { colors, isDark } = useTheme();
 
   // State for dynamic content
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -69,9 +71,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
   const greeting = getGreeting();
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <Animated.ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 120 }}
@@ -83,15 +83,13 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
         <SearchBar onNavigate={handleNavigation} />
 
-
-
         <HeroCarousel onNavigate={handleNavigation} />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
         {/* <FlashSale onNavigate={handleNavigation} /> */}
 
         <CategoriesSection onNavigate={handleNavigation} />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
         <CategoryProductsSection 
           onNavigate={handleNavigation}
@@ -105,16 +103,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             console.log('Add to wishlist:', product);
           }}
         />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
         <TrendingProducts onNavigate={handleNavigation} />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
         <WhyChooseUs />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
         <AppStatistics />
-        <View style={{ height: 1, backgroundColor: '#E5E7EB', marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
         <Newsletter />
       </Animated.ScrollView>

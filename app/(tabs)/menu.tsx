@@ -35,6 +35,7 @@ import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import { useWishlist } from '@/store/wishlistStore';
 import { useLanguageStore } from '@/store/languageStore';
+import { useTheme } from '@/hooks/useTheme';
 import { Link, router } from 'expo-router';
 import Animated, { 
   useAnimatedStyle, 
@@ -54,6 +55,7 @@ interface MenuItemProps {
   badge?: number;
   rightElement?: React.ReactNode;
   color?: string;
+  tint?: 'primary' | 'success' | 'warning' | 'error' | 'info';
   disabled?: boolean;
 }
 
@@ -66,8 +68,10 @@ const MenuItem: React.FC<MenuItemProps> = ({
   badge,
   rightElement,
   color = 'text-gray-600',
+  tint,
   disabled = false
 }) => {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);
 
@@ -77,6 +81,8 @@ const MenuItem: React.FC<MenuItemProps> = ({
       opacity: opacity.value,
     };
   });
+
+  const iconTint = tint ? (colors as any)[tint] : colors.primary;
 
   const handlePressIn = () => {
     scale.value = withTiming(0.98, { duration: 100 });
@@ -105,32 +111,50 @@ const MenuItem: React.FC<MenuItemProps> = ({
       style={[
         animatedStyle,
         {
-          backgroundColor: 'white',
+          backgroundColor: colors.surface,
           borderRadius: 16,
           padding: 16,
           marginBottom: 8,
-          shadowColor: '#000',
+          shadowColor: colors.shadow,
           shadowOffset: { width: 0, height: 1 },
           shadowOpacity: 0.05,
           shadowRadius: 4,
           elevation: 2,
           opacity: disabled ? 0.5 : 1,
+          borderWidth: 1,
+          borderColor: colors.border,
         }
       ]}
       disabled={disabled}
     >
       <HStack className="items-center justify-between">
         <HStack className="items-center flex-1">
-          <View className={`w-12 h-12 bg-gray-50 rounded-xl items-center justify-center mr-4`}>
-            <Icon as={IconComponent} size="md" className={color} />
+          <View style={{
+            width: 48,
+            height: 48,
+            backgroundColor: iconTint + '20',
+            borderRadius: 12,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 16
+          }}>
+            <Icon as={IconComponent} size="md" style={{ color: iconTint }} />
           </View>
           
           <VStack className="flex-1">
-            <Text className="font-semibold text-gray-900 text-base">
+            <Text style={{
+              fontWeight: '600',
+              color: colors.text,
+              fontSize: 16
+            }}>
               {title}
             </Text>
             {subtitle && (
-              <Text className="text-sm text-gray-500 mt-1">
+              <Text style={{
+                fontSize: 14,
+                color: colors.textSecondary,
+                marginTop: 4
+              }}>
                 {subtitle}
               </Text>
             )}
@@ -139,15 +163,26 @@ const MenuItem: React.FC<MenuItemProps> = ({
 
         <HStack className="items-center" space="sm">
           {badge && badge > 0 && (
-            <View className="bg-red-500 rounded-full px-2 py-1 min-w-6 items-center">
-              <Text className="text-white text-xs font-bold">
+            <View style={{
+              backgroundColor: colors.error,
+              borderRadius: 12,
+              paddingHorizontal: 8,
+              paddingVertical: 4,
+              minWidth: 24,
+              alignItems: 'center'
+            }}>
+              <Text style={{
+                color: colors.textInverse,
+                fontSize: 12,
+                fontWeight: 'bold'
+              }}>
                 {badge > 99 ? '99+' : badge.toString()}
               </Text>
             </View>
           )}
           
           {rightElement || (
-            <Icon as={ChevronRight} size="sm" className="text-gray-400" />
+            <Icon as={ChevronRight} size="sm" style={{ color: colors.textTertiary }} />
           )}
         </HStack>
       </HStack>
@@ -162,16 +197,18 @@ export default function MenuScreen() {
   const compareCount = useCompareStore((state) => state.getCompareCount());
   const wishlistCount = useWishlist((state) => state.totalItems());
   const { isRTL, toggleLanguage } = useLanguageStore();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { colors, isDark, toggleTheme, themePreference } = useTheme();
 
   const handleLogout = () => {
     logout();
     router.replace('/login');
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // Here you would implement actual dark mode toggle
+  const getThemeSubtitle = () => {
+    if (themePreference === 'system') {
+      return `System (${isDark ? 'Dark' : 'Light'})`;
+    }
+    return isDark ? 'Switch to light' : 'Switch to dark';
   };
 
   const accountMenuItems = [
@@ -180,7 +217,7 @@ export default function MenuScreen() {
       title: 'Profile',
       subtitle: 'Manage your account',
       href: '/profile',
-      color: 'text-blue-600',
+      tint: 'info',
     },
     {
       icon: ShoppingCart,
@@ -188,7 +225,7 @@ export default function MenuScreen() {
       subtitle: 'Review your items',
       href: '/cart',
       badge: cartCount,
-      color: 'text-green-600',
+      tint: 'primary',
     },
     {
       icon: Heart,
@@ -196,14 +233,14 @@ export default function MenuScreen() {
       subtitle: 'Your favorite items',
       href: '/wishlist',
       badge: wishlistCount,
-      color: 'text-red-600',
+      tint: 'error',
     },
     {
       icon: Package,
       title: 'Orders',
       subtitle: 'Track your purchases',
       href: '/orders',
-      color: 'text-purple-600',
+      tint: 'success',
     },
   ];
 
@@ -213,28 +250,28 @@ export default function MenuScreen() {
       title: 'Search',
       subtitle: 'Find products quickly',
       href: '/search',
-      color: 'text-orange-600',
+      tint: 'info',
     },
     {
       icon: Bell,
       title: 'Notifications',
       subtitle: 'Stay updated',
       href: '/notifications',
-      color: 'text-yellow-600',
+      tint: 'warning',
     },
     {
       icon: CreditCard,
       title: 'Payment Methods',
       subtitle: 'Manage cards & payments',
       href: '/payment-methods',
-      color: 'text-indigo-600',
+      tint: 'primary',
     },
     {
       icon: MapPin,
       title: 'Addresses',
       subtitle: 'Delivery locations',
       href: '/addresses',
-      color: 'text-teal-600',
+      tint: 'success',
     },
   ];
 
@@ -244,9 +281,19 @@ export default function MenuScreen() {
       title: 'Language',
       subtitle: isRTL ? 'العربية' : 'English',
       onPress: toggleLanguage,
+      tint: 'info',
       rightElement: (
-        <View className="bg-blue-100 rounded-lg px-3 py-1">
-          <Text className="text-blue-600 font-semibold text-sm">
+        <View style={{
+          backgroundColor: colors.primary + '20',
+          borderRadius: 8,
+          paddingHorizontal: 12,
+          paddingVertical: 4
+        }}>
+          <Text style={{
+            color: colors.primary,
+            fontWeight: '600',
+            fontSize: 14
+          }}>
             {isRTL ? 'AR' : 'EN'}
           </Text>
         </View>
@@ -254,25 +301,26 @@ export default function MenuScreen() {
       color: 'text-blue-600',
     },
     {
-      icon: isDarkMode ? Sun : Moon,
-      title: 'Dark Mode',
-      subtitle: isDarkMode ? 'Switch to light' : 'Switch to dark',
-      onPress: toggleDarkMode,
+      icon: isDark ? Sun : Moon,
+      title: 'Theme',
+      subtitle: getThemeSubtitle(),
+      onPress: toggleTheme,
+      tint: 'warning',
       rightElement: (
         <View style={{
           width: 48,
           height: 24,
           borderRadius: 12,
-          backgroundColor: isDarkMode ? '#3B82F6' : '#D1D5DB',
+          backgroundColor: isDark ? colors.primary : colors.border,
           padding: 2,
           justifyContent: 'center'
         }}>
           <View style={{
             width: 20,
             height: 20,
-            backgroundColor: 'white',
+            backgroundColor: colors.surface,
             borderRadius: 10,
-            transform: [{ translateX: isDarkMode ? 24 : 0 }]
+            transform: [{ translateX: isDark ? 24 : 0 }]
           }} />
         </View>
       ),
@@ -283,7 +331,7 @@ export default function MenuScreen() {
       title: 'Settings',
       subtitle: 'App preferences',
       href: '/settings',
-      color: 'text-gray-600',
+      tint: 'primary',
     },
   ];
 
@@ -293,14 +341,14 @@ export default function MenuScreen() {
       title: 'Help & Support',
       subtitle: 'Get assistance',
       href: '/help',
-      color: 'text-green-600',
+      tint: 'success',
     },
     {
       icon: Headphones,
       title: 'Contact Us',
       subtitle: '24/7 customer service',
       href: '/contact',
-      color: 'text-blue-600',
+      tint: 'primary',
     },
     {
       icon: Star,
@@ -309,20 +357,20 @@ export default function MenuScreen() {
       onPress: () => {
         // Handle app rating
       },
-      color: 'text-yellow-600',
+      tint: 'warning',
     },
     {
       icon: Shield,
       title: 'Privacy Policy',
       subtitle: 'Your data protection',
       href: '/privacy',
-      color: 'text-purple-600',
+      tint: 'info',
     },
   ];
 
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 120 }}
@@ -334,62 +382,127 @@ export default function MenuScreen() {
             marginTop: insets.top,
             marginHorizontal: 16,
             marginBottom: 16,
-            backgroundColor: 'white',
+            backgroundColor: colors.surface,
             borderRadius: 24,
-            shadowColor: '#000',
+            shadowColor: colors.shadow,
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.1,
             shadowRadius: 8,
             elevation: 5,
             padding: 20,
+            borderWidth: 1,
+            borderColor: colors.border,
           }}
         >
           {isAuthenticated && user ? (
             <HStack className="items-center mb-4">
-              <View className="w-16 h-16 bg-blue-100 rounded-full items-center justify-center mr-4">
+              <View style={{
+                width: 64,
+                height: 64,
+                backgroundColor: colors.primary + '20',
+                borderRadius: 32,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 16
+              }}>
                 {user.avatar ? (
                   <View className="w-16 h-16 rounded-full overflow-hidden">
                     {/* Image would go here */}
-                    <View className="w-full h-full bg-blue-500 items-center justify-center">
-                      <Text className="text-white font-bold text-xl">
+                    <View style={{
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: colors.primary,
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <Text style={{
+                        color: colors.textInverse,
+                        fontWeight: 'bold',
+                        fontSize: 20
+                      }}>
                         {(user.name || user.username || user.email || 'U').charAt(0).toUpperCase()}
                       </Text>
                     </View>
                   </View>
                 ) : (
-                  <Text className="text-blue-600 font-bold text-xl">
+                  <Text style={{
+                    color: colors.primary,
+                    fontWeight: 'bold',
+                    fontSize: 20
+                  }}>
                     {(user.name || user.username || user.email || 'U').charAt(0).toUpperCase()}
                   </Text>
                 )}
               </View>
               <VStack className="flex-1">
-                <Text className="text-xl font-bold text-gray-900">
+                <Text style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  color: colors.text
+                }}>
                   {user.name || user.username || 'User'}
                 </Text>
                 {user.email && (
-                  <Text className="text-gray-500 mt-1">
+                  <Text style={{
+                    color: colors.textSecondary,
+                    marginTop: 4
+                  }}>
                     {user.email}
                   </Text>
                 )}
-                <Badge className="bg-green-100 self-start mt-2">
-                  <BadgeText className="text-green-600 font-semibold">Premium Member</BadgeText>
-                </Badge>
+                <View style={{
+                  backgroundColor: colors.success + '20',
+                  alignSelf: 'flex-start',
+                  marginTop: 8,
+                  paddingHorizontal: 12,
+                  paddingVertical: 4,
+                  borderRadius: 12
+                }}>
+                  <Text style={{
+                    color: colors.success,
+                    fontWeight: '600',
+                    fontSize: 12
+                  }}>
+                    Premium Member
+                  </Text>
+                </View>
               </VStack>
             </HStack>
           ) : (
             <VStack className="items-center mb-4">
-              <View className="w-20 h-20 bg-gray-100 rounded-full items-center justify-center mb-4">
-                <Icon as={User} size="xl" className="text-gray-400" />
+              <View style={{
+                width: 80,
+                height: 80,
+                backgroundColor: colors.backgroundSecondary,
+                borderRadius: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 16
+              }}>
+                <Icon as={User} size="xl" style={{ color: colors.textTertiary }} />
               </View>
-              <Text className="text-xl font-bold text-gray-900 mb-2">
+              <Text style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                color: colors.text,
+                marginBottom: 8
+              }}>
                 Welcome Guest
               </Text>
               <Link href="/login" asChild>
-                <Button className="bg-blue-500 rounded-xl">
-                  <ButtonText className="text-white font-semibold">
+                <Pressable style={{
+                  backgroundColor: colors.primary,
+                  borderRadius: 12,
+                  paddingHorizontal: 24,
+                  paddingVertical: 12
+                }}>
+                  <Text style={{
+                    color: colors.textInverse,
+                    fontWeight: '600'
+                  }}>
                     Sign In
-                  </ButtonText>
-                </Button>
+                  </Text>
+                </Pressable>
               </Link>
             </VStack>
           )}
@@ -400,7 +513,12 @@ export default function MenuScreen() {
         {isAuthenticated && (
           <View className="px-5 mt-6">
             <VStack space="sm">
-              <Text className="text-lg font-bold text-gray-900 mb-2">
+              <Text style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: colors.text,
+                marginBottom: 8
+              }}>
                 Account
               </Text>
               {accountMenuItems.map((item, index) => (
@@ -413,7 +531,12 @@ export default function MenuScreen() {
         {/* App Features */}
         <View className="px-5 mt-6">
           <VStack space="sm">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: colors.text,
+              marginBottom: 8
+            }}>
               App Features
             </Text>
             {appMenuItems.map((item, index) => (
@@ -425,7 +548,12 @@ export default function MenuScreen() {
         {/* Settings */}
         <View className="px-5 mt-6">
           <VStack space="sm">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: colors.text,
+              marginBottom: 8
+            }}>
               Settings
             </Text>
             {settingsMenuItems.map((item, index) => (
@@ -437,7 +565,12 @@ export default function MenuScreen() {
         {/* Support */}
         <View className="px-5 mt-6">
           <VStack space="sm">
-            <Text className="text-lg font-bold text-gray-900 mb-2">
+            <Text style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+              color: colors.text,
+              marginBottom: 8
+            }}>
               Support
             </Text>
             {supportMenuItems.map((item, index) => (
@@ -463,12 +596,19 @@ export default function MenuScreen() {
         <View className="px-5 mt-8 mb-4">
           <VStack className="items-center" space="sm">
             <HStack className="items-center" space="sm">
-              <Icon as={Smartphone} size="sm" className="text-gray-400" />
-              <Text className="text-gray-500 text-sm">
+              <Icon as={Smartphone} size="sm" style={{ color: colors.textTertiary }} />
+              <Text style={{
+                color: colors.textTertiary,
+                fontSize: 14
+              }}>
                 Version 1.0.0
               </Text>
             </HStack>
-            <Text className="text-gray-400 text-xs text-center">
+            <Text style={{
+              color: colors.textTertiary,
+              fontSize: 12,
+              textAlign: 'center'
+            }}>
               © 2024 E-Commerce App. All rights reserved.
             </Text>
           </VStack>

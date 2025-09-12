@@ -3,18 +3,23 @@ import { View } from 'react-native';
 import { VStack } from '@/components/ui/vstack';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
+import { useTheme } from '@/hooks/useTheme';
 
 export function LoginHeader() {
+  const { colors, isDark } = useTheme();
+
   return (
     <View
       style={{
-        backgroundColor: '#000000',
+        backgroundColor: isDark ? colors.surfaceSecondary : colors.primary,
         marginHorizontal: -24,
         marginTop: -50,
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 24,
         marginBottom: 40,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
       }}
     >
       <VStack className="items-center">
@@ -23,16 +28,44 @@ export function LoginHeader() {
             width: 50,
             height: 50,
             borderRadius: 25,
-            backgroundColor: '#ffffff',
+            backgroundColor: colors.surface,
             justifyContent: 'center',
             alignItems: 'center',
             marginBottom: 12,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 4,
+            elevation: 3,
           }}
         >
-          <Text style={{ fontSize: 20, color: '#000000', fontWeight: 'bold' }}>🛒</Text>
+          <Text style={{ 
+            fontSize: 20, 
+            color: colors.primary, 
+            fontWeight: 'bold' 
+          }}>
+            🛒
+          </Text>
         </View>
-        <Heading className="text-white text-lg font-bold text-center tracking-widest">LUXE MART</Heading>
-        <Text className="text-gray-300 text-xs text-center font-light tracking-wide mt-1">Premium Shopping</Text>
+        <Text style={{
+          color: isDark ? colors.text : colors.textInverse,
+          fontSize: 18,
+          fontWeight: 'bold',
+          textAlign: 'center',
+          letterSpacing: 2
+        }}>
+          LUXE MART
+        </Text>
+        <Text style={{
+          color: isDark ? colors.textSecondary : colors.textInverse + 'CC', // 80% opacity
+          fontSize: 12,
+          textAlign: 'center',
+          fontWeight: '300',
+          letterSpacing: 1,
+          marginTop: 4
+        }}>
+          Premium Shopping
+        </Text>
       </VStack>
     </View>
   );

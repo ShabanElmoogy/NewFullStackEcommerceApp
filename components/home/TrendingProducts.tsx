@@ -7,6 +7,7 @@ import { Icon } from '@/components/ui/icon';
 import { Badge, BadgeText } from '@/components/ui/badge';
 import { Image } from '@/components/ui/image';
 import { TrendingUp, Star, Heart, Plus, Flame } from 'lucide-react-native';
+import { useTheme } from '@/hooks/useTheme';
 import Animated, { 
   FadeInUp, 
   FadeInRight, 
@@ -63,6 +64,7 @@ const trendingProducts = [
 ];
 
 export default function TrendingProducts({ onNavigate }: TrendingProductsProps) {
+  const { colors } = useTheme();
   const pulseScale = useSharedValue(1);
 
   React.useEffect(() => {
@@ -83,22 +85,37 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
   return (
     <Animated.View
       entering={FadeInUp.delay(1100)}
-      className="px-5 mt-8"
+      style={{ paddingHorizontal: 20, marginTop: 32 }}
     >
       <VStack space="md">
         <HStack className="items-center justify-between">
           <HStack className="items-center">
             <Animated.View style={pulseAnimatedStyle}>
-              <Icon as={TrendingUp} size="md" className="text-orange-500 mr-2" />
+              <Icon as={TrendingUp} size="md" style={{ color: colors.warning, marginRight: 8 }} />
             </Animated.View>
-            <Text className="text-xl font-bold text-gray-900">
+            <Text style={{
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: colors.text
+            }}>
               Trending Now
             </Text>
           </HStack>
-          <Badge className="bg-orange-50">
-            <Icon as={Flame} size="xs" className="text-orange-600 mr-1" />
-            <BadgeText className="text-orange-600 font-semibold">Hot</BadgeText>
-          </Badge>
+          <View style={{
+            backgroundColor: colors.warning + '20',
+            borderRadius: 12,
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}>
+            <Icon as={Flame} size="xs" style={{ color: colors.warning, marginRight: 4 }} />
+            <Text style={{
+              color: colors.warning,
+              fontWeight: '600',
+              fontSize: 12
+            }}>Hot</Text>
+          </View>
         </HStack>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -110,18 +127,20 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
                 onPress={() => onNavigate('/products')}
                 style={{
                   width: 220,
-                  backgroundColor: 'white',
+                  backgroundColor: colors.surface,
                   borderRadius: 20,
                   overflow: 'hidden',
-                  shadowColor: '#000',
+                  shadowColor: colors.shadow,
                   shadowOffset: { width: 0, height: 8 },
                   shadowOpacity: 0.12,
                   shadowRadius: 20,
                   elevation: 8,
+                  borderWidth: 1,
+                  borderColor: colors.border,
                 }}
               >
                 <View style={{ position: 'relative' }}>
-                  <View style={{ height: 160, backgroundColor: '#F8FAFC' }}>
+                  <View style={{ height: 160, backgroundColor: colors.backgroundSecondary }}>
                     <Image
                       source={{ uri: product.image }}
                       style={{ width: '100%', height: '100%' }}
@@ -132,19 +151,37 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
 
                   {/* Badges */}
                   <View style={{ position: 'absolute', top: 12, left: 12 }}>
-                    <Badge style={{ backgroundColor: product.badgeColor }}>
-                      <BadgeText className="text-white font-bold text-xs">
+                    <View style={{
+                      backgroundColor: product.badgeColor,
+                      borderRadius: 8,
+                      paddingHorizontal: 8,
+                      paddingVertical: 4
+                    }}>
+                      <Text style={{
+                        color: '#FFFFFF',
+                        fontWeight: 'bold',
+                        fontSize: 12
+                      }}>
                         {product.badge}
-                      </BadgeText>
-                    </Badge>
+                      </Text>
+                    </View>
                   </View>
 
                   <View style={{ position: 'absolute', top: 12, right: 12 }}>
-                    <Badge className="bg-red-500">
-                      <BadgeText className="text-white font-bold text-xs">
+                    <View style={{
+                      backgroundColor: colors.error,
+                      borderRadius: 8,
+                      paddingHorizontal: 8,
+                      paddingVertical: 4
+                    }}>
+                      <Text style={{
+                        color: colors.textInverse,
+                        fontWeight: 'bold',
+                        fontSize: 12
+                      }}>
                         -{product.discount}%
-                      </BadgeText>
-                    </Badge>
+                      </Text>
+                    </View>
                   </View>
 
                   {/* Wishlist Button */}
@@ -155,54 +192,74 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
                       right: 12,
                       width: 36,
                       height: 36,
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backgroundColor: colors.surface + 'F0', // 95% opacity
                       borderRadius: 18,
                       alignItems: 'center',
                       justifyContent: 'center',
-                      shadowColor: '#000',
+                      shadowColor: colors.shadow,
                       shadowOffset: { width: 0, height: 2 },
                       shadowOpacity: 0.1,
                       shadowRadius: 4,
                       elevation: 3,
                     }}
                   >
-                    <Icon as={Heart} size="sm" className="text-gray-600" />
+                    <Icon as={Heart} size="sm" style={{ color: colors.textSecondary }} />
                   </Pressable>
                 </View>
 
-                <VStack className="p-4" space="sm">
-                  <Text className="font-bold text-gray-900 text-base" numberOfLines={2}>
+                <VStack style={{ padding: 16 }} space="sm">
+                  <Text style={{
+                    fontWeight: 'bold',
+                    color: colors.text,
+                    fontSize: 16
+                  }} numberOfLines={2}>
                     {product.name}
                   </Text>
 
                   <HStack className="items-center">
-                    <Icon as={Star} size="xs" className="text-yellow-500 fill-current mr-1" />
-                    <Text className="text-yellow-600 font-semibold text-sm mr-2">
+                    <Icon as={Star} size="xs" style={{ color: colors.warning, marginRight: 4 }} />
+                    <Text style={{
+                      color: colors.warning,
+                      fontWeight: '600',
+                      fontSize: 14,
+                      marginRight: 8
+                    }}>
                       {product.rating}
                     </Text>
-                    <Text className="text-gray-400 text-xs">
+                    <Text style={{
+                      color: colors.textTertiary,
+                      fontSize: 12
+                    }}>
                       ({product.reviews.toLocaleString()})
                     </Text>
                   </HStack>
 
                   <HStack className="items-center justify-between">
                     <VStack>
-                      <Text className="font-bold text-blue-600 text-lg">
+                      <Text style={{
+                        fontWeight: 'bold',
+                        color: colors.primary,
+                        fontSize: 18
+                      }}>
                         ${product.price}
                       </Text>
-                      <Text className="text-gray-400 text-sm line-through">
+                      <Text style={{
+                        color: colors.textTertiary,
+                        fontSize: 14,
+                        textDecorationLine: 'line-through'
+                      }}>
                         ${product.originalPrice}
                       </Text>
                     </VStack>
 
                     <Pressable
                       style={{
-                        backgroundColor: '#3B82F6',
+                        backgroundColor: colors.primary,
                         borderRadius: 12,
                         padding: 10,
                       }}
                     >
-                      <Icon as={Plus} size="sm" className="text-white" />
+                      <Icon as={Plus} size="sm" style={{ color: colors.textInverse }} />
                     </Pressable>
                   </HStack>
                 </VStack>
