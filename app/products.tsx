@@ -14,8 +14,9 @@ import ProductFilter, { FilterOptions } from '../components/ProductFilter';
 import ProductSearch from '../components/ProductSearch';
 import ActiveFilters from '../components/ActiveFilters';
 import CompareFloatingBar from '../components/CompareFloatingBar';
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { useLocalSearchParams, router } from 'expo-router';
+import React, { useState, useCallback, useMemo } from 'react';
+import { router } from 'expo-router';
+import { useSearchStore } from '../store/searchStore';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useFilterPersistence } from '@/hooks/useFilterPersistence';
@@ -42,44 +43,30 @@ import {
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
-  const [isUserClearing, setIsUserClearing] = useState(false);
-  const searchParams = useLocalSearchParams();
+
 
   // Use persistent filters
-  const { 
-    filters, 
-    isLoaded: filtersLoaded, 
-    updateFilters, 
-    updatePartialFilters, 
+  const {
+    filters,
+    isLoaded: filtersLoaded,
+    updateFilters,
+    updatePartialFilters,
     clearSavedFilters,
-    defaultFilters 
+    defaultFilters
   } = useFilterPersistence();
 
-  // Handle URL search parameters - sync when URL changes
-  useEffect(() => {
-    if (!filtersLoaded) return;
+  // Zustand search store
+  const searchQuery = useSearchStore((state) => state.searchQuery);
+  const setSearchQuery = useSearchStore((state) => state.setSearchQuery);
+  const clearSearchQuery = useSearchStore((state) => state.clearSearchQuery);
 
-    const searchFromUrl = searchParams.search;
-    
-    if (searchFromUrl) {
-      const searchQuery = Array.isArray(searchFromUrl) 
-        ? searchFromUrl[0] 
-        : searchFromUrl;
-      
-      if (searchQuery && typeof searchQuery === 'string') {
-        const decodedQuery = decodeURIComponent(searchQuery);
-        // Only update if the query is different from current filter
-        if (filters?.searchQuery !== decodedQuery) {
-          updatePartialFilters({ searchQuery: decodedQuery });
-        }
-      }
-    } else {
-      // If no search param in URL, clear search query if it exists
-      if (filters?.searchQuery) {
-        updatePartialFilters({ searchQuery: '' });
-      }
+  // Sync Zustand searchQuery to filters.searchQuery
+  React.useEffect(() => {
+    if (filters && filters.searchQuery !== searchQuery) {
+      updatePartialFilters({ searchQuery });
     }
-  }, [filtersLoaded, searchParams.search, filters?.searchQuery, updatePartialFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   // Use persistent view mode
   const {
@@ -113,14 +100,13 @@ export default function ProductsScreen() {
     updateFilters(newFilters);
   }, [updateFilters]);
 
-  const handleSearchChange = useCallback((searchQuery: string) => {
-    updatePartialFilters({ searchQuery });
-    
-    // Set flag when user is clearing to prevent URL override
-    if (!searchQuery || searchQuery.trim() === '') {
-      setIsUserClearing(true);
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+    updatePartialFilters({ searchQuery: query });
+    if (!query || query.trim() === '') {
+      clearSearchQuery();
     }
-  }, [updatePartialFilters]);
+  }, [setSearchQuery, updatePartialFilters, clearSearchQuery]);
 
   const handleRemoveFilter = useCallback((key: keyof FilterOptions) => {
     console.log('handleRemoveFilter called with key:', key);
@@ -220,7 +206,7 @@ export default function ProductsScreen() {
         {/* Search Bar */}
         <ProductSearch
           onSearchChange={handleSearchChange}
-          value={filters?.searchQuery || ''}
+          value={searchQuery}
         />
 
         {/* Filter Row */}
@@ -559,7 +545,7 @@ const styles = {
     alignItems: 'center' as const,
     maxWidth: 360,
     alignSelf: 'center' as const,
-    width: '100%',
+    // width removed for flex
   },
   noResultsIllustration: {
     width: 120,
@@ -597,8 +583,8 @@ const styles = {
   noResultsActions: {
     flexDirection: 'row' as const,
     gap: 12,
-    width: '100%',
     marginBottom: 24,
+    // width removed for flex
   },
   primaryButton: {
     flex: 1,
@@ -632,9 +618,9 @@ const styles = {
     backgroundColor: '#F8FAFC',
     borderRadius: 16,
     padding: 20,
-    width: '100%',
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    // width removed for flex
   },
   suggestionsHeader: {
     alignItems: 'center' as const,
@@ -667,7 +653,7 @@ const styles = {
     alignItems: 'center' as const,
     maxWidth: 320,
     alignSelf: 'center' as const,
-    width: '100%',
+    // width removed for flex
   },
   emptyStateIllustration: {
     width: 120,

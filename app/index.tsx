@@ -274,8 +274,15 @@ export default function HomeScreen() {
       className="flex-1 bg-surface-primary"
       showsVerticalScrollIndicator={false}
     >
+      {/* Search Bar */}
+      <View className="mt-4 mb-2">
+        {require('../components/home/SearchBar').default && (
+          React.createElement(require('../components/home/SearchBar').default, {})
+        )}
+      </View>
+
       {/* Hero Banner Carousel */}
-      <View className="mt-4 mb-6">
+      <View className="mb-6">
         <FlatList
           data={heroBanners}
           horizontal

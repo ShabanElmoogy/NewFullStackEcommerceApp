@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSearchStore } from '../../store/searchStore';
 import { View, Pressable } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { Filter } from 'lucide-react-native';
@@ -18,34 +19,36 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
   const [searchText, setSearchText] = useState('');
   const scaleAnimation = useSharedValue(1);
 
+  const setSearchQuery = useSearchStore((state) => state.setSearchQuery);
   // Handle search text changes (for real-time updates if needed)
   const handleSearchTextChange = (text: string) => {
     setSearchText(text);
-    // You can add real-time search logic here if needed
+    setSearchQuery(text);
   };
 
   // Handle actual search execution
   const handleSearch = (searchQuery: string) => {
     if (!searchQuery.trim()) return;
-    
-    const route = `/products?search=${encodeURIComponent(searchQuery.trim())}`;
-    
+    setSearchQuery(searchQuery.trim());
     if (onNavigate) {
-      onNavigate(route);
+      onNavigate('/products');
     } else {
-      router.push(route as any);
+      router.push('/products');
     }
   };
 
   // Handle suggestion selection
   const handleSuggestionPress = (suggestion: string) => {
     setSearchText(suggestion);
+    setSearchQuery(suggestion);
     handleSearch(suggestion);
   };
 
   // Handle search input clear
+  const clearSearchQuery = useSearchStore((state) => state.clearSearchQuery);
   const handleClear = () => {
     setSearchText('');
+    clearSearchQuery();
   };
 
   // Handle filter button press
