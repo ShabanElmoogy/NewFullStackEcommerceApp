@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RTLWrapper } from '@/components/layout';
 import { Stack } from 'expo-router';
+import GlobalHeader from '@/components/layout/GlobalHeader';
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,10 @@ export default function RootLayout() {
         <SafeAreaView className="flex-1 bg-background-0" edges={['top']}>
           <GluestackUIProvider mode="light">
             <GestureHandlerRootView style={{ flex: 1 }}>
+              {/* Global fixed header */}
+              <GlobalHeader />
+
+              {/* App navigator stack without individual headers */}
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />

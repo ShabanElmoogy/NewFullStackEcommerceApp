@@ -7,11 +7,12 @@ import { router } from 'expo-router';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 // Import separate components
-import HomeHeader from './components/home/HomeHeader';
+// import HomeHeader from './components/home/HomeHeader';
 import HeroCarousel from './components/home/HeroCarousel';
 import FlashSale from './components/home/FlashSale';
 import StatsCards from './components/home/StatsCards';
 import CategoriesSection from './components/home/CategoriesSection';
+import CategoryProductsSection from './components/home/CategoryProductsSection';
 import TrendingProducts from './components/home/TrendingProducts';
 import WhyChooseUs from './components/home/WhyChooseUs';
 import AppStatistics from './components/home/AppStatistics';
@@ -77,14 +78,9 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         onScroll={scrollHandler}
         scrollEventThrottle={16}
       >
-        <HomeHeader
-          greeting={greeting}
-          cartCount={cartCount}
-          wishlistCount={wishlistCount}
-          onNavigate={handleNavigation}
-        />
+        {/* GlobalHeader now renders the home header content */}
 
-                <StatsCards
+        <StatsCards
           cartCount={cartCount}
           compareCount={compareCount}
           onNavigate={handleNavigation}
@@ -92,11 +88,22 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
         <HeroCarousel onNavigate={handleNavigation} />
 
-        <FlashSale onNavigate={handleNavigation} />
-
-
+        {/* <FlashSale onNavigate={handleNavigation} /> */}
 
         <CategoriesSection onNavigate={handleNavigation} />
+
+        <CategoryProductsSection 
+          onNavigate={handleNavigation}
+          onProductPress={(productId) => handleNavigation(`/product/${productId}`)}
+          onAddToCart={(product) => {
+            // Add to cart logic here
+            console.log('Add to cart:', product);
+          }}
+          onAddToWishlist={(product) => {
+            // Add to wishlist logic here
+            console.log('Add to wishlist:', product);
+          }}
+        />
 
         <TrendingProducts onNavigate={handleNavigation} />
 

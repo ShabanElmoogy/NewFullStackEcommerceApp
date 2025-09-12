@@ -8,7 +8,7 @@ import {
   Platform,
   Pressable
 } from 'react-native';
-import ProductItem from '../components/ProductListItem';
+import ProductCard from '../components/ProductCard';
 import ProductFilter, { FilterOptions } from '../components/ProductFilter';
 import ProductSearch from '../components/ProductSearch';
 import ActiveFilters from '../components/ActiveFilters';
@@ -251,7 +251,7 @@ export default function ProductsScreen() {
           columnWrapperStyle={numOfColumns > 1 ? styles.columnWrapper : null}
           ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
           renderItem={({ item }) => (
-            <ProductItem product={item} viewMode={viewMode} />
+            <ProductCard product={item} viewMode={viewMode} />
           )}
           showsVerticalScrollIndicator={false}
           refreshControl={

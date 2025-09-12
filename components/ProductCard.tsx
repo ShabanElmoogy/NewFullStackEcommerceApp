@@ -3,7 +3,7 @@ import { Image } from "@/components/ui/image";
 import { Badge, BadgeText } from "@/components/ui/badge";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
-import React, { useState } from "react";
+import React from "react";
 import { VStack } from "./ui/vstack";
 import { HStack } from "./ui/hstack";
 import { Heading } from "./ui/heading";
@@ -24,7 +24,7 @@ import {
   Zap
 } from "lucide-react-native";
 
-interface ProductItemProps {
+interface ProductCardProps {
   product: {
     id: number;
     name: string;
@@ -38,10 +38,10 @@ interface ProductItemProps {
     isTrending?: boolean;
     stock?: number;
   };
- viewMode?: 'grid' | 'list';
+  viewMode?: 'grid' | 'list';
 }
 
-export default function ProductItem({ product, viewMode = 'grid' }: ProductItemProps) {
+export default function ProductCard({ product, viewMode = 'grid' }: ProductCardProps) {
   const { name, price, image, description, rating = 4.5, reviewCount = 0, discount, isNew, isTrending, stock = 10 } = product;
   const addToCart = useCart((state) => state.addProduct);
   const toast = useToast();
@@ -80,7 +80,7 @@ export default function ProductItem({ product, viewMode = 'grid' }: ProductItemP
                   source={{ uri: image || 'https://via.placeholder.com/300x300?text=No+Image' }}
                   className="w-full h-full"
                   alt={`${name} image`}
-                  resizeMode="cover"
+                  resizeMode="contain"
                 />
 
                 {/* Stock Status Overlay */}
@@ -123,12 +123,19 @@ export default function ProductItem({ product, viewMode = 'grid' }: ProductItemP
                     </HStack>
                   </VStack>
                   
-                  {/* Wishlist Button */}
-                  <WishlistButton 
-                    product={product} 
-                    size="sm" 
-                    variant="filled"
-                  />
+                  {/* Actions: Wishlist + Compare */}
+                  <HStack space="xs">
+                    <WishlistButton 
+                      product={product} 
+                      size="sm" 
+                      variant="filled"
+                    />
+                    <CompareButton 
+                      product={product} 
+                      size="sm" 
+                      variant="icon"
+                    />
+                  </HStack>
                 </HStack>
 
                 {/* Rating */}

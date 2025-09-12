@@ -35,7 +35,7 @@ import {
 } from 'lucide-react-native';
 import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
-import ProductItem from '../components/ProductListItem';
+import ProductCard from '../components/ProductCard';
 import { LanguageToggleButton } from '@/components/LanguageToggleButton';
 import CompareTestButton from '@/components/CompareTestButton';
 import { transformCategoriesToDisplay } from '@/utils/categoryUtils';
@@ -351,7 +351,7 @@ export default function HomeScreen() {
           contentContainerStyle={{ paddingHorizontal: 12, marginBottom: 32 }}
           renderItem={({ item }) => (
             <View style={{ width: 180, marginHorizontal: 4 }}>
-              <ProductItem product={item} />
+              <ProductCard product={item} />
             </View>
           )}
           keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
@@ -376,7 +376,7 @@ export default function HomeScreen() {
           contentContainerStyle={{ paddingHorizontal: 12, marginBottom: 32 }}
           renderItem={({ item }) => (
             <View style={{ width: 180, marginHorizontal: 4 }}>
-              <ProductItem product={item} />
+              <ProductCard product={item} />
             </View>
           )}
           keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
