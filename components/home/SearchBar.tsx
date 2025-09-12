@@ -24,6 +24,10 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
   const handleSearchTextChange = (text: string) => {
     setSearchText(text);
     setSearchQuery(text);
+    // If the input is cleared, also clear Zustand searchQuery for immediate filter update
+    if (text === '') {
+      setSearchQuery('');
+    }
   };
 
   // Handle actual search execution
