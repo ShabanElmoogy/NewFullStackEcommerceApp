@@ -3,7 +3,7 @@ import { Image } from "@/components/ui/image";
 import { Badge, BadgeText } from "@/components/ui/badge";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
-import React from "react";
+import React, { useState } from "react";
 import { VStack } from "./ui/vstack";
 import { HStack } from "./ui/hstack";
 import { Heading } from "./ui/heading";
@@ -17,10 +17,10 @@ import { useToast } from "./ui/toast";
 import { CustomToast } from "./CustomToast";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTheme } from "@/hooks/useTheme";
-import { 
-  ShoppingCart, 
-  Star, 
-  Eye, 
+import {
+  ShoppingCart,
+  Star,
+  Eye,
   TrendingUp,
   Zap
 } from "lucide-react-native";
@@ -48,7 +48,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const toast = useToast();
   const { isRTL } = useLanguageStore();
   const { colors } = useTheme();
-
+  const [ratio, setRatio] = useState(1);
   const discountedPrice = discount ? price * (1 - discount / 100) : price;
   const isLowStock = stock < 5;
   const isOutOfStock = stock === 0;
@@ -56,9 +56,9 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
   const handleAddToCart = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (isOutOfStock) return;
-    
+
     addToCart(product);
     toast.show({
       placement: "bottom",
@@ -133,7 +133,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                 {/* Product Name and Badges */}
                 <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                   <View style={{ flex: 1, gap: 8 }}>
-                    <Text 
+                    <Text
                       style={{
                         fontSize: 16,
                         fontWeight: '600',
@@ -144,7 +144,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                     >
                       {name}
                     </Text>
-                    
+
                     {/* Badges */}
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                       {isNew && (
@@ -197,17 +197,17 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                       )}
                     </View>
                   </View>
-                  
+
                   {/* Actions: Wishlist + Compare */}
                   <View style={{ flexDirection: 'row', gap: 4 }}>
-                    <WishlistButton 
-                      product={product} 
-                      size="sm" 
+                    <WishlistButton
+                      product={product}
+                      size="sm"
                       variant="filled"
                     />
-                    <CompareButton 
-                      product={product} 
-                      size="sm" 
+                    <CompareButton
+                      product={product}
+                      size="sm"
                       variant="icon"
                     />
                   </View>
@@ -239,7 +239,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
                 {/* Description */}
                 {description && (
-                  <Text 
+                  <Text
                     style={{
                       fontSize: 14,
                       color: colors.textSecondary,
@@ -280,7 +280,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                         ${price.toFixed(2)}
                       </Text>
                     )}
-                    
+
                     {/* Low Stock Warning */}
                     {isLowStock && !isOutOfStock && (
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
@@ -311,14 +311,14 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                       opacity: isOutOfStock ? 0.6 : 1
                     }}
                   >
-                    <Icon 
-                      as={ShoppingCart} 
-                      size="xs" 
-                      style={{ 
+                    <Icon
+                      as={ShoppingCart}
+                      size="xs"
+                      style={{
                         color: isOutOfStock ? colors.textTertiary : colors.text,
                         marginRight: isRTL ? 0 : 4,
                         marginLeft: isRTL ? 4 : 0
-                      }} 
+                      }}
                     />
                     <Text style={{
                       fontSize: 12,
@@ -342,7 +342,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
     <View className="flex-1">
       <Card className="flex-1 relative overflow-hidden bg-background-0 border border-outline-100 shadow-sm">
         {/* Product Badges */}
-        <View 
+        <View
           className="absolute top-2 z-20 flex-row gap-1"
           style={{
             left: isRTL ? undefined : 8,
@@ -368,37 +368,37 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         </View>
 
         {/* Wishlist Button */}
-        <View 
+        <View
           className="absolute top-2 z-20"
           style={{
             right: isRTL ? undefined : 8,
             left: isRTL ? 8 : undefined
           }}
         >
-          <WishlistButton 
-            product={product} 
-            size="sm" 
+          <WishlistButton
+            product={product}
+            size="sm"
             variant="filled"
           />
         </View>
 
         {/* Compare Button */}
-        <View 
+        <View
           className="absolute top-2 z-20"
           style={{
             right: isRTL ? undefined : 48,
             left: isRTL ? 48 : undefined
           }}
         >
-          <CompareButton 
-            product={product} 
-            size="sm" 
+          <CompareButton
+            product={product}
+            size="sm"
             variant="icon"
           />
         </View>
 
         {/* Quick View Button */}
-        <View 
+        <View
           className="absolute top-2 z-20"
           style={{
             right: isRTL ? undefined : 88,
@@ -418,9 +418,9 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             <View className="relative bg-background-50 rounded-t-lg overflow-hidden h-48">
               <Image
                 source={{ uri: image || 'https://via.placeholder.com/300x300?text=No+Image' }}
-                className="h-48 w-full absolute inset-0"
+                className="h-full w-full absolute inset-0"
                 alt={`${name} image`}
-                resizeMode="contain"
+                resizeMode="contain"   // ✅ fills while respecting aspect ratio
                 style={{ backgroundColor: 'transparent' }}
               />
 
@@ -433,7 +433,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
               {/* Low Stock Warning */}
               {isLowStock && !isOutOfStock && (
-                <View 
+                <View
                   className="absolute bottom-2"
                   style={{
                     left: isRTL ? undefined : 8,
@@ -451,8 +451,8 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             {/* Product Info */}
             <VStack className="p-3 flex-1" space="xs">
               {/* Product Name */}
-              <Text 
-                className="text-sm font-semibold text-typography-900 leading-tight" 
+              <Text
+                className="text-sm font-semibold text-typography-900 leading-tight"
                 numberOfLines={2}
               >
                 {name}
@@ -471,8 +471,8 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
                           star <= Math.floor(rating)
                             ? 'text-yellow-500 fill-current'
                             : star <= rating
-                            ? 'text-yellow-500'
-                            : 'text-typography-300'
+                              ? 'text-yellow-500'
+                              : 'text-typography-300'
                         }
                       />
                     ))}
@@ -485,8 +485,8 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
 
               {/* Description */}
               {description && (
-                <Text 
-                  className="text-xs text-typography-600 leading-relaxed" 
+                <Text
+                  className="text-xs text-typography-600 leading-relaxed"
                   numberOfLines={2}
                 >
                   {description}
@@ -524,21 +524,25 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
             size="sm"
             onPress={handleAddToCart}
             disabled={isOutOfStock}
-            className={`w-full ${
-              isOutOfStock 
-                ? 'bg-background-300' 
-                : 'bg-primary-600 active:bg-primary-700'
-            }`}
+            style={{
+              backgroundColor: isOutOfStock ? colors.backgroundSecondary : colors.primary,
+              borderRadius: 8,
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              opacity: isOutOfStock ? 0.6 : 1
+            }}
           >
-            <Icon 
-              as={ShoppingCart} 
-              size="xs" 
-              className={`${isRTL ? 'ml-2' : 'mr-2'} ${isOutOfStock ? 'text-typography-400' : 'text-white'}`} 
+            <Icon
+              as={ShoppingCart}
+              size="xs"
+              className={`${isRTL ? 'ml-2' : 'mr-2'} ${isOutOfStock ? 'text-typography-400' : 'text-white'}`}
             />
-            <ButtonText 
-              className={`text-xs font-semibold ${
-                isOutOfStock ? 'text-typography-400' : 'text-white'
-              }`}
+            <ButtonText
+              className={`text-xs font-semibold ${isOutOfStock ? 'text-typography-400' : 'text-white'
+                }`}
             >
               {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
             </ButtonText>
