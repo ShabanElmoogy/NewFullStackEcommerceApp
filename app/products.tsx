@@ -21,6 +21,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useFilterPersistence } from '@/hooks/useFilterPersistence';
 import { useViewModePersistence } from '@/hooks/useViewModePersistence';
+import { useTheme } from '@/hooks/useTheme';
 import { Text } from '../components/ui/text';
 import { HStack } from '../components/ui/hstack';
 import { Badge, BadgeText } from '../components/ui/badge';
@@ -43,7 +44,7 @@ import {
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
-
+  const { colors, isDark } = useTheme();
 
   // Use persistent filters
   const {
@@ -173,11 +174,14 @@ export default function ProductsScreen() {
   const hasResults = filteredProducts.length > 0;
   const isSearching = filters && filters.searchQuery && filters.searchQuery.trim() !== '';
 
+  // Create theme-aware styles
+  const styles = createStyles(colors, isDark);
+
   // Loading state
   if (isLoading || !filtersLoaded || !viewModeLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3B82F6" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Loading products...</Text>
       </View>
     );
@@ -187,7 +191,7 @@ export default function ProductsScreen() {
   if (error) {
     return (
       <View style={styles.errorContainer}>
-        <AlertCircleIcon color="#EF4444" size={48} />
+        <AlertCircleIcon color={colors.error} size={48} />
         <Text style={styles.errorTitle}>Something went wrong</Text>
         <Text style={styles.errorMessage}>{error.message}</Text>
         <Button onPress={onRefresh} style={styles.retryButton}>
@@ -199,7 +203,7 @@ export default function ProductsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
       
       {/* Header Section */}
       <View style={styles.headerContainer}>
@@ -413,45 +417,45 @@ const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => (
   </View>
 );
 
-// Styles
-const styles = {
+// Create theme-aware styles function
+const createStyles = (colors: any, isDark: boolean) => ({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#64748B',
+    color: colors.textSecondary,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
     paddingHorizontal: 32,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   errorTitle: {
     fontSize: 20,
     fontWeight: '700' as const,
-    color: '#0F172A',
+    color: colors.text,
     marginTop: 16,
     marginBottom: 8,
   },
   errorMessage: {
     fontSize: 16,
-    color: '#64748B',
+    color: colors.textSecondary,
     textAlign: 'center' as const,
     marginBottom: 24,
   },
   retryButton: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 12,
@@ -461,9 +465,9 @@ const styles = {
     fontWeight: '600' as const,
   },
   headerContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: colors.border,
     paddingBottom: 8,
   },
   filterRow: {
@@ -478,7 +482,7 @@ const styles = {
   },
   viewToggle: {
     flexDirection: 'row' as const,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 8,
     padding: 2,
   },
@@ -488,8 +492,8 @@ const styles = {
     borderRadius: 6,
   },
   viewButtonActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
+    backgroundColor: colors.surface,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -504,26 +508,26 @@ const styles = {
   },
   resultsText: {
     fontSize: 14,
-    color: '#64748B',
+    color: colors.textSecondary,
     fontWeight: '500' as const,
   },
   filteredBadge: {
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primary + '20',
     borderWidth: 1,
-    borderColor: '#DBEAFE',
+    borderColor: colors.primary + '40',
   },
   filteredBadgeText: {
-    color: '#3B82F6',
+    color: colors.primary,
     fontSize: 12,
     fontWeight: '600' as const,
   },
   productsList: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.backgroundSecondary,
   },
   productsListContent: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 120, // Add extra padding for bottom tabs
   },
   columnWrapper: {
     gap: 16,
@@ -533,35 +537,35 @@ const styles = {
   },
   emptyStateContainer: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   emptyStateContent: {
     flexGrow: 1,
     justifyContent: 'center' as const,
     paddingHorizontal: 24,
     paddingVertical: 40,
+    paddingBottom: 120, // Add extra padding for bottom tabs
   },
   noResultsContainer: {
     alignItems: 'center' as const,
     maxWidth: 360,
     alignSelf: 'center' as const,
-    // width removed for flex
   },
   noResultsIllustration: {
     width: 120,
     height: 120,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 60,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
   },
   noResultsIconContainer: {
     width: 64,
     height: 64,
-    backgroundColor: '#EFF6FF',
+    backgroundColor: colors.primary + '20',
     borderRadius: 32,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -569,13 +573,13 @@ const styles = {
   noResultsTitle: {
     fontSize: 24,
     fontWeight: '700' as const,
-    color: '#0F172A',
+    color: colors.text,
     textAlign: 'center' as const,
     marginBottom: 8,
   },
   noResultsMessage: {
     fontSize: 16,
-    color: '#64748B',
+    color: colors.textSecondary,
     textAlign: 'center' as const,
     lineHeight: 24,
     marginBottom: 24,
@@ -584,11 +588,10 @@ const styles = {
     flexDirection: 'row' as const,
     gap: 12,
     marginBottom: 24,
-    // width removed for flex
   },
   primaryButton: {
     flex: 1,
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 12,
   },
@@ -599,13 +602,14 @@ const styles = {
   },
   secondaryButton: {
     flex: 1,
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.backgroundSecondary,
     paddingVertical: 14,
     borderRadius: 12,
-    borderWidth: 0,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   secondaryButtonText: {
-    color: '#475569',
+    color: colors.textSecondary,
     fontWeight: '600' as const,
     fontSize: 15,
   },
@@ -615,12 +619,11 @@ const styles = {
     gap: 8,
   },
   suggestionsCard: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    // width removed for flex
+    borderColor: colors.border,
   },
   suggestionsHeader: {
     alignItems: 'center' as const,
@@ -630,7 +633,7 @@ const styles = {
   suggestionsTitle: {
     fontSize: 16,
     fontWeight: '600' as const,
-    color: '#0F172A',
+    color: colors.text,
   },
   suggestionItem: {
     alignItems: 'center' as const,
@@ -640,12 +643,12 @@ const styles = {
   suggestionBullet: {
     width: 6,
     height: 6,
-    backgroundColor: '#3B82F6',
+    backgroundColor: colors.primary,
     borderRadius: 3,
   },
   suggestionText: {
     fontSize: 15,
-    color: '#475569',
+    color: colors.textSecondary,
     flex: 1,
     lineHeight: 22,
   },
@@ -653,23 +656,22 @@ const styles = {
     alignItems: 'center' as const,
     maxWidth: 320,
     alignSelf: 'center' as const,
-    // width removed for flex
   },
   emptyStateIllustration: {
     width: 120,
     height: 120,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 60,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
   },
   emptyStateIconContainer: {
     width: 64,
     height: 64,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: colors.warning + '20',
     borderRadius: 32,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -677,15 +679,15 @@ const styles = {
   emptyStateTitle: {
     fontSize: 24,
     fontWeight: '700' as const,
-    color: '#0F172A',
+    color: colors.text,
     textAlign: 'center' as const,
     marginBottom: 8,
   },
   emptyStateMessage: {
     fontSize: 16,
-    color: '#64748B',
+    color: colors.textSecondary,
     textAlign: 'center' as const,
     lineHeight: 24,
     marginBottom: 24,
   },
-};
+});
