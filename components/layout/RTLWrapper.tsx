@@ -7,7 +7,7 @@ interface RTLWrapperProps {
 }
 
 export function RTLWrapper({ children }: RTLWrapperProps) {
-  const { isRTL, key, initializeLanguage } = useLanguageStore();
+  const { isRTL, initializeLanguage } = useLanguageStore();
 
   useEffect(() => {
     initializeLanguage();
@@ -21,7 +21,6 @@ export function RTLWrapper({ children }: RTLWrapperProps) {
 
   return (
     <View
-      key={key}
       style={{
         flex: 1,
         flexDirection: 'column',

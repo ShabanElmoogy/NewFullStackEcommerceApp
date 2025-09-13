@@ -4,7 +4,6 @@ import i18n, { getLanguage, setLanguage, getDeviceLanguage } from '../utils/i18n
 
 interface LanguageState {
   language: string;
-  key: number;
   isRTL: boolean;
   toggleLanguage: () => void;
   initializeLanguage: () => Promise<void>;
@@ -13,7 +12,6 @@ interface LanguageState {
 
 export const useLanguageStore = create<LanguageState>((set, get) => ({
   language: getDeviceLanguage(), // Initialize with device language
-  key: 0,
   isRTL: getDeviceLanguage() === 'ar', // Set RTL based on device language
 
   initializeLanguage: async () => {
@@ -35,12 +33,11 @@ export const useLanguageStore = create<LanguageState>((set, get) => ({
       I18nManager.forceRTL(isRTL);
     }
     
-    // Update state - key change forces re-render without restart
-    set((state) => ({
+    // Update state
+    set({
       language: lang,
       isRTL,
-      key: state.key + 1, // Force re-render of root component
-    }));
+    });
 
     // For web platform
     if (Platform.OS === 'web') {
