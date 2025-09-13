@@ -23,7 +23,7 @@ export default function WhyChooseUs() {
   return (
     <Animated.View
       entering={FadeInUp.delay(1300)}
-      style={{ paddingHorizontal: 20, marginTop: 32 }}
+      style={{ paddingHorizontal: 20 }}
     >
       <VStack space="md">
         <HStack className="items-center justify-center mb-2">

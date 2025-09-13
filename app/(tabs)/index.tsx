@@ -94,12 +94,12 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         <SearchBar onNavigate={handleNavigation} />
 
         <HeroCarousel onNavigate={handleNavigation} />
-        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         {/* <FlashSale onNavigate={handleNavigation} /> */}
 
         <CategoriesSection onNavigate={handleNavigation} />
-        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         <CategoryProductsSection 
           onNavigate={handleNavigation}

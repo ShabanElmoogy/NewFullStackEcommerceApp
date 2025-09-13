@@ -20,7 +20,7 @@ export default function AppStatistics() {
   return (
     <Animated.View
       entering={FadeInUp.delay(1500)}
-      className="px-5 mt-8"
+      className="px-5"
     >
       <View
         style={{

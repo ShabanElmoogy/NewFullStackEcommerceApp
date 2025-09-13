@@ -30,7 +30,7 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
   return (
     <Animated.View
       entering={FadeInUp.delay(900)}
-      style={{ paddingHorizontal: 20, marginTop: 32 }}
+      style={{ paddingHorizontal: 20}}
     >
       <VStack space="md">
         <HStack className="items-center justify-between">

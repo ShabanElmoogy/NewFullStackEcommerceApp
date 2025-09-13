@@ -15,7 +15,7 @@ export default function Newsletter() {
   return (
     <Animated.View
       entering={SlideInUp.delay(1600)}
-      style={{ paddingHorizontal: 20, marginTop: 32, position: 'relative', zIndex: 10 }}
+      style={{ paddingHorizontal: 20, marginBottom: 20, position: 'relative', zIndex: 10 }}
     >
       <View
       style={{

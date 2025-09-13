@@ -83,7 +83,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         shadowRadius: 4,
         elevation: 3,
         overflow: 'hidden',
-        marginBottom: 12,
+        marginBottom: 6,
       }}>
         <Link href={`/product/${product.id}`} asChild>
           <Pressable style={{ opacity: 1 }}>
@@ -415,7 +415,7 @@ export default function ProductCard({ product, viewMode = 'grid' }: ProductCardP
         <Link href={`/product/${product.id}`} asChild>
           <Pressable className="flex-1 active:opacity-95">
             {/* Product Image Container */}
-            <View className="relative bg-background-50 rounded-t-lg overflow-hidden h-48">
+            <View className="relative rounded-t-lg overflow-hidden h-48">
               <Image
                 source={{ uri: image || 'https://via.placeholder.com/300x300?text=No+Image' }}
                 className="h-full w-full absolute inset-0"

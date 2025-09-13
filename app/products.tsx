@@ -203,7 +203,8 @@ export default function ProductsScreen() {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.background} />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} 
+                 backgroundColor={colors.background} />
       
       {/* Header Section */}
       <View style={styles.headerContainer}>
@@ -527,7 +528,7 @@ const createStyles = (colors: any, isDark: boolean) => ({
   },
   productsListContent: {
     padding: 16,
-    paddingBottom: 120, // Add extra padding for bottom tabs
+    paddingBottom: 140, // Increased bottom padding for better spacing under cards
   },
   columnWrapper: {
     gap: 16,

@@ -27,6 +27,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useLanguageStore } from '@/store/languageStore';
+import { useTheme } from '@/hooks/useTheme';
 import ProductCard from '@/components/ProductCard';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -38,64 +39,77 @@ interface CategoryProductsSectionProps {
   onAddToWishlist?: (product: any) => void;
 }
 
-// Enhanced category configuration with gradients and colorss
-const categoryConfig = {
-  'Mobiles': {
-    icon: Smartphone,
-    gradient: ['#667eea', '#764ba2'],
-    color: '#667eea',
-    bgColor: '#EEF2FF',
-    emoji: '📱',
-    lightColor: '#E0E7FF',
-  },
-  'Fashion': {
-    icon: Shirt,
-    gradient: ['#f093fb', '#f5576c'],
-    color: '#f093fb',
-    bgColor: '#FDF2F8',
-    emoji: '👕',
-    lightColor: '#FCE7F3',
-  },
-  'Home': {
-    icon: Home,
-    gradient: ['#4facfe', '#00f2fe'],
-    color: '#4facfe',
-    bgColor: '#EFF6FF',
-    emoji: '🏠',
-    lightColor: '#DBEAFE',
-  },
-  'Sports': {
-    icon: Dumbbell,
-    gradient: ['#43e97b', '#38f9d7'],
-    color: '#43e97b',
-    bgColor: '#ECFDF5',
-    emoji: '💪',
-    lightColor: '#D1FAE5',
-  },
-  'Books': {
-    icon: Book,
-    gradient: ['#fa709a', '#fee140'],
-    color: '#fa709a',
-    bgColor: '#FEF7CD',
-    emoji: '📚',
-    lightColor: '#FEF3C7',
-  },
-  'Gaming': {
-    icon: Gamepad2,
-    gradient: ['#a8edea', '#fed6e3'],
-    color: '#a8edea',
-    bgColor: '#F0FDF4',
-    emoji: '🎮',
-    lightColor: '#DCFCE7',
-  },
-  'default': {
-    icon: Sparkles,
-    gradient: ['#667eea', '#764ba2'],
-    color: '#667eea',
-    bgColor: '#F3F4F6',
-    emoji: '✨',
-    lightColor: '#F9FAFB',
-  },
+// Enhanced category configuration with theme-aware colors
+const getCategoryConfig = (categoryName: string, isDark: boolean) => {
+  const configs = {
+    'Mobiles': {
+      icon: Smartphone,
+      light: { color: '#3B82F6', lightColor: '#DBEAFE' }, // Blue
+      dark: { color: '#60A5FA', lightColor: '#1E3A8A' },
+      emoji: '📱',
+    },
+    'Fashion': {
+      icon: Shirt,
+      light: { color: '#EC4899', lightColor: '#FCE7F3' }, // Pink
+      dark: { color: '#F472B6', lightColor: '#831843' },
+      emoji: '👕',
+    },
+    'Home': {
+      icon: Home,
+      light: { color: '#10B981', lightColor: '#D1FAE5' }, // Emerald
+      dark: { color: '#34D399', lightColor: '#064E3B' },
+      emoji: '🏠',
+    },
+    'Sports': {
+      icon: Dumbbell,
+      light: { color: '#F59E0B', lightColor: '#FEF3C7' }, // Amber
+      dark: { color: '#FBBF24', lightColor: '#78350F' },
+      emoji: '💪',
+    },
+    'Books': {
+      icon: Book,
+      light: { color: '#8B5CF6', lightColor: '#EDE9FE' }, // Violet
+      dark: { color: '#A78BFA', lightColor: '#4C1D95' },
+      emoji: '📚',
+    },
+    'Gaming': {
+      icon: Gamepad2,
+      light: { color: '#EF4444', lightColor: '#FEE2E2' }, // Red
+      dark: { color: '#F87171', lightColor: '#7F1D1D' },
+      emoji: '🎮',
+    },
+    'Electronics': {
+      icon: Smartphone,
+      light: { color: '#06B6D4', lightColor: '#CFFAFE' }, // Cyan
+      dark: { color: '#22D3EE', lightColor: '#164E63' },
+      emoji: '⚡',
+    },
+    'Beauty': {
+      icon: Sparkles,
+      light: { color: '#F97316', lightColor: '#FED7AA' }, // Orange
+      dark: { color: '#FB923C', lightColor: '#9A3412' },
+      emoji: '💄',
+    },
+    'default': {
+      icon: Sparkles,
+      light: { color: '#6B7280', lightColor: '#F3F4F6' }, // Gray
+      dark: { color: '#9CA3AF', lightColor: '#374151' },
+      emoji: '✨',
+    },
+  };
+
+  const configKey = Object.keys(configs).find(key => 
+    categoryName.toLowerCase().includes(key.toLowerCase())
+  ) as keyof typeof configs;
+  
+  const config = configs[configKey] || configs.default;
+  const themeColors = isDark ? config.dark : config.light;
+  
+  return {
+    ...config,
+    color: themeColors.color,
+    lightColor: themeColors.lightColor,
+  };
 };
 
 export default function CategoryProductsSection({ 
@@ -103,6 +117,7 @@ export default function CategoryProductsSection({
 }: CategoryProductsSectionProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const { language } = useLanguageStore();
+  const { colors, isDark } = useTheme();
   
   // Animation values
   const sparkleRotation = useSharedValue(0);
@@ -172,14 +187,6 @@ export default function CategoryProductsSection({
     return language === 'ar' ? category.nameAr : category.nameEn;
   };
 
-  // Get category configuration
-  const getCategoryConfig = (categoryName: string) => {
-    const configKey = Object.keys(categoryConfig).find(key => 
-      categoryName.toLowerCase().includes(key.toLowerCase())
-    );
-    return categoryConfig[configKey as keyof typeof categoryConfig] || categoryConfig.default;
-  };
-
   // Handle category selection
   const handleCategoryPress = (categoryId: number) => {
     setSelectedCategoryId(categoryId === selectedCategoryId ? null : categoryId);
@@ -192,15 +199,15 @@ export default function CategoryProductsSection({
     return (
       <Animated.View 
         entering={FadeInUp.delay(1000)}
-        className="px-5 mt-8"
+        className="px-5"
       >
         <Animated.View style={[
           {
-            backgroundColor: 'white',
+            backgroundColor: colors.card,
             borderRadius: 24,
             padding: 32,
             alignItems: 'center',
-            shadowColor: '#3B82F6',
+            shadowColor: colors.primary,
             shadowOffset: { width: 0, height: 8 },
             shadowRadius: 20,
             elevation: 10,
@@ -211,17 +218,21 @@ export default function CategoryProductsSection({
             <View style={{
               width: 60,
               height: 60,
-              backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              backgroundColor: colors.primary,
               borderRadius: 30,
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 16,
             }}>
-              <Icon as={Sparkles} size="xl" className="text-white" />
+              <Icon as={Sparkles} size="xl" style={{ color: colors.textInverse }} />
             </View>
           </Animated.View>
-          <Text className="text-gray-700 font-semibold text-lg mb-2">Discovering Products</Text>
-          <Text className="text-gray-500 text-center">Finding the best deals just for you...</Text>
+          <Text style={{ color: colors.text, fontWeight: '600', fontSize: 18, marginBottom: 8 }}>
+            Discovering Products
+          </Text>
+          <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
+            Finding the best deals just for you...
+          </Text>
         </Animated.View>
       </Animated.View>
     );
@@ -230,16 +241,15 @@ export default function CategoryProductsSection({
   return (
     <Animated.View
       entering={FadeInUp.delay(1000)}
-      className="mt-8"
     >
       <VStack space="xl">
         {/* Section Title */}
         <View className="px-5">
           <VStack space="sm">
-            <Text className="text-2xl font-bold text-typography-900">
+            <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text }}>
               {selectedCategoryId ? 'Category Products' : 'Featured Products'}
             </Text>
-            <Text className="text-typography-500">
+            <Text style={{ color: colors.textSecondary }}>
               {selectedCategoryId ? 'Discover products in this category' : 'Handpicked items just for you'}
             </Text>
           </VStack>
@@ -249,11 +259,12 @@ export default function CategoryProductsSection({
         <View
           style={{
             borderWidth: 2,
-            borderColor: '#E5E7EB',
+            borderColor: colors.border,
             borderRadius: 32,
             marginHorizontal: 16,
             marginBottom: 8,
             overflow: 'hidden',
+            backgroundColor: colors.surface,
           }}
         >
           <ScrollView
@@ -271,18 +282,18 @@ export default function CategoryProductsSection({
               paddingHorizontal: 14,
               height: 44,
               borderRadius: 22,
-              backgroundColor: selectedCategoryId === null ? categoryConfig['Mobiles'].color : categoryConfig['Mobiles'].lightColor,
+              backgroundColor: selectedCategoryId === null ? colors.primary : colors.backgroundSecondary,
               marginRight: 8,
               opacity: selectedCategoryId === null ? 1 : 0.92,
             }}
           >
-            <Icon as={Sparkles} size="md" style={{ color: selectedCategoryId === null ? '#fff' : categoryConfig['Mobiles'].color, marginRight: 6 }} />
-            <Text style={{ color: selectedCategoryId === null ? '#fff' : categoryConfig['Mobiles'].color, fontWeight: '600', fontSize: 15 }}>All</Text>
+            <Icon as={Sparkles} size="md" style={{ color: selectedCategoryId === null ? colors.textInverse : colors.textSecondary, marginRight: 6 }} />
+            <Text style={{ color: selectedCategoryId === null ? colors.textInverse : colors.textSecondary, fontWeight: '600', fontSize: 15 }}>All</Text>
           </Pressable>
 
           {categories?.filter(cat => !cat.isDeleted).map((category) => {
             const isSelected = selectedCategoryId === category.id;
-            const config = getCategoryConfig(getCategoryName(category));
+            const config = getCategoryConfig(getCategoryName(category), isDark);
             return (
               <Pressable
                 key={category.id}
@@ -326,11 +337,11 @@ export default function CategoryProductsSection({
             <Animated.View 
               entering={FadeInUp.delay(1400)}
               style={{
-                backgroundColor: 'white',
+                backgroundColor: colors.card,
                 borderRadius: 24,
                 padding: 40,
                 alignItems: 'center',
-                shadowColor: '#000',
+                shadowColor: colors.shadow,
                 shadowOffset: { width: 0, height: 8 },
                 shadowOpacity: 0.1,
                 shadowRadius: 20,
@@ -340,18 +351,28 @@ export default function CategoryProductsSection({
               <View style={{
                 width: 80,
                 height: 80,
-                backgroundColor: '#F3F4F6',
+                backgroundColor: colors.backgroundSecondary,
                 borderRadius: 40,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: 16,
               }}>
-                <Icon as={Gift} size="xl" className="text-gray-400" />
+                <Icon as={Gift} size="xl" style={{ color: colors.textTertiary }} />
               </View>
-              <Text className="text-gray-700 text-center font-bold text-xl mb-2">
+              <Text style={{ 
+                color: colors.text, 
+                textAlign: 'center', 
+                fontWeight: 'bold', 
+                fontSize: 20, 
+                marginBottom: 8,
+                marginTop: 16 
+              }}>
                 {selectedCategoryId ? 'No products found' : 'No products available'}
               </Text>
-              <Text className="text-gray-500 text-center text-base">
+              <Text style={{ 
+                color: colors.textSecondary, 
+                textAlign: 'center', 
+                fontSize: 16 
+              }}>
                 {selectedCategoryId ? 'Try selecting a different category' : 'Check back later for new arrivals'}
               </Text>
             </Animated.View>
@@ -360,23 +381,32 @@ export default function CategoryProductsSection({
 
         {/* Enhanced Show More Button */}
         {productsToShow.length > 0 && (
-          <View style={{ alignItems: 'center', marginTop: 16 }}>
+          <View style={{ alignItems: 'center' }}>
             <Pressable
               onPress={() => onNavigate('/products')}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: '#3B82F6',
+                backgroundColor: colors.primary,
                 borderRadius: 24,
                 paddingVertical: 14,
                 paddingHorizontal: 28,
                 minWidth: 180,
                 elevation: 2,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
               }}
             >
-              <Icon as={Sparkles} size="md" style={{ color: '#fff', marginRight: 10 }} />
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16, letterSpacing: 0.5 }}>
+              <Icon as={Sparkles} size="md" style={{ color: colors.textInverse, marginRight: 10 }} />
+              <Text style={{ 
+                color: colors.textInverse, 
+                fontWeight: 'bold', 
+                fontSize: 16, 
+                letterSpacing: 0.5 
+              }}>
                 Explore All Products
               </Text>
             </Pressable>
