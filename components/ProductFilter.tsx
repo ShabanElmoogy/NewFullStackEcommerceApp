@@ -28,6 +28,8 @@ import { Switch } from './ui/switch';
 import { useCategories } from '@/hooks/useCategories';
 import { useSubCategories } from '@/hooks/useSubCategories';
 import { getCategoriesForFilter, getSubCategoriesForFilter } from '@/utils/categoryUtils';
+import { useTheme } from '@/hooks/useTheme';
+import { getColorForSelectedItem } from '@/utils/selectedColors';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -58,15 +60,6 @@ const sortOptions = [
   { value: 'popularity', label: 'Most Popular' },
 ];
 
-const categoryOptions = [
-  { value: 'Electronics', label: 'Electronics', icon: PackageIcon, color: '#3B82F6' },
-  { value: 'Clothing', label: 'Clothing', icon: TagIcon, color: '#10B981' },
-  { value: 'Books', label: 'Books', icon: PackageIcon, color: '#F59E0B' },
-  { value: 'Home & Garden', label: 'Home & Garden', icon: PackageIcon, color: '#8B5CF6' },
-  { value: 'Sports', label: 'Sports', icon: PackageIcon, color: '#EF4444' },
-  { value: 'Beauty', label: 'Beauty', icon: PackageIcon, color: '#EC4899' },
-];
-
 const brandOptions = [
   { value: 'Apple', label: 'Apple', icon: PackageIcon, color: '#6B7280' },
   { value: 'Samsung', label: 'Samsung', icon: PackageIcon, color: '#3B82F6' },
@@ -78,6 +71,7 @@ const brandOptions = [
 
 export default function ProductFilter({ onFilterChange, activeFilters, productCount }: ProductFilterProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const { colors, isDark } = useTheme();
   
   // Fetch real category and subcategory data
   const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
@@ -86,7 +80,8 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
   // Transform categories for filter options - only use real API data
   const realCategoryOptions = categoriesData ? getCategoriesForFilter(categoriesData, 'en') : [];
   const realSubCategoryOptions = subCategoriesData ? getSubCategoriesForFilter(subCategoriesData, 'en') : [];
-  
+
+    
   // Default filter values to prevent undefined errors
   const defaultFilters: FilterOptions = {
     searchQuery: '',
@@ -205,39 +200,39 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.surface,
           paddingHorizontal: 16,
           paddingVertical: 12,
           borderRadius: 12,
           borderWidth: 1,
-          borderColor: '#E5E7EB',
-          shadowColor: '#000',
+          borderColor: colors.border,
+          shadowColor: colors.shadow,
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.05,
           shadowRadius: 4,
           elevation: 2,
         }}
       >
-        <SlidersHorizontal color="#6B7280" size={20} style={{ marginRight: 8 }} />
-        <Text style={{ fontSize: 14, fontWeight: '600', color: '#374151', flex: 1 }}>
+        <SlidersHorizontal color={colors.textSecondary} size={20} style={{ marginRight: 8 }} />
+        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, flex: 1 }}>
           Filter & Sort
         </Text>
         {activeFilterCount > 0 && (
           <Badge
             style={{
-              backgroundColor: '#3B82F6',
+              backgroundColor: colors.primary,
               borderRadius: 12,
               paddingHorizontal: 8,
               paddingVertical: 4,
               marginLeft: 8,
             }}
           >
-            <BadgeText style={{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' }}>
+            <BadgeText style={{ color: colors.textInverse, fontSize: 12, fontWeight: '700' }}>
               {activeFilterCount}
             </BadgeText>
           </Badge>
         )}
-        <ChevronDownIcon color="#6B7280" size={16} style={{ marginLeft: 8 }} />
+        <ChevronDownIcon color={colors.textSecondary} size={16} style={{ marginLeft: 8 }} />
       </Pressable>
 
       {/* Filter Modal */}
@@ -247,13 +242,13 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
         onRequestClose={closeModal}
         presentationStyle="pageSheet"
       >
-        <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
           {/* Handle Bar */}
           <View
             style={{
               width: 40,
               height: 4,
-              backgroundColor: '#D1D5DB',
+              backgroundColor: colors.border,
               borderRadius: 2,
               alignSelf: 'center',
               marginTop: 12,
@@ -263,11 +258,11 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
           {/* Header */}
           <HStack style={{ justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 20 }}>
-            <Text style={{ fontSize: 20, fontWeight: '800', color: '#111827' }}>
+            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text }}>
               Filter Products
             </Text>
             <Pressable onPress={closeModal} style={{ padding: 4 }}>
-              <XIcon color="#6B7280" size={24} />
+              <XIcon color={colors.textSecondary} size={24} />
             </Pressable>
           </HStack>
 
@@ -293,22 +288,23 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
             >
             {/* Categories Filter */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
                 Categories
               </Text>
               {categoriesLoading ? (
                 <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ color: '#6B7280', fontSize: 14 }}>Loading categories...</Text>
+                  <Text style={{ color: colors.textSecondary, fontSize: 14 }}>Loading categories...</Text>
                 </View>
               ) : realCategoryOptions.length === 0 ? (
                 <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ color: '#6B7280', fontSize: 14 }}>No categories available</Text>
+                  <Text style={{ color: colors.textSecondary, fontSize: 14 }}>No categories available</Text>
                 </View>
               ) : (
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                   {realCategoryOptions.map((option) => {
                     const isSelected = localFilters.categories && localFilters.categories.includes(option.value);
                     const IconComponent = option.icon;
+                    const categoryColors = getColorForSelectedItem(option.value, localFilters.categories || [], isDark);
                     
                     return (
                       <Pressable
@@ -321,12 +317,12 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                           paddingVertical: 8,
                           borderRadius: 20,
                           borderWidth: 1,
-                          borderColor: isSelected ? '#3B82F6' : '#E5E7EB',
-                          backgroundColor: isSelected ? '#EBF8FF' : '#FFFFFF',
+                          borderColor: isSelected && categoryColors ? categoryColors.primary : colors.border,
+                          backgroundColor: isSelected && categoryColors ? categoryColors.secondary : colors.surface,
                         }}
                       >
                         <IconComponent
-                          color={isSelected ? '#3B82F6' : '#6B7280'}
+                          color={isSelected && categoryColors ? categoryColors.primary : colors.textSecondary}
                           size={16}
                           style={{ marginRight: 6 }}
                         />
@@ -334,7 +330,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                           style={{
                             fontSize: 14,
                             fontWeight: isSelected ? '600' : '500',
-                            color: isSelected ? '#3B82F6' : '#6B7280',
+                            color: isSelected && categoryColors ? categoryColors.primary : colors.textSecondary,
                           }}
                         >
                           {option.label}
@@ -348,13 +344,14 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
             {/* Brands Filter */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
                 Brands
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                 {brandOptions.map((option) => {
                   const isSelected = localFilters.brands && localFilters.brands.includes(option.value);
                   const IconComponent = option.icon;
+                  const brandColors = getColorForSelectedItem(option.value, localFilters.brands || [], isDark);
                   
                   return (
                     <Pressable
@@ -367,12 +364,12 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                         paddingVertical: 8,
                         borderRadius: 20,
                         borderWidth: 1,
-                        borderColor: isSelected ? option.color : '#E5E7EB',
-                        backgroundColor: isSelected ? `${option.color}15` : '#FFFFFF',
+                        borderColor: isSelected && brandColors ? brandColors.primary : colors.border,
+                        backgroundColor: isSelected && brandColors ? brandColors.secondary : colors.surface,
                       }}
                     >
                       <IconComponent
-                        color={isSelected ? option.color : '#6B7280'}
+                        color={isSelected && brandColors ? brandColors.primary : colors.textSecondary}
                         size={16}
                         style={{ marginRight: 6 }}
                       />
@@ -380,7 +377,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                         style={{
                           fontSize: 14,
                           fontWeight: isSelected ? '600' : '500',
-                          color: isSelected ? option.color : '#6B7280',
+                          color: isSelected && brandColors ? brandColors.primary : colors.textSecondary,
                         }}
                       >
                         {option.label}
@@ -393,7 +390,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
             {/* Price Range */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
                 Price Range
               </Text>
               <HStack style={{ gap: 12 }}>
@@ -407,7 +404,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                     />
                   </Input>
                 </View>
-                <Text style={{ alignSelf: 'center', color: '#6B7280' }}>-</Text>
+                <Text style={{ alignSelf: 'center', color: colors.textSecondary }}>-</Text>
                 <View style={{ flex: 1 }}>
                   <Input>
                     <InputField
@@ -423,7 +420,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
             {/* Rating Filter */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
                 Minimum Rating
               </Text>
               <HStack style={{ gap: 12, flexWrap: 'wrap' }}>
@@ -443,15 +440,15 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                         paddingHorizontal: 12,
                         paddingVertical: 8,
                         borderRadius: 12,
-                        backgroundColor: isSelected ? '#FEF3C7' : '#F9FAFB',
+                        backgroundColor: isSelected ? colors.warning + '20' : colors.backgroundSecondary,
                         borderWidth: 1,
-                        borderColor: isSelected ? '#F59E0B' : '#E5E7EB',
+                        borderColor: isSelected ? colors.warning : colors.border,
                       }}
                     >
                       {Array.from({ length: rating }, (_, i) => (
                         <StarIcon
                           key={i}
-                          color={isSelected ? '#F59E0B' : '#D1D5DB'}
+                          color={isSelected ? colors.warning : colors.textTertiary}
                           size={16}
                           style={{ marginRight: 2 }}
                         />
@@ -460,7 +457,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                         style={{
                           fontSize: 14,
                           fontWeight: isSelected ? '600' : '500',
-                          color: isSelected ? '#F59E0B' : '#6B7280',
+                          color: isSelected ? colors.warning : colors.textSecondary,
                           marginLeft: 4,
                         }}
                       >
@@ -474,13 +471,13 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
             {/* Availability & Offers */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
                 Availability & Offers
               </Text>
               
               {/* Stock Status */}
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.textSecondary, marginBottom: 8 }}>
                   Stock Status
                 </Text>
                 <HStack style={{ gap: 8 }}>
@@ -499,16 +496,16 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                           paddingHorizontal: 16,
                           paddingVertical: 8,
                           borderRadius: 12,
-                          backgroundColor: isSelected ? '#EBF8FF' : '#F9FAFB',
+                          backgroundColor: isSelected ? colors.primary + '20' : colors.backgroundSecondary,
                           borderWidth: 1,
-                          borderColor: isSelected ? '#3B82F6' : '#E5E7EB',
+                          borderColor: isSelected ? colors.primary : colors.border,
                         }}
                       >
                         <Text
                           style={{
                             fontSize: 14,
                             fontWeight: isSelected ? '600' : '500',
-                            color: isSelected ? '#3B82F6' : '#374151',
+                            color: isSelected ? colors.primary : colors.text,
                           }}
                         >
                           {option.label}
@@ -521,7 +518,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
               {/* On Sale */}
               <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#374151' }}>
+                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
                   On Sale Only
                 </Text>
                 <Switch
@@ -533,7 +530,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
             {/* Sort Options */}
             <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 12 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
                 Sort By
               </Text>
               <VStack style={{ gap: 8 }}>
@@ -550,16 +547,16 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                         paddingHorizontal: 16,
                         paddingVertical: 12,
                         borderRadius: 12,
-                        backgroundColor: isSelected ? '#F0FDF4' : '#F9FAFB',
+                        backgroundColor: isSelected ? colors.success + '20' : colors.backgroundSecondary,
                         borderWidth: 1,
-                        borderColor: isSelected ? '#10B981' : '#E5E7EB',
+                        borderColor: isSelected ? colors.success : colors.border,
                       }}
                     >
                       <Text
                         style={{
                           fontSize: 14,
                           fontWeight: isSelected ? '600' : '500',
-                          color: isSelected ? '#10B981' : '#374151',
+                          color: isSelected ? colors.success : colors.text,
                           flex: 1,
                         }}
                       >
@@ -571,12 +568,12 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                             width: 20,
                             height: 20,
                             borderRadius: 10,
-                            backgroundColor: '#10B981',
+                            backgroundColor: colors.success,
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}
                         >
-                          <CheckCircle color="#FFFFFF" size={12} />
+                          <CheckCircle color={colors.textInverse} size={12} />
                         </View>
                       )}
                     </Pressable>
@@ -591,11 +588,11 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                 marginHorizontal: 20,
                 marginBottom: 24,
                 padding: 16,
-                backgroundColor: '#F3F4F6',
+                backgroundColor: colors.backgroundSecondary,
                 borderRadius: 12,
               }}
             >
-              <Text style={{ fontSize: 14, color: '#6B7280', textAlign: 'center' }}>
+              <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center' }}>
                 {productCount} product{productCount !== 1 ? 's' : ''} found
               </Text>
             </View>
@@ -608,8 +605,8 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
               paddingHorizontal: 20,
               paddingVertical: 16,
               borderTopWidth: 1,
-              borderTopColor: '#E5E7EB',
-              backgroundColor: '#FFFFFF',
+              borderTopColor: colors.border,
+              backgroundColor: colors.surface,
             }}
           >
             <HStack style={{ gap: 12 }}>
@@ -617,21 +614,21 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
                 onPress={handleResetFilters}
                 style={{
                   flex: 1,
-                  backgroundColor: '#F9FAFB',
+                  backgroundColor: colors.backgroundSecondary,
                   borderWidth: 1,
-                  borderColor: '#E5E7EB',
+                  borderColor: colors.border,
                 }}
               >
-                <ButtonText style={{ color: '#374151' }}>Reset</ButtonText>
+                <ButtonText style={{ color: colors.text }}>Reset</ButtonText>
               </Button>
               <Button
                 onPress={handleApplyFilters}
                 style={{
                   flex: 2,
-                  backgroundColor: '#3B82F6',
+                  backgroundColor: colors.primary,
                 }}
               >
-                <ButtonText style={{ color: '#FFFFFF' }}>Apply Filters</ButtonText>
+                <ButtonText style={{ color: colors.textInverse }}>Apply Filters</ButtonText>
               </Button>
             </HStack>
           </View>

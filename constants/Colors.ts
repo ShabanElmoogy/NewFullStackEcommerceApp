@@ -45,64 +45,21 @@ export const Colors = {
     tabActive: '#007AFF',
     tabInactive: '#8E8E93',
     
-    // Category colors - Optimized for UI/UX
-    categoryColors: {
-      mobiles: {
-        primary: '#6366F1', // Modern indigo
-        secondary: '#EEF2FF',
-        accent: '#4F46E5',
-      },
-      fashion: {
-        primary: '#EC4899', // Vibrant pink
-        secondary: '#FDF2F8',
-        accent: '#DB2777',
-      },
-      home: {
-        primary: '#059669', // Fresh emerald
-        secondary: '#ECFDF5',
-        accent: '#047857',
-      },
-      sports: {
-        primary: '#F59E0B', // Energetic amber
-        secondary: '#FFFBEB',
-        accent: '#D97706',
-      },
-      books: {
-        primary: '#7C3AED', // Rich violet
-        secondary: '#F3E8FF',
-        accent: '#6D28D9',
-      },
-      gaming: {
-        primary: '#EF4444', // Bold red
-        secondary: '#FEF2F2',
-        accent: '#DC2626',
-      },
-      electronics: {
-        primary: '#0891B2', // Tech cyan
-        secondary: '#F0F9FF',
-        accent: '#0E7490',
-      },
-      beauty: {
-        primary: '#F97316', // Warm orange
-        secondary: '#FFF7ED',
-        accent: '#EA580C',
-      },
-      food: {
-        primary: '#65A30D', // Natural lime
-        secondary: '#F7FEE7',
-        accent: '#4D7C0F',
-      },
-      automotive: {
-        primary: '#374151', // Professional gray
-        secondary: '#F9FAFB',
-        accent: '#1F2937',
-      },
-      default: {
-        primary: '#6B7280', // Neutral gray
-        secondary: '#F3F4F6',
-        accent: '#4B5563',
-      },
-    },
+    // Selected colors for dynamic selection states
+    selectedColors: [
+      { primary: '#6366F1', secondary: '#EEF2FF', accent: '#4F46E5' }, // Indigo
+      { primary: '#EC4899', secondary: '#FDF2F8', accent: '#DB2777' }, // Pink
+      { primary: '#059669', secondary: '#ECFDF5', accent: '#047857' }, // Emerald
+      { primary: '#F59E0B', secondary: '#FFFBEB', accent: '#D97706' }, // Amber
+      { primary: '#7C3AED', secondary: '#F3E8FF', accent: '#6D28D9' }, // Violet
+      { primary: '#EF4444', secondary: '#FEF2F2', accent: '#DC2626' }, // Red
+      { primary: '#0891B2', secondary: '#F0F9FF', accent: '#0E7490' }, // Cyan
+      { primary: '#F97316', secondary: '#FFF7ED', accent: '#EA580C' }, // Orange
+      { primary: '#65A30D', secondary: '#F7FEE7', accent: '#4D7C0F' }, // Lime
+      { primary: '#8B5CF6', secondary: '#F5F3FF', accent: '#7C3AED' }, // Purple
+      { primary: '#06B6D4', secondary: '#F0F9FF', accent: '#0891B2' }, // Sky
+      { primary: '#84CC16', secondary: '#F7FEE7', accent: '#65A30D' }, // Lime Green
+    ],
     
     // Shadow
     shadow: 'rgba(0, 0, 0, 0.1)',
@@ -149,64 +106,21 @@ export const Colors = {
     tabActive: '#0A84FF',
     tabInactive: '#8E8E93',
     
-    // Category colors - Dark mode optimized
-    categoryColors: {
-      mobiles: {
-        primary: '#818CF8', // Lighter indigo for dark mode
-        secondary: '#312E81',
-        accent: '#6366F1',
-      },
-      fashion: {
-        primary: '#F472B6', // Lighter pink for dark mode
-        secondary: '#831843',
-        accent: '#EC4899',
-      },
-      home: {
-        primary: '#34D399', // Lighter emerald for dark mode
-        secondary: '#064E3B',
-        accent: '#059669',
-      },
-      sports: {
-        primary: '#FBBF24', // Lighter amber for dark mode
-        secondary: '#78350F',
-        accent: '#F59E0B',
-      },
-      books: {
-        primary: '#A78BFA', // Lighter violet for dark mode
-        secondary: '#4C1D95',
-        accent: '#7C3AED',
-      },
-      gaming: {
-        primary: '#F87171', // Lighter red for dark mode
-        secondary: '#7F1D1D',
-        accent: '#EF4444',
-      },
-      electronics: {
-        primary: '#22D3EE', // Lighter cyan for dark mode
-        secondary: '#164E63',
-        accent: '#0891B2',
-      },
-      beauty: {
-        primary: '#FB923C', // Lighter orange for dark mode
-        secondary: '#9A3412',
-        accent: '#F97316',
-      },
-      food: {
-        primary: '#84CC16', // Lighter lime for dark mode
-        secondary: '#365314',
-        accent: '#65A30D',
-      },
-      automotive: {
-        primary: '#9CA3AF', // Lighter gray for dark mode
-        secondary: '#374151',
-        accent: '#6B7280',
-      },
-      default: {
-        primary: '#9CA3AF', // Lighter neutral gray for dark mode
-        secondary: '#374151',
-        accent: '#6B7280',
-      },
-    },
+    // Selected colors for dynamic selection states - Dark mode optimized
+    selectedColors: [
+      { primary: '#818CF8', secondary: '#312E81', accent: '#6366F1' }, // Indigo
+      { primary: '#F472B6', secondary: '#831843', accent: '#EC4899' }, // Pink
+      { primary: '#34D399', secondary: '#064E3B', accent: '#059669' }, // Emerald
+      { primary: '#FBBF24', secondary: '#78350F', accent: '#F59E0B' }, // Amber
+      { primary: '#A78BFA', secondary: '#4C1D95', accent: '#7C3AED' }, // Violet
+      { primary: '#F87171', secondary: '#7F1D1D', accent: '#EF4444' }, // Red
+      { primary: '#22D3EE', secondary: '#164E63', accent: '#0891B2' }, // Cyan
+      { primary: '#FB923C', secondary: '#9A3412', accent: '#F97316' }, // Orange
+      { primary: '#84CC16', secondary: '#365314', accent: '#65A30D' }, // Lime
+      { primary: '#A78BFA', secondary: '#4C1D95', accent: '#8B5CF6' }, // Purple
+      { primary: '#67E8F9', secondary: '#164E63', accent: '#06B6D4' }, // Sky
+      { primary: '#A3E635', secondary: '#365314', accent: '#84CC16' }, // Lime Green
+    ],
     
     // Shadow
     shadow: 'rgba(0, 0, 0, 0.3)',
