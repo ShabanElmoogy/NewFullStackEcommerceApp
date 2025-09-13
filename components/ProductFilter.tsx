@@ -1,37 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Pressable,
-  Modal,
-  ScrollView,
-  Dimensions,
-  Animated,
-} from 'react-native';
-import { Text } from './ui/text';
-import { VStack } from './ui/vstack';
-import { HStack } from './ui/hstack';
-import { Input, InputField } from './ui/input';
-import { Button, ButtonText } from './ui/button';
-import { Badge, BadgeText } from './ui/badge';
-import {
-  FilterIcon,
-  XIcon,
-  SearchIcon,
-  StarIcon,
-  TagIcon,
-  PackageIcon,
-  ChevronDownIcon,
-  SlidersHorizontal,
-  CheckCircle,
-} from 'lucide-react-native';
-import { Switch } from './ui/switch';
+import { ScrollView, View } from 'react-native';
+import { PackageIcon } from 'lucide-react-native';
 import { useCategories } from '@/hooks/useCategories';
 import { useSubCategories } from '@/hooks/useSubCategories';
 import { getCategoriesForFilter, getSubCategoriesForFilter } from '@/utils/categoryUtils';
 import { useTheme } from '@/hooks/useTheme';
-import { getColorForSelectedItem } from '@/utils/selectedColors';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+// Import filter components
+import FilterButton from './filters/FilterButton';
+import FilterModal from './filters/FilterModal';
+import CategoriesFilter from './filters/CategoriesFilter';
+import BrandsFilter from './filters/BrandsFilter';
+import PriceRangeFilter from './filters/PriceRangeFilter';
+import RatingFilter from './filters/RatingFilter';
+import AvailabilityFilter from './filters/AvailabilityFilter';
+import SortFilter from './filters/SortFilter';
 
 export interface FilterOptions {
   searchQuery: string;
@@ -194,446 +177,63 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
 
   return (
     <>
-      {/* Filter Button */}
-      <Pressable
+      <FilterButton 
         onPress={openModal}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          backgroundColor: colors.surface,
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-          borderRadius: 12,
-          borderWidth: 1,
-          borderColor: colors.border,
-          shadowColor: colors.shadow,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 4,
-          elevation: 2,
-        }}
+        activeFilterCount={activeFilterCount}
+      />
+
+      <FilterModal
+        isVisible={isVisible}
+        onClose={closeModal}
+        onApply={handleApplyFilters}
+        onReset={handleResetFilters}
+        scrollViewRef={scrollViewRef}
+        productCount={productCount}
       >
-        <SlidersHorizontal color={colors.textSecondary} size={20} style={{ marginRight: 8 }} />
-        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, flex: 1 }}>
-          Filter & Sort
-        </Text>
-        {activeFilterCount > 0 && (
-          <Badge
-            style={{
-              backgroundColor: colors.primary,
-              borderRadius: 12,
-              paddingHorizontal: 8,
-              paddingVertical: 4,
-              marginLeft: 8,
-            }}
-          >
-            <BadgeText style={{ color: colors.textInverse, fontSize: 12, fontWeight: '700' }}>
-              {activeFilterCount}
-            </BadgeText>
-          </Badge>
-        )}
-        <ChevronDownIcon color={colors.textSecondary} size={16} style={{ marginLeft: 8 }} />
-      </Pressable>
+        <CategoriesFilter
+          categories={realCategoryOptions}
+          selectedCategories={localFilters.categories || []}
+          onToggleCategory={toggleCategory}
+          isLoading={categoriesLoading}
+          isDark={isDark}
+        />
 
-      {/* Filter Modal */}
-      <Modal
-        visible={isVisible}
-        animationType="slide"
-        onRequestClose={closeModal}
-        presentationStyle="pageSheet"
-      >
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          {/* Handle Bar */}
-          <View
-            style={{
-              width: 40,
-              height: 4,
-              backgroundColor: colors.border,
-              borderRadius: 2,
-              alignSelf: 'center',
-              marginTop: 12,
-              marginBottom: 16,
-            }}
-          />
+        <BrandsFilter
+          brands={brandOptions}
+          selectedBrands={localFilters.brands || []}
+          onToggleBrand={toggleBrand}
+          isDark={isDark}
+        />
 
-          {/* Header */}
-          <HStack style={{ justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, marginBottom: 20 }}>
-            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text }}>
-              Filter Products
-            </Text>
-            <Pressable onPress={closeModal} style={{ padding: 4 }}>
-              <XIcon color={colors.textSecondary} size={24} />
-            </Pressable>
-          </HStack>
+        <PriceRangeFilter
+          minPrice={localFilters.minPrice}
+          maxPrice={localFilters.maxPrice}
+          onMinPriceChange={(text) => setLocalFilters(prev => ({ ...prev, minPrice: text }))}
+          onMaxPriceChange={(text) => setLocalFilters(prev => ({ ...prev, maxPrice: text }))}
+          scrollViewRef={scrollViewRef}
+        />
 
-          <View style={{ flex: 1 }}>
-            <ScrollView 
-              ref={scrollViewRef}
-              style={{ flex: 1 }} 
-              contentContainerStyle={{ 
-                paddingBottom: 20,
-                flexGrow: 1 
-              }}
-              showsVerticalScrollIndicator={true}
-              indicatorStyle="black"
-              scrollIndicatorInsets={{ right: 3 }}
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
-              bounces={true}
-              alwaysBounceVertical={true}
-              keyboardShouldPersistTaps="handled"
-              nestedScrollEnabled={true}
-              persistentScrollbar={true}
-              fadingEdgeLength={0}
-            >
-            {/* Categories Filter */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Categories
-              </Text>
-              {categoriesLoading ? (
-                <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ color: colors.textSecondary, fontSize: 14 }}>Loading categories...</Text>
-                </View>
-              ) : realCategoryOptions.length === 0 ? (
-                <View style={{ height: 40, justifyContent: 'center', alignItems: 'center' }}>
-                  <Text style={{ color: colors.textSecondary, fontSize: 14 }}>No categories available</Text>
-                </View>
-              ) : (
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                  {realCategoryOptions.map((option) => {
-                    const isSelected = localFilters.categories && localFilters.categories.includes(option.value);
-                    const IconComponent = option.icon;
-                    const categoryColors = getColorForSelectedItem(option.value, localFilters.categories || [], isDark);
-                    
-                    return (
-                      <Pressable
-                        key={option.value}
-                        onPress={() => toggleCategory(option.value)}
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          paddingHorizontal: 12,
-                          paddingVertical: 8,
-                          borderRadius: 20,
-                          borderWidth: 1,
-                          borderColor: isSelected && categoryColors ? categoryColors.primary : colors.border,
-                          backgroundColor: isSelected && categoryColors ? categoryColors.secondary : colors.surface,
-                        }}
-                      >
-                        <IconComponent
-                          color={isSelected && categoryColors ? categoryColors.primary : colors.textSecondary}
-                          size={16}
-                          style={{ marginRight: 6 }}
-                        />
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            fontWeight: isSelected ? '600' : '500',
-                            color: isSelected && categoryColors ? categoryColors.primary : colors.textSecondary,
-                          }}
-                        >
-                          {option.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
-              )}
-            </View>
+        <RatingFilter
+          minRating={localFilters.minRating}
+          onRatingChange={(rating) => setLocalFilters(prev => ({ 
+            ...prev, 
+            minRating: rating 
+          }))}
+        />
 
-            {/* Brands Filter */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Brands
-              </Text>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {brandOptions.map((option) => {
-                  const isSelected = localFilters.brands && localFilters.brands.includes(option.value);
-                  const IconComponent = option.icon;
-                  const brandColors = getColorForSelectedItem(option.value, localFilters.brands || [], isDark);
-                  
-                  return (
-                    <Pressable
-                      key={option.value}
-                      onPress={() => toggleBrand(option.value)}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        borderRadius: 20,
-                        borderWidth: 1,
-                        borderColor: isSelected && brandColors ? brandColors.primary : colors.border,
-                        backgroundColor: isSelected && brandColors ? brandColors.secondary : colors.surface,
-                      }}
-                    >
-                      <IconComponent
-                        color={isSelected && brandColors ? brandColors.primary : colors.textSecondary}
-                        size={16}
-                        style={{ marginRight: 6 }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: isSelected ? '600' : '500',
-                          color: isSelected && brandColors ? brandColors.primary : colors.textSecondary,
-                        }}
-                      >
-                        {option.label}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
+        <AvailabilityFilter
+          inStock={localFilters.inStock}
+          onSale={localFilters.onSale}
+          onStockChange={(value) => setLocalFilters(prev => ({ ...prev, inStock: value }))}
+          onSaleChange={(value) => setLocalFilters(prev => ({ ...prev, onSale: value }))}
+        />
 
-            {/* Price Range */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Price Range
-              </Text>
-              <HStack style={{ gap: 12 }}>
-                <View style={{ flex: 1 }}>
-                  <Input>
-                    <InputField
-                      placeholder="Min price"
-                      value={localFilters.minPrice}
-                      onChangeText={(text) => setLocalFilters(prev => ({ ...prev, minPrice: text }))}
-                      keyboardType="numeric"
-                    />
-                  </Input>
-                </View>
-                <Text style={{ alignSelf: 'center', color: colors.textSecondary }}>-</Text>
-                <View style={{ flex: 1 }}>
-                  <Input>
-                    <InputField
-                      placeholder="Max price"
-                      value={localFilters.maxPrice}
-                      onChangeText={(text) => setLocalFilters(prev => ({ ...prev, maxPrice: text }))}
-                      keyboardType="numeric"
-                    />
-                  </Input>
-                </View>
-              </HStack>
-            </View>
-
-            {/* Rating Filter */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Minimum Rating
-              </Text>
-              <HStack style={{ gap: 12, flexWrap: 'wrap' }}>
-                {[1, 2, 3, 4, 5].map((rating) => {
-                  const isSelected = localFilters.minRating >= rating;
-                  
-                  return (
-                    <Pressable
-                      key={rating}
-                      onPress={() => setLocalFilters(prev => ({ 
-                        ...prev, 
-                        minRating: prev.minRating === rating ? 0 : rating 
-                      }))}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        borderRadius: 12,
-                        backgroundColor: isSelected ? colors.warning + '20' : colors.backgroundSecondary,
-                        borderWidth: 1,
-                        borderColor: isSelected ? colors.warning : colors.border,
-                      }}
-                    >
-                      {Array.from({ length: rating }, (_, i) => (
-                        <StarIcon
-                          key={i}
-                          color={isSelected ? colors.warning : colors.textTertiary}
-                          size={16}
-                          style={{ marginRight: 2 }}
-                        />
-                      ))}
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: isSelected ? '600' : '500',
-                          color: isSelected ? colors.warning : colors.textSecondary,
-                          marginLeft: 4,
-                        }}
-                      >
-                        {rating}+
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </HStack>
-            </View>
-
-            {/* Availability & Offers */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Availability & Offers
-              </Text>
-              
-              {/* Stock Status */}
-              <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.textSecondary, marginBottom: 8 }}>
-                  Stock Status
-                </Text>
-                <HStack style={{ gap: 8 }}>
-                  {[
-                    { value: null, label: 'All' },
-                    { value: true, label: 'In Stock' },
-                    { value: false, label: 'Out of Stock' }
-                  ].map((option) => {
-                    const isSelected = localFilters.inStock === option.value;
-                    
-                    return (
-                      <Pressable
-                        key={String(option.value)}
-                        onPress={() => setLocalFilters(prev => ({ ...prev, inStock: option.value }))}
-                        style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 8,
-                          borderRadius: 12,
-                          backgroundColor: isSelected ? colors.primary + '20' : colors.backgroundSecondary,
-                          borderWidth: 1,
-                          borderColor: isSelected ? colors.primary : colors.border,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            fontWeight: isSelected ? '600' : '500',
-                            color: isSelected ? colors.primary : colors.text,
-                          }}
-                        >
-                          {option.label}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </HStack>
-              </View>
-
-              {/* On Sale */}
-              <HStack style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
-                  On Sale Only
-                </Text>
-                <Switch
-                  value={localFilters.onSale}
-                  onValueChange={(value) => setLocalFilters(prev => ({ ...prev, onSale: value }))}
-                />
-              </HStack>
-            </View>
-
-            {/* Sort Options */}
-            <View style={{ paddingHorizontal: 20, marginBottom: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text, marginBottom: 12 }}>
-                Sort By
-              </Text>
-              <VStack style={{ gap: 8 }}>
-                {sortOptions.map((option) => {
-                  const isSelected = localFilters.sortBy === option.value;
-                  
-                  return (
-                    <Pressable
-                      key={option.value}
-                      onPress={() => setLocalFilters(prev => ({ ...prev, sortBy: option.value as any }))}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        paddingHorizontal: 16,
-                        paddingVertical: 12,
-                        borderRadius: 12,
-                        backgroundColor: isSelected ? colors.success + '20' : colors.backgroundSecondary,
-                        borderWidth: 1,
-                        borderColor: isSelected ? colors.success : colors.border,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: isSelected ? '600' : '500',
-                          color: isSelected ? colors.success : colors.text,
-                          flex: 1,
-                        }}
-                      >
-                        {option.label}
-                      </Text>
-                      {isSelected && (
-                        <View
-                          style={{
-                            width: 20,
-                            height: 20,
-                            borderRadius: 10,
-                            backgroundColor: colors.success,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <CheckCircle color={colors.textInverse} size={12} />
-                        </View>
-                      )}
-                    </Pressable>
-                  );
-                })}
-              </VStack>
-            </View>
-
-            {/* Results Preview */}
-            <View
-              style={{
-                marginHorizontal: 20,
-                marginBottom: 24,
-                padding: 16,
-                backgroundColor: colors.backgroundSecondary,
-                borderRadius: 12,
-              }}
-            >
-              <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center' }}>
-                {productCount} product{productCount !== 1 ? 's' : ''} found
-              </Text>
-            </View>
-          </ScrollView>
-          </View>
-
-          {/* Action Buttons */}
-          <View
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 16,
-              borderTopWidth: 1,
-              borderTopColor: colors.border,
-              backgroundColor: colors.surface,
-            }}
-          >
-            <HStack style={{ gap: 12 }}>
-              <Button
-                onPress={handleResetFilters}
-                style={{
-                  flex: 1,
-                  backgroundColor: colors.backgroundSecondary,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                }}
-              >
-                <ButtonText style={{ color: colors.text }}>Reset</ButtonText>
-              </Button>
-              <Button
-                onPress={handleApplyFilters}
-                style={{
-                  flex: 2,
-                  backgroundColor: colors.primary,
-                }}
-              >
-                <ButtonText style={{ color: colors.textInverse }}>Apply Filters</ButtonText>
-              </Button>
-            </HStack>
-          </View>
-        </View>
-      </Modal>
+        <SortFilter
+          sortBy={localFilters.sortBy}
+          onSortChange={(value) => setLocalFilters(prev => ({ ...prev, sortBy: value as any }))}
+          sortOptions={sortOptions}
+        />
+      </FilterModal>
     </>
   );
 }
