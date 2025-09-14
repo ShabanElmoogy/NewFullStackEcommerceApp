@@ -61,7 +61,7 @@ export default function FilterModal({
           <ScrollView 
             ref={scrollViewRef}
             className="flex-1"
-            contentContainerStyle={{ paddingBottom: 30 }}
+            contentContainerStyle={{ paddingBottom: 120 }}
             showsVerticalScrollIndicator={true}
             indicatorStyle="black"
             scrollIndicatorInsets={{ right: 3 }}

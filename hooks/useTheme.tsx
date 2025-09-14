@@ -29,7 +29,6 @@ interface ThemeProviderProps {
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const systemColorScheme = useColorScheme();
   const [themePreference, setThemePreference] = useState<ColorScheme | 'system'>('system');
-  const [isLoading, setIsLoading] = useState(true);
 
   // Determine the actual color scheme based on preference
   const colorScheme: ColorScheme = 
@@ -51,8 +50,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         }
       } catch (error) {
         console.warn('Failed to load theme preference:', error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -88,11 +85,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     themePreference,
   };
 
-  // Don't render children until theme is loaded
-  if (isLoading) {
-    return null;
-  }
-
+  
   return (
     <ThemeContext.Provider value={value}>
       {children}

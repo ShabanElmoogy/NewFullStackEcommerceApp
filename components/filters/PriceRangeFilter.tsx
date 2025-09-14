@@ -25,7 +25,7 @@ export default function PriceRangeFilter({
   const handleScroll = () => {
     setTimeout(() => {
       scrollViewRef.current?.scrollTo({
-        y: 1000,
+        y: 10,
         animated: true,
       });
     }, 300);
@@ -44,7 +44,6 @@ export default function PriceRangeFilter({
               value={minPrice}
               onChangeText={onMinPriceChange}
               keyboardType="numeric"
-              onFocus={handleScroll}
             />
           </Input>
         </View>
@@ -52,11 +51,10 @@ export default function PriceRangeFilter({
         <View className="flex-1">
           <Input>
             <InputField
-              placeholder="Max price"
+              placeholder="Max prices"
               value={maxPrice}
               onChangeText={onMaxPriceChange}
               keyboardType="numeric"
-              onFocus={handleScroll}
             />
           </Input>
         </View>

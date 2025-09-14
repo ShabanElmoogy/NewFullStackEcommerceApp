@@ -1,3 +1,13 @@
+/**
+ * HeroCarousel
+ * - Displays a promotional carousel with three slides.
+ * - Uses Reanimated for entrance transitions and a decorative sparkle loop.
+ * - The first slide and wrapper apply entering animations (FadeInUp/FadeIn).
+ *   If you need to stop initial entrance animations on first app load,
+ *   gate the `entering` props with a flag (e.g., `disableInitialAnimation`).
+ * - Auto-advances every 4s via setInterval; cleans up on unmount.
+ * 
+ */
 import React, { useState, useEffect } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
@@ -22,6 +32,7 @@ interface HeroCarouselProps {
   onNavigate: (route: string) => void;
 }
 
+// Slides content shown by the carousel. Extend/modify to add or remove slides.
 const slides = [
   {
     id: '1',
@@ -58,6 +69,9 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
   const [activeSlide, setActiveSlide] = useState(0);
   const sparkleScale = useSharedValue(1);
 
+  // Decorative sparkle icon animation (does not affect layout positioning).
+  // Loops between 1 and 1.3 scale. If you want to pause this on first open,
+  // guard this effect with a flag (e.g., `if (disableInitialAnimation) return;`).
   useEffect(() => {
     sparkleScale.value = withRepeat(
       withSequence(
@@ -73,7 +87,9 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
     transform: [{ scale: sparkleScale.value }],
   }));
 
-  // Auto slide
+  // Auto slide: automatically advance slides every 4 seconds.
+  // To pause on user interaction or visibility (e.g., screen out of focus),
+  // add guards based on focus/visibility state.
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % slides.length);
@@ -81,19 +97,22 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
     return () => clearInterval(interval);
   }, []);
 
+  // Jump to a specific slide (used by pagination dots).
   const goToSlide = (index: number) => {
     setActiveSlide(index);
+    
   };
-
+  
   const currentSlide = slides[activeSlide];
 
+  // Rendering: wrapper and slide use `entering` transitions.
   return (
     <AnimatedBox entering={FadeInUp.delay(300)} className="mt-6">
       {/* Single Slide Display */}
       <Box className="mx-4" style={{ height: 220 }}>
         <AnimatedBox
           key={`slide-${activeSlide}`}
-          entering={FadeIn.duration(500)}
+          entering={FadeIn.duration(500)} 
           exiting={FadeOut.duration(300)}
         >
           <Pressable
@@ -151,7 +170,7 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
         </AnimatedBox>
       </Box>
 
-      {/* Pagination Dots */}
+      {/* Pagination Dots: tap to jump to a slide. Active slide renders wider indicator. */}
       <HStack space="sm" className="justify-center mt-3 py-2">
         {slides.map((_, i) => (
           <Pressable

@@ -24,13 +24,14 @@ interface HomePageProps {
 
 export default function HomePage({ onNavigate }: HomePageProps) {
   // Optimized store subscriptions to prevent unnecessary re-renders
-  const cartCount = useCart((state) => state.totalQuantity(), (a, b) => a === b);
-  const wishlistCount = useWishlist((state) => state.totalItems(), (a, b) => a === b);
+  const cartCount = useCart((state) => state.totalQuantity());
+  const wishlistCount = useWishlist((state) => state.totalItems());
   // const compareCount = useCompareStore((state) => state.getCompareCount());
   const { colors, isDark } = useTheme();
 
   // State for dynamic content
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [firstOpen, setFirstOpen] = useState(true);
 
   // Animation values
   const scrollY = useSharedValue(0);
@@ -41,7 +42,13 @@ export default function HomePage({ onNavigate }: HomePageProps) {
       setCurrentTime(new Date());
     }, 60000);
 
-    return () => clearInterval(timer);
+    // Mark first open complete after first paint cycle
+    const id = setTimeout(() => setFirstOpen(false), 0);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(id);
+    };
   }, []);
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -76,7 +83,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
     console.log('Add to wishlist:', product);
   }, []);
 
-  const handleProductPress = useCallback((productId: string) => {
+  const handleProductPress = useCallback((productId: number) => {
     handleNavigation(`/product/${productId}`);
   }, [handleNavigation]);
 
@@ -118,7 +125,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         <AppStatistics />
         <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
 
-        <Newsletter />
+        <Newsletter disableInitialAnimation={firstOpen} />
       </Animated.ScrollView>
     </View>
   );
