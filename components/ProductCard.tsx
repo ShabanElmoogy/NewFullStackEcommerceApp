@@ -98,6 +98,8 @@ export default function ProductCard({
           <CustomToast id={id} message={`${name} added to cart!`} icon={Check} />
         ),
       });
+      // Restore original button text after a short success flash
+      setTimeout(() => setShowSuccess(false), 1500);
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast.show({
