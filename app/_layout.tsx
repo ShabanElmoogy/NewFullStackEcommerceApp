@@ -41,7 +41,7 @@ function AppContent() {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: colors.background }}
-      edges={['top', 'bottom']}
+      edges={['top']}
     >
       <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={colors.background} />
       <GluestackUIProvider mode={isDark ? 'dark' : 'light'}>

@@ -16,7 +16,7 @@ import { useToast } from "./ui/toast";
 import { CustomToast } from "./CustomToast";
 import { useLanguageStore } from "@/store/languageStore";
 import { useTheme } from "@/hooks/useTheme";
-import { ShoppingCart, Star, Eye, TrendingUp, Zap } from "lucide-react-native";
+import { ShoppingCart, Star, Eye, TrendingUp, Zap, Check, Loader } from "lucide-react-native";
 
 // Expo Router safe import
 let Link: any = null;
@@ -70,24 +70,44 @@ export default function ProductCard({
   const { isRTL } = useLanguageStore();
   const { colors } = useTheme();
   const [ratio] = useState(1);
+  
+  // Enhanced UX states
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const discountedPrice = discount ? price * (1 - discount / 100) : price;
   const isLowStock = stock < 5;
   const isOutOfStock = stock === 0;
 
-  const handleAddToCart = (e: any) => {
+  // Add to Cart handler with loading + toast
+  const handleAddToCart = async (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isOutOfStock) return;
+    if (isOutOfStock || isAddingToCart) return;
 
-    addToCart(product);
-    toast.show({
-      placement: "bottom",
-      duration: 2000,
-      render: ({ id }) => (
-        <CustomToast id={id} message={`${name} added to cart!`} />
-      ),
-    });
+    try {
+      setIsAddingToCart(true);
+      // Simulated async delay for nicer UX (optional)
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      addToCart(product as any);
+      setShowSuccess(true);
+      toast.show({
+        placement: "bottom",
+        duration: 5000,
+        render: ({ id }) => (
+          <CustomToast id={id} message={`${name} added to cart!`} icon={Check} />
+        ),
+      });
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.show({
+        placement: "bottom",
+        duration: 3000,
+        render: ({ id }) => <CustomToast id={id} message="Failed to add item to cart" />,
+      });
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   /** Wrapper for product content */
@@ -126,6 +146,73 @@ export default function ProductCard({
       <Icon as={Eye} size="xs" className="text-typography-700" />
     </Pressable>
   );
+
+  /** Enhanced Add to Cart Button */
+  const AddToCartInlineButton = ({ variant = "default" }: { variant?: "default" | "compact" }) => {
+    const getButtonContent = () => {
+      if (isAddingToCart) {
+        return { icon: Loader, text: "Adding...", iconProps: { className: "animate-spin" } };
+      }
+      if (showSuccess) {
+        return { icon: Check, text: "Added!", iconProps: {} };
+      }
+      if (isOutOfStock) {
+        return { icon: ShoppingCart, text: "Out of Stock", iconProps: {} };
+      }
+      return { icon: ShoppingCart, text: variant === "compact" ? "Add" : "Add to Cart", iconProps: {} };
+    };
+
+    const { icon, text, iconProps } = getButtonContent();
+    const buttonColor = showSuccess ? colors.success : isOutOfStock ? colors.backgroundSecondary : colors.primary;
+    const textColor = showSuccess ? colors.text : isOutOfStock ? colors.textTertiary : colors.text;
+
+    if (variant === "compact") {
+      return (
+        <Pressable
+          onPress={handleAddToCart}
+          disabled={isOutOfStock || isAddingToCart}
+          style={{
+            backgroundColor: buttonColor,
+            borderRadius: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            opacity: isOutOfStock && !showSuccess ? 0.6 : 1,
+            flexDirection: "row",
+            alignItems: "center",
+            transform: [{ scale: showSuccess ? 1.05 : 1 }],
+          }}
+        >
+          <Icon as={icon} size="xs" style={{ color: textColor }} {...iconProps} />
+          <Text style={{ marginLeft: 4, fontSize: 12, fontWeight: "600", color: textColor }}>{text}</Text>
+        </Pressable>
+      );
+    }
+
+    return (
+      <Button
+        size="sm"
+        onPress={handleAddToCart}
+        disabled={isOutOfStock || isAddingToCart}
+        style={{
+          backgroundColor: buttonColor,
+          opacity: isOutOfStock && !showSuccess ? 0.6 : 1,
+          transform: [{ scale: showSuccess ? 1.02 : 1 }],
+        }}
+      >
+        <Icon
+          as={icon}
+          size="xs"
+          className={showSuccess ? "text-white" : isOutOfStock ? "text-typography-400" : "text-white"}
+          {...iconProps}
+        />
+        <ButtonText
+          className={`text-xs font-semibold ${showSuccess ? "text-white" : isOutOfStock ? "text-typography-400" : "text-white"}`}
+        >
+          {text}
+        </ButtonText>
+      </Button>
+    );
+  };
 
   /** ─────────────────────────────
    * LIST VIEW
@@ -275,39 +362,7 @@ export default function ProductCard({
                   )}
                 </VStack>
 
-                <Pressable
-                  onPress={handleAddToCart}
-                  disabled={isOutOfStock}
-                  style={{
-                    backgroundColor: isOutOfStock
-                      ? colors.backgroundSecondary
-                      : colors.primary,
-                    borderRadius: 8,
-                    paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    opacity: isOutOfStock ? 0.6 : 1,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Icon
-                    as={ShoppingCart}
-                    size="xs"
-                    style={{
-                      color: isOutOfStock ? colors.textTertiary : colors.text,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      marginLeft: 4,
-                      fontSize: 12,
-                      fontWeight: "600",
-                      color: isOutOfStock ? colors.textTertiary : colors.text,
-                    }}
-                  >
-                    {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-                  </Text>
-                </Pressable>
+                <AddToCartInlineButton variant="compact" />
               </HStack>
             </View>
           </View>
@@ -446,30 +501,7 @@ export default function ProductCard({
         </ProductContent>
 
         <View className="p-3 pt-0">
-          <Button
-            size="sm"
-            onPress={handleAddToCart}
-            disabled={isOutOfStock}
-            style={{
-              backgroundColor: isOutOfStock
-                ? colors.backgroundSecondary
-                : colors.primary,
-              opacity: isOutOfStock ? 0.6 : 1,
-            }}
-          >
-            <Icon
-              as={ShoppingCart}
-              size="xs"
-              className={isOutOfStock ? "text-typography-400" : "text-white"}
-            />
-            <ButtonText
-              className={`text-xs font-semibold ${
-                isOutOfStock ? "text-typography-400" : "text-white"
-              }`}
-            >
-              {isOutOfStock ? "Out of Stock" : "Add to Cart"}
-            </ButtonText>
-          </Button>
+          <AddToCartInlineButton />
         </View>
       </Card>
     </View>

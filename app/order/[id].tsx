@@ -51,6 +51,7 @@ import {
   AccordionIcon,
 } from '@/components/ui/accordion';
 import { ChevronDown } from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Status color mapping (same as orders screen)
 const getStatusColor = (status: string) => {
@@ -388,7 +389,8 @@ export default function OrderDetailScreen() {
   const total = subtotal + tax + shipping;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: '#F9FAFB' }} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F9FAFB' }} edges={['bottom']}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <View style={{ paddingHorizontal: 16, paddingVertical: 20 }}>
         <HStack style={{ alignItems: 'center', marginBottom: 16 }}>
@@ -678,5 +680,6 @@ export default function OrderDetailScreen() {
         )}
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }

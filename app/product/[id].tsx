@@ -1,8 +1,7 @@
 import { Text } from '@/components/ui/text';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Card } from "@/components/ui/card";
 import { Image } from "@/components/ui/image";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Heading } from '@/components/ui/heading';
@@ -14,7 +13,7 @@ import { Icon } from '@/components/ui/icon';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { Pressable } from 'react-native';
 import { useProduct } from '@/hooks/useProducts';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Animated } from 'react-native';
 import { useCart } from '@/store/cartStore';
 import { useToast } from '@/components/ui/toast';
 import { CustomToast } from "@/components/CustomToast";
@@ -28,21 +27,28 @@ import {
   Shield, 
   RotateCcw,
   Info,
-  ChevronRight
+  ChevronRight,
+  Check
 } from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data, isLoading, error } = useProduct(Number(id));
   const addProduct = useCart((state) => state.addProduct);
   const toast = useToast();
+  const { colors } = useTheme();
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [justAdded, setJustAdded] = useState(false);
+  const btnScale = useRef(new Animated.Value(1)).current;
+  const iconScale = useRef(new Animated.Value(1)).current;
 
   if (isLoading) {
     return (
       <Box className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text className="mt-4 text-typography-600">Loading product...</Text>
       </Box>
     );
@@ -73,10 +79,26 @@ export default function ProductDetailsScreen() {
   }
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addProduct(data);
-    }
+    // Add in one update
+    addProduct(data, quantity);
 
+    // Button bounce
+    Animated.sequence([
+      Animated.timing(btnScale, { toValue: 0.97, duration: 90, useNativeDriver: true }),
+      Animated.spring(btnScale, { toValue: 1, friction: 4, useNativeDriver: true }),
+    ]).start();
+
+    // Icon pop
+    Animated.sequence([
+      Animated.timing(iconScale, { toValue: 1.2, duration: 110, useNativeDriver: true }),
+      Animated.spring(iconScale, { toValue: 1, friction: 4, useNativeDriver: true }),
+    ]).start();
+
+    // Temporary success state
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 900);
+
+    // Toast feedback
     toast.show({
       placement: "bottom",
       duration: 2000,
@@ -99,11 +121,12 @@ export default function ProductDetailsScreen() {
   const images = [data.image, data.image, data.image]; // Mock multiple images
 
   return (
-    <ScrollView className="flex-1 bg-background-0">
-      <Stack.Screen options={{ title: data.name }} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['bottom']}>
+      <ScrollView className="flex-1 bg-background-0" contentContainerStyle={{ paddingBottom: 24 }}>
+        <Stack.Screen options={{ title: data.name }} />
       
       {/* Product Images */}
-      <Box className="bg-white">
+      <Box style={{ backgroundColor: colors.surface }}>
         <Image
           source={{ uri: images[selectedImageIndex] }}
           className="h-80 w-full"
@@ -261,7 +284,7 @@ export default function ProductDetailsScreen() {
       </VStack>
 
       {/* Bottom Action Bar */}
-      <Box className="p-4 bg-white border-t border-background-200">
+      <Box className="p-4" style={{ backgroundColor: colors.surface, borderTopWidth: 1, borderTopColor: colors.border }}>
         <HStack space="sm">
           <Button
             variant="outline"
@@ -280,18 +303,24 @@ export default function ProductDetailsScreen() {
             <ButtonText className="text-primary-500">Add to Wishlist</ButtonText>
           </Button>
           
-          <Button
-            className="flex-2 bg-primary-600"
-            onPress={handleAddToCart}
-            isDisabled={!inStock}
-          >
-            <Icon as={ShoppingCart} size="sm" className="text-white mr-2" />
-            <ButtonText className="text-white font-semibold">
-              Add to Cart • ${(data.price * quantity).toFixed(2)}
-            </ButtonText>
-          </Button>
+          <Animated.View style={{ transform: [{ scale: btnScale }] }}>
+            <Button
+              className="flex-2"
+              onPress={handleAddToCart}
+              isDisabled={!inStock}
+              style={{ backgroundColor: justAdded ? colors.success : colors.primary }}
+            >
+              <Animated.View style={{ transform: [{ scale: iconScale }], marginRight: 8 }}>
+                <Icon as={justAdded ? Check : ShoppingCart} size="sm" className="text-white" />
+              </Animated.View>
+              <ButtonText className="text-white font-semibold">
+                {justAdded ? 'Added!' : `Add to Cart • ${(data.price * quantity).toFixed(2)}`}
+              </ButtonText>
+            </Button>
+          </Animated.View>
         </HStack>
       </Box>
     </ScrollView>
+    </SafeAreaView>
   );
 }

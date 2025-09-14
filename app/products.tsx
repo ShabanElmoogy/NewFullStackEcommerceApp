@@ -6,17 +6,9 @@ import {
   ScrollView,
   RefreshControl,
   StatusBar,
-  Pressable,
 } from "react-native";
 import {
-  SearchIcon,
-  RefreshCwIcon,
-  ShoppingBagIcon,
-  XIcon,
   AlertCircleIcon,
-  SparklesIcon,
-  GridIcon,
-  ListIcon,
 } from "lucide-react-native";
 
 import ProductCard from "../components/ProductCard";
@@ -32,10 +24,11 @@ import { useViewModePersistence } from "@/hooks/useViewModePersistence";
 import { useTheme } from "@/hooks/useTheme";
 import { useNumColumns } from "@/hooks/useNumColumns";
 import { Text } from "../components/ui/text";
-import { HStack } from "../components/ui/hstack";
 import { VStack } from "../components/ui/vstack";
-import { Badge, BadgeText } from "../components/ui/badge";
 import { Button, ButtonText } from "../components/ui/button";
+import ResultsHeader from "../components/products/ResultsHeader";
+import NoResultsState from "../components/products/NoResultsState";
+import EmptyState from "../components/products/EmptyState";
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -229,129 +222,7 @@ export default function ProductsScreen() {
           )}
         </ScrollView>
       )}
-
       <CompareFloatingBar />
     </View>
   );
 }
-
-/* ----------------- Header Row ----------------- */
-const ResultsHeader = ({ isSearching, filteredCount, totalCount, filters, viewMode, updateViewMode, colors }: any) => (
-  <HStack className="justify-between items-center px-4 pt-3">
-    <HStack className="items-center flex-1 gap-2">
-      <Text className="text-sm font-medium" style={{ color: colors.textSecondary }}>
-        {isSearching ? `${filteredCount} results for "${filters?.searchQuery}"` : `${filteredCount} of ${totalCount} products`}
-      </Text>
-      {filteredCount !== totalCount && (
-        <Badge className="border" style={{ backgroundColor: colors.primary + "20", borderColor: colors.primary + "40" }}>
-          <BadgeText className="text-xs font-semibold" style={{ color: colors.primary }}>
-            Filtered
-          </BadgeText>
-        </Badge>
-      )}
-    </HStack>
-
-    <View className="rounded-xl p-1 mt-2 border" style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-      <HStack className="gap-1">
-        {["grid", "list"].map((mode) => {
-          const Icon = mode === "grid" ? GridIcon : ListIcon;
-          const active = viewMode === mode;
-          return (
-            <Pressable
-              key={mode}
-              onPress={() => updateViewMode(mode)}
-              className="px-4 py-2.5 rounded-lg flex-row items-center gap-2"
-              style={{ backgroundColor: active ? colors.primary : "transparent" }}
-            >
-              <Icon size={16} color={active ? "#fff" : colors.textSecondary} />
-              <Text className="text-sm font-medium" style={{ color: active ? "#fff" : colors.textSecondary }}>
-                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </HStack>
-    </View>
-  </HStack>
-);
-
-/* ----------------- No Results ----------------- */
-const NoResultsState = ({ searchQuery, onClearSearch, onResetFilters, colors }: any) => (
-  <VStack className="items-center max-w-sm self-center">
-    <CircleIcon colors={colors} icon={<SearchIcon color={colors.primary} size={40} />} tint={colors.primary + "20"} />
-    <Text className="text-2xl font-bold text-center mb-2" style={{ color: colors.text }}>
-      No results found
-    </Text>
-    <Text className="text-base text-center mb-6" style={{ color: colors.textSecondary }}>
-      {searchQuery.trim() ? `We couldn't find anything matching "${searchQuery}"` : "No products match your filters"}
-    </Text>
-
-    <HStack className="gap-3 mb-6">
-      {searchQuery.trim() && (
-        <Button onPress={onClearSearch} className="flex-1 py-3.5 rounded-xl border" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
-          <HStack className="items-center justify-center gap-2">
-            <XIcon color={colors.textSecondary} size={18} />
-            <ButtonText className="font-semibold" style={{ color: colors.textSecondary }}>
-              Clear search
-            </ButtonText>
-          </HStack>
-        </Button>
-      )}
-      <Button onPress={onResetFilters} className="flex-1 py-3.5 rounded-xl" style={{ backgroundColor: colors.primary }}>
-        <HStack className="items-center justify-center gap-2">
-          <RefreshCwIcon color="#fff" size={18} />
-          <ButtonText className="text-white font-semibold">Reset filters</ButtonText>
-        </HStack>
-      </Button>
-    </HStack>
-
-    <SuggestionBox colors={colors} />
-  </VStack>
-);
-
-/* ----------------- Empty State ----------------- */
-const EmptyState = ({ onRefresh, colors }: any) => (
-  <VStack className="items-center max-w-xs self-center">
-    <CircleIcon colors={colors} icon={<ShoppingBagIcon color={colors.warning} size={40} />} tint={colors.warning + "20"} />
-    <Text className="text-2xl font-bold text-center mb-2" style={{ color: colors.text }}>
-      Coming soon
-    </Text>
-    <Text className="text-base text-center mb-6" style={{ color: colors.textSecondary }}>
-      We're working hard to bring you amazing products. Check back soon!
-    </Text>
-    <Button onPress={onRefresh} className="py-3.5 px-6 rounded-xl" style={{ backgroundColor: colors.primary }}>
-      <HStack className="items-center justify-center gap-2">
-        <RefreshCwIcon color="#fff" size={20} />
-        <ButtonText className="text-white font-semibold">Refresh</ButtonText>
-      </HStack>
-    </Button>
-  </VStack>
-);
-
-/* ----------------- Helpers ----------------- */
-const CircleIcon = ({ colors, icon, tint }: any) => (
-  <View className="w-30 h-30 rounded-full items-center justify-center mb-6 border" style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}>
-    <View className="w-16 h-16 rounded-full items-center justify-center" style={{ backgroundColor: tint }}>
-      {icon}
-    </View>
-  </View>
-);
-
-const SuggestionBox = ({ colors }: any) => (
-  <View className="rounded-2xl p-5 border" style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
-    <HStack className="items-center mb-4 gap-2">
-      <SparklesIcon color={colors.primary} size={20} />
-      <Text className="text-base font-semibold" style={{ color: colors.text }}>
-        Try these suggestions
-      </Text>
-    </HStack>
-    {["Check your spelling", "Use more general keywords", "Try different terms", "Remove some filters"].map((s, i) => (
-      <HStack key={i} className="items-center mb-2 gap-3">
-        <View className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colors.primary }} />
-        <Text className="text-sm flex-1" style={{ color: colors.textSecondary }}>
-          {s}
-        </Text>
-      </HStack>
-    ))}
-  </View>
-);
