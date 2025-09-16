@@ -44,14 +44,22 @@ export const useCart = create<CartStore>()(
 
       addProduct: (product, quantity = 1) => {
         if (quantity <= 0) return;
-        const items = [...get().items];
-        const index = items.findIndex((it) => it.product.id === product.id);
-        if (index > -1) {
-          items[index] = { ...items[index], quantity: items[index].quantity + quantity };
-        } else {
-          items.push({ product, quantity });
-        }
-        set({ items });
+        
+        set((state) => {
+          const existingItem = state.items.find(item => item.product.id === product.id);
+          
+          if (existingItem) {
+            return {
+              items: state.items.map(item => 
+                item.product.id === product.id
+                  ? { ...item, quantity: item.quantity + quantity }
+                  : item
+              )
+            };
+          }
+          
+          return { items: [...state.items, { product, quantity }] };
+        });
       },
 
       setQuantity: (productId, quantity) => {
@@ -101,22 +109,6 @@ export const useCart = create<CartStore>()(
       name: STORAGE_KEY,
       version: STORE_VERSION,
       storage: createJSONStorage(() => AsyncStorage),
-      // Persist only the items array
-      partialize: (state) => ({ items: state.items }),
-      // Ensure older shapes migrate to the current one safely
-      migrate: (persistedState, version) => {
-        const state = persistedState as any;
-        let items: any[] = Array.isArray(state?.items) ? state.items : [];
-        items = items
-          .map((it) => {
-            const product = it?.product ?? it;
-            const quantity = typeof it?.quantity === 'number' && it.quantity > 0 ? it.quantity : 1;
-            if (!product || typeof product.id !== 'number') return null;
-            return { product, quantity } as CartItem;
-          })
-          .filter(Boolean);
-        return { items } as Pick<CartStore, 'items'>;
-      },
     }
   )
 );

@@ -1,10 +1,10 @@
 import React from "react";
 import { SearchIcon, XIcon, RefreshCwIcon } from "lucide-react-native";
-import { VStack } from "../ui/vstack";
-import { HStack } from "../ui/hstack";
-import { Text } from "../ui/text";
-import { Button, ButtonText } from "../ui/button";
-import CircleIcon from "./CircleIcon";
+import { VStack } from "../../ui/vstack";
+import { HStack } from "../../ui/hstack";
+import { Text } from "../../ui/text";
+import { Button, ButtonText } from "../../ui/button";
+import CircleIcon from "../productCard/CircleIcon";
 import SuggestionBox from "./SuggestionBox";
 
 export interface NoResultsStateProps {

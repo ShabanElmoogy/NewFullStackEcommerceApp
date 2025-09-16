@@ -7,14 +7,14 @@ import { getCategoriesForFilter, getSubCategoriesForFilter } from '@/utils/categ
 import { useTheme } from '@/hooks/useTheme';
 
 // Import filter components
-import FilterButton from './filters/FilterButton';
-import FilterModal from './filters/FilterModal';
-import CategoriesFilter from './filters/CategoriesFilter';
-import BrandsFilter from './filters/BrandsFilter';
-import PriceRangeFilter from './filters/PriceRangeFilter';
-import RatingFilter from './filters/RatingFilter';
-import AvailabilityFilter from './filters/AvailabilityFilter';
-import SortFilter from './filters/SortFilter';
+import FilterButton from '../../filters/FilterButton';
+import FilterModal from '../../filters/FilterModal';
+import CategoriesFilter from '../../filters/CategoriesFilter';
+import BrandsFilter from '../../filters/BrandsFilter';
+import PriceRangeFilter from '../../filters/PriceRangeFilter';
+import RatingFilter from '../../filters/RatingFilter';
+import AvailabilityFilter from '../../filters/AvailabilityFilter';
+import SortFilter from '../../filters/SortFilter';
 
 export interface FilterOptions {
   searchQuery: string;

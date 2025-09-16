@@ -13,6 +13,9 @@ import { ThemeProvider, useTheme } from '@/hooks/useTheme';
 import * as NavigationBar from 'expo-navigation-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '@/constants/Colors';
+import ToastManager, { Toast } from 'toastify-react-native'
+import { toastConfig } from './toastConfig'
+
 
 const queryClient = new QueryClient();
 
@@ -59,6 +62,7 @@ function AppContent() {
             <Stack.Screen name="rtl-test" options={{ headerShown: false }} />
           </Stack>
         </GestureHandlerRootView>
+        <ToastManager config={toastConfig} />
       </GluestackUIProvider>
     </SafeAreaView>
   );

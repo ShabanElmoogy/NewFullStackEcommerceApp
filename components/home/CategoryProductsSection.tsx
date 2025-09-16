@@ -28,7 +28,7 @@ import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTheme } from '@/hooks/useTheme';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from '@/components/products/productCard/ProductCard';
 
 const { width: screenWidth } = Dimensions.get('window');
 

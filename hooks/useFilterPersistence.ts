@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FilterOptions } from '@/components/ProductFilter';
+import { FilterOptions } from '@/components/products/productsFilter/ProductFilter';
 
 const FILTER_STORAGE_KEY = 'product_filters';
 

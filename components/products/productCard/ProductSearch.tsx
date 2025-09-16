@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Text } from './ui/text';
-import SimpleSearchInput from './ui/SimpleSearchInput';
+import { Text } from '../../ui/text';
+import SimpleSearchInput from '../../ui/SimpleSearchInput';
 
 interface ProductSearchProps {
   onSearchChange: (query: string) => void;

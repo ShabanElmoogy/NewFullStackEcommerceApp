@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Pressable } from "react-native";
 import { GridIcon, ListIcon } from "lucide-react-native";
-import { HStack } from "../ui/hstack";
-import { Text } from "../ui/text";
-import { Badge, BadgeText } from "../ui/badge";
-import type { FilterOptions } from "../ProductFilter";
+import { HStack } from "../../ui/hstack";
+import { Text } from "../../ui/text";
+import { Badge, BadgeText } from "../../ui/badge";
+import type { FilterOptions } from "./ProductFilter";
 
 export interface ResultsHeaderProps {
   isSearching: boolean;

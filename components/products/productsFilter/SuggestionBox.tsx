@@ -1,8 +1,8 @@
 import React from "react";
 import { View } from "react-native";
 import { SparklesIcon } from "lucide-react-native";
-import { HStack } from "../ui/hstack";
-import { Text } from "../ui/text";
+import { HStack } from "../../ui/hstack";
+import { Text } from "../../ui/text";
 
 interface SuggestionBoxProps {
   colors: any;

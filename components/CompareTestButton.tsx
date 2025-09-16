@@ -3,13 +3,11 @@ import { View } from 'react-native';
 import { Button, ButtonText } from '@/components/ui/button';
 import { VStack } from '@/components/ui/vstack';
 import { useCompareStore } from '@/store/compareStore';
-import { useToast } from '@/components/ui/toast';
-import { CustomToast } from './CustomToast';
+
 
 // Test component to add sample products for comparison testing
 export default function CompareTestButton() {
   const { addToCompare, clearCompare, getCompareCount } = useCompareStore();
-  const toast = useToast();
 
   const sampleProducts = [
     {
@@ -85,31 +83,33 @@ export default function CompareTestButton() {
     sampleProducts.forEach(product => {
       addToCompare(product);
     });
-    
-    toast.show({
-      placement: "bottom",
-      duration: 3000,
-      render: ({ id }) => (
-        <CustomToast 
-          id={id} 
-          message={`Added ${sampleProducts.length} sample products for comparison testing!`}
-        />
-      ),
-    });
+
+      //TODO: Add Toast
+    // toast.show({
+    //   placement: "bottom",
+    //   duration: 3000,
+    //   render: ({ id }) => (
+    //     <CustomToast 
+    //       id={id} 
+    //       message={`Added ${sampleProducts.length} sample products for comparison testing!`}
+    //     />
+    //   ),
+    // });
   };
 
   const clearAllProducts = () => {
     clearCompare();
-    toast.show({
-      placement: "bottom",
-      duration: 2000,
-      render: ({ id }) => (
-        <CustomToast 
-          id={id} 
-          message="Cleared all products from comparison"
-        />
-      ),
-    });
+      //TODO: Add Toast
+    // toast.show({
+    //   placement: "bottom",
+    //   duration: 2000,
+    //   render: ({ id }) => (
+    //     <CustomToast 
+    //       id={id} 
+    //       message="Cleared all products from comparison"
+    //     />
+    //   ),
+    // });
   };
 
   const compareCount = getCompareCount();

@@ -15,9 +15,6 @@ import { Image } from '@/components/ui/image';
 import { Icon } from '@/components/ui/icon';
 import { Divider } from '@/components/ui/divider';
 import { Badge, BadgeText } from '@/components/ui/badge';
-import { CustomToast } from '@/components/CustomToast';
-import { ConfirmationToast } from '@/components/ConfirmationToast';
-import { useToast } from '@/components/ui/toast';
 import { useAuth } from '@/store/authStore';
 
 export default function WishlistScreen() {
@@ -25,7 +22,6 @@ export default function WishlistScreen() {
   const removeProduct = useWishlist((state) => state.removeProduct);
   const clearWishlist = useWishlist((state) => state.clearWishlist);
   const addToCart = useCart((state) => state.addProduct);
-  const toast = useToast();
   const router = useRouter();
 
   const isAuthenticated = useAuth(s => s.isAuthenticated);
@@ -47,47 +43,50 @@ export default function WishlistScreen() {
   const handleAddToCart = (product: any) => {
     console.log('Adding to cart from wishlist:', product.name);
     addToCart(product);
-    toast.show({
-      placement: "bottom",
-      duration: 3000,
-      render: ({ id }) => (
-        <CustomToast id={id} message={`"${product.name}" added to cart! 🛒`} />
-      ),
-    });
+    //TODO: Add Toast
+    // toast.show({
+    //   placement: "bottom",
+    //   duration: 3000,
+    //   render: ({ id }) => (
+    //     <CustomToast id={id} message={`"${product.name}" added to cart! 🛒`} />
+    //   ),
+    // });
   };
 
   const handleClearWishlist = () => {
     console.log('Clear wishlist clicked');
-    toast.show({
-      placement: "top",
-      duration: 8000,
-      render: ({ id }) => (
-        <ConfirmationToast
-          id={id}
-          title="Clear Wishlist"
-          message={`Remove all ${totalItems} items from your wishlist?`}
-          onConfirm={() => {
-            console.log('Clearing wishlist');
-            clearWishlist();
-            toast.close(id);
-            toast.show({
-              placement: "bottom",
-              duration: 3000,
-              render: ({ id: successId }) => (
-                <CustomToast id={successId} message="Wishlist cleared" />
-              ),
-            });
-          }}
-          onCancel={() => {
-            console.log('Clear cancelled');
-            toast.close(id);
-          }}
-          confirmText="Clear All"
-          cancelText="Cancel"
-          type="warning"
-        />
-      ),
-    });
+      //TODO: Add Toast
+
+    // toast.show({
+    //   placement: "top",
+    //   duration: 8000,
+    //   render: ({ id }) => (
+    //     <ConfirmationToast
+    //       id={id}
+    //       title="Clear Wishlist"
+    //       message={`Remove all ${totalItems} items from your wishlist?`}
+    //       onConfirm={() => {
+    //         console.log('Clearing wishlist');
+    //         clearWishlist();
+    //         toast.close(id);
+    //         toast.show({
+    //           placement: "bottom",
+    //           duration: 3000,
+    //           render: ({ id: successId }) => (
+    //             <CustomToast id={successId} message="Wishlist cleared" />
+    //           ),
+    //         });
+    //       }}
+    //       onCancel={() => {
+    //         console.log('Clear cancelled');
+    //         toast.close(id);
+    //       }}
+    //       confirmText="Clear All"
+    //       cancelText="Cancel"
+    //       type="warning"
+    //     />
+    //   ),
+    // });
   };
 
   // Empty wishlist state
@@ -256,13 +255,14 @@ export default function WishlistScreen() {
                 onPress={() => {
                   // Add all items to cart
                   items.forEach(item => addToCart(item.product));
-                  toast.show({
-                    placement: "bottom",
-                    duration: 4000,
-                    render: ({ id }) => (
-                      <CustomToast id={id} message={`Added ${totalItems} items to cart! 🛒`} />
-                    ),
-                  });
+                  // toast.show({
+                  //   placement: "bottom",
+                  //   duration: 4000,
+                  //   render: ({ id }) => (
+                  //     <CustomToast id={id} message={`Added ${totalItems} items to cart! 🛒`} />
+                  //   ),
+                  // });
+                  //TODO: Add Toast
                 }}
                 className="bg-primary-600"
               >

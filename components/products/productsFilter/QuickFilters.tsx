@@ -1,10 +1,10 @@
 import React from 'react';
 import { ScrollView, Pressable } from 'react-native';
-import { HStack } from './ui/hstack';
-import { Text } from './ui/text';
-import { Icon } from './ui/icon';
+import { HStack } from '../ui/hstack';
+import { Text } from '../ui/text';
+import { Icon } from '../ui/icon';
 import { StarIcon, TagIcon, TrendingUpIcon, PercentIcon } from 'lucide-react-native';
-import { FilterOptions } from './ProductFilter';
+import { FilterOptions } from './productsFilter/ProductFilter';
 
 interface QuickFiltersProps {
   onQuickFilter: (filterUpdate: Partial<FilterOptions>) => void;

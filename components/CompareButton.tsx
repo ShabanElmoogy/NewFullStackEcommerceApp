@@ -3,8 +3,6 @@ import { Pressable, View } from 'react-native';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { useCompareStore, Product } from '@/store/compareStore';
-import { useToast } from '@/components/ui/toast';
-import { CustomToast } from './CustomToast';
 import { Scale, Check } from 'lucide-react-native';
 import Animated, { 
   useSharedValue, 
@@ -36,7 +34,6 @@ export default function CompareButton({
     getCompareCount 
   } = useCompareStore();
   
-  const toast = useToast();
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
 
@@ -58,42 +55,45 @@ export default function CompareButton({
 
     if (isComparing) {
       removeFromCompare(product.id);
-      toast.show({
-        placement: "bottom",
-        duration: 2000,
-        render: ({ id }) => (
-          <CustomToast 
-            id={id} 
-            message={`${product.name} removed from comparison`}
-          />
-        ),
-      });
+      //TODO: Add Toast
+      // toast.show({
+      //   placement: "bottom",
+      //   duration: 2000,
+      //   render: ({ id }) => (
+      //     <CustomToast 
+      //       id={id} 
+      //       message={`${product.name} removed from comparison`}
+      //     />
+      //   ),
+      // });
     } else {
       if (!canAdd) {
-        toast.show({
-          placement: "bottom",
-          duration: 3000,
-          render: ({ id }) => (
-            <CustomToast 
-              id={id} 
-              message="Maximum 4 products can be compared. Remove one to add another."
-            />
-          ),
-        });
+          //TODO: Add Toast
+        // toast.show({
+        //   placement: "bottom",
+        //   duration: 3000,
+        //   render: ({ id }) => (
+        //     <CustomToast 
+        //       id={id} 
+        //       message="Maximum 4 products can be compared. Remove one to add another."
+        //     />
+        //   ),
+        // });
         return;
       }
 
       addToCompare(product);
-      toast.show({
-        placement: "bottom",
-        duration: 2000,
-        render: ({ id }) => (
-          <CustomToast 
-            id={id} 
-            message={`${product.name} added to comparison (${compareCount + 1}/4)`}
-          />
-        ),
-      });
+        //TODO: Add Toast
+      // toast.show({
+      //   placement: "bottom",
+      //   duration: 2000,
+      //   render: ({ id }) => (
+      //     <CustomToast 
+      //       id={id} 
+      //       message={`${product.name} added to comparison (${compareCount + 1}/4)`}
+      //     />
+      //   ),
+      // });
     }
   };
 

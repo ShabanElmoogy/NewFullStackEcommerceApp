@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, Pressable, ScrollView } from 'react-native';
-import { HStack } from './ui/hstack';
-import { Badge, BadgeText } from './ui/badge';
-import { Button, ButtonText } from './ui/button';
-import { Text } from './ui/text';
+import { HStack } from '../../ui/hstack';
+import { Text } from '../../ui/text';
 import { X } from 'lucide-react-native';
 import { FilterOptions } from './ProductFilter';
 

@@ -5,7 +5,6 @@ import { Icon } from '@/components/ui/icon';
 import { ShoppingCart, Loader, Check } from 'lucide-react-native';
 import type { Product } from '@/store/cartStore';
 import { useCart } from '@/store/cartStore';
-import { useToast } from '@/components/ui/toast';
 import { CustomToast } from '@/components/CustomToast';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -45,7 +44,6 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   successFlashMs = 900,
 }) => {
   const addProduct = useCart((s) => s.addProduct);
-  const toast = useToast();
   const { colors } = useTheme();
 
   const [loading, setLoading] = useState(false);
@@ -75,11 +73,13 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
 
     if (!inStock) {
       if (showToast) {
-        toast.show({
-          placement: toastPlacement,
-          duration: 2500,
-          render: ({ id }) => <CustomToast id={id} message={outOfStockMessage} />,
-        });
+      //TODO: Add Toast
+
+        // toast.show({
+        //   placement: toastPlacement,
+        //   duration: 2500,
+        //   render: ({ id }) => <CustomToast id={id} message={outOfStockMessage} />,
+        // });
       }
       return;
     }
@@ -93,13 +93,15 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
 
     if (showToast) {
       const qtyText = quantity > 1 ? ` × ${quantity}` : '';
-      toast.show({
-        placement: toastPlacement,
-        duration: 2500,
-        render: ({ id }) => (
-          <CustomToast id={id} message={`${addedMessage}${qtyText}`} />
-        ),
-      });
+      //TODO: Add Toast
+
+      // toast.show({
+      //   placement: toastPlacement,
+      //   duration: 2500,
+      //   render: ({ id }) => (
+      //     <CustomToast id={id} message={`${addedMessage}${qtyText}`} />
+      //   ),
+      // });
     }
 
     setLoading(false);

@@ -18,7 +18,6 @@ import { useMutation } from '@tanstack/react-query';
 import { createOrder } from '@/api/orders';
 import { CustomToast } from '@/components/CustomToast';
 import { ConfirmationToast } from '@/components/ConfirmationToast';
-import { useToast } from '@/components/ui/toast';
 import { useAuth } from '@/store/authStore';
 import { SafeToast } from '@/components/SafeToast';
 
@@ -28,7 +27,6 @@ export default function CartScreen() {
   const increaseQuantity = useCart((state) => state.increaseQuantity);
   const decreaseQuantity = useCart((state) => state.decreaseQuantity);
   const resetCart = useCart((state) => state.resetCart);
-  const toast = useToast();
   const router = useRouter();
 
   const isAuthenticated = useAuth(s => s.isAuthenticated);
@@ -62,96 +60,101 @@ export default function CartScreen() {
     onSuccess: (data) => {
       console.log('Order created successfully:', data);
       resetCart();
-      toast.show({
-        placement: "bottom",
-        duration: 4000,
-        render: ({ id }) => (
-          <CustomToast id={id} message="Order placed successfully! 🎉" />
-        ),
-      });
+      // toast.show({
+      //   placement: "bottom",
+      //   duration: 4000,
+      //   render: ({ id }) => (
+      //     <CustomToast id={id} message="Order placed successfully! 🎉" />
+      //   ),
+      // });
+        //TODO: Add Toast
       router.push('/');
     },
+
     onError: (error) => {
-      toast.show({
-        placement: "bottom",
-        duration: 4000,
-        render: ({ id }) => (
-          <CustomToast id={id} message={`Failed to place order: ${error.message}`} />
-        ),
-      });
+      // toast.show({
+      //   placement: "bottom",
+      //   duration: 4000,
+      //   render: ({ id }) => (
+      //     <CustomToast id={id} message={`Failed to place order: ${error.message}`} />
+      //   ),
+      // });
+      //TODO: Add Toast
     }
   });
 
   const handleRemoveItem = (productId: number, productName: string) => {
     console.log('Remove item clicked:', productName);
-    toast.show({
-      placement: "top",
-      duration: 8000,
-      render: ({ id }) => (
-        <SafeToast placement="top">
-          <ConfirmationToast
-            id={id}
-            title="Remove Item"
-            message={`Are you sure you want to remove "${productName}" from your cart?`}
-            onConfirm={() => {
-              console.log('Removing item:', productId);
-              removeProduct(productId);
-              toast.close(id);
-              toast.show({
-                placement: "bottom",
-                duration: 3000,
-                render: ({ id: successId }) => (
-                  <CustomToast id={successId} message="Item removed from cart" />
-                ),
-              });
-            }}
-            onCancel={() => {
-              console.log('Remove cancelled');
-              toast.close(id);
-            }}
-            confirmText="Remove"
-            cancelText="Cancel"
-            type="danger"
-          />
-        </SafeToast>
-      ),
-    });
+    // toast.show({
+    //   placement: "top",
+    //   duration: 8000,
+    //   render: ({ id }) => (
+    //     <SafeToast placement="top">
+    //       <ConfirmationToast
+    //         id={id}
+    //         title="Remove Item"
+    //         message={`Are you sure you want to remove "${productName}" from your cart?`}
+    //         onConfirm={() => {
+    //           console.log('Removing item:', productId);
+    //           removeProduct(productId);
+    //           toast.close(id);
+    //           toast.show({
+    //             placement: "bottom",
+    //             duration: 3000,
+    //             render: ({ id: successId }) => (
+    //               <CustomToast id={successId} message="Item removed from cart" />
+    //             ),
+    //           });
+    //         }}
+    //         onCancel={() => {
+    //           console.log('Remove cancelled');
+    //           toast.close(id);
+    //         }}
+    //         confirmText="Remove"
+    //         cancelText="Cancel"
+    //         type="danger"
+    //       />
+    //     </SafeToast>
+    //   ),
+    // });
+    //TODO: Add Toast
   };
 
   const handleClearAllItems = () => {
     console.log('Clear all items clicked');
-    toast.show({
-      placement: "top",
-      duration: 8000,
-      render: ({ id }) => (
-        <SafeToast placement="top">
-          <ConfirmationToast
-            id={id}
-            title="Clear Cart"
-            message={`Are you sure you want to remove all ${totalQuantity} items from your cart? This action cannot be undone.`}
-            onConfirm={() => {
-              console.log('Clearing all items from cart');
-              resetCart();
-              toast.close(id);
-              toast.show({
-                placement: "bottom",
-                duration: 3000,
-                render: ({ id: successId }) => (
-                  <CustomToast id={successId} message="Cart cleared successfully" />
-                ),
-              });
-            }}
-            onCancel={() => {
-              console.log('Clear all cancelled');
-              toast.close(id);
-            }}
-            confirmText="Clear All"
-            cancelText="Cancel"
-            type="danger"
-          />
-        </SafeToast>
-      ),
-    });
+    //TODO: Add Toast
+    // toast.show({
+    //   placement: "top",
+    //   duration: 8000,
+    //   render: ({ id }) => (
+    //     <SafeToast placement="top">
+    //       <ConfirmationToast
+    //         id={id}
+    //         title="Clear Cart"
+    //         message={`Are you sure you want to remove all ${totalQuantity} items from your cart? This action cannot be undone.`}
+    //         onConfirm={() => {
+    //           console.log('Clearing all items from cart');
+    //           resetCart();
+    //           toast.close(id);
+    //           toast.show({
+    //             placement: "bottom",
+    //             duration: 3000,
+    //             render: ({ id: successId }) => (
+    //               <CustomToast id={successId} message="Cart cleared successfully" />
+    //             ),
+    //           });
+    //         }}
+    //         onCancel={() => {
+    //           console.log('Clear all cancelled');
+    //           toast.close(id);
+    //         }}
+    //         confirmText="Clear All"
+    //         cancelText="Cancel"
+    //         type="danger"
+    //       />
+    //     </SafeToast>
+    //   ),
+    // });
   };
 
   const onCheckOut = () => {
@@ -159,32 +162,34 @@ export default function CartScreen() {
     console.log('Items to order:', items);
     console.log('Is authenticated:', isAuthenticated);
     console.log('Total amount:', finalTotal.toFixed(2));
+
+    //TODO: Add Toast
     
-    toast.show({
-      placement: "top",
-      duration: 10000,
-      render: ({ id }) => (
-        <SafeToast placement="top">
-          <ConfirmationToast
-            id={id}
-            title="Confirm Order"
-            message={`Place order for ${finalTotal.toFixed(2)}?\n\n${totalQuantity} items • Total: ${finalTotal.toFixed(2)}`}
-            onConfirm={() => {
-              console.log('Order confirmed, calling mutation...');
-              toast.close(id);
-              createOrderMutation.mutate();
-            }}
-            onCancel={() => {
-              console.log('Order cancelled');
-              toast.close(id);
-            }}
-            confirmText="Place Order"
-            cancelText="Cancel"
-            type="info"
-          />
-        </SafeToast>
-      ),
-    });
+    // toast.show({
+    //   placement: "top",
+    //   duration: 10000,
+    //   render: ({ id }) => (
+    //     <SafeToast placement="top">
+    //       <ConfirmationToast
+    //         id={id}
+    //         title="Confirm Order"
+    //         message={`Place order for ${finalTotal.toFixed(2)}?\n\n${totalQuantity} items • Total: ${finalTotal.toFixed(2)}`}
+    //         onConfirm={() => {
+    //           console.log('Order confirmed, calling mutation...');
+    //           toast.close(id);
+    //           createOrderMutation.mutate();
+    //         }}
+    //         onCancel={() => {
+    //           console.log('Order cancelled');
+    //           toast.close(id);
+    //         }}
+    //         confirmText="Place Order"
+    //         cancelText="Cancel"
+    //         type="info"
+    //       />
+    //     </SafeToast>
+    //   ),
+    // });
   };
 
   // Empty cart state

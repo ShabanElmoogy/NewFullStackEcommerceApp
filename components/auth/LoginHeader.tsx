@@ -1,7 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
 import { VStack } from '@/components/ui/vstack';
-import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/hooks/useTheme';
 

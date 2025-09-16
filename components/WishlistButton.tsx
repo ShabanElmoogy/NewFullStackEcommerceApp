@@ -3,8 +3,6 @@ import { Pressable } from 'react-native';
 import { Icon } from './ui/icon';
 import { Heart } from 'lucide-react-native';
 import { useWishlist } from '@/store/wishlistStore';
-import { useToast } from './ui/toast';
-import { CustomToast } from './CustomToast';
 
 interface WishlistButtonProps {
   product: {
@@ -24,7 +22,7 @@ export default function WishlistButton({
   variant = 'ghost'
 }: WishlistButtonProps) {
   const { addProduct, removeProduct, isInWishlist } = useWishlist();
-  const toast = useToast();
+
   const inWishlist = isInWishlist(product.id);
 
   const handleToggleWishlist = () => {

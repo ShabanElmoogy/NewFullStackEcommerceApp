@@ -11,10 +11,10 @@ import {
   AlertCircleIcon,
 } from "lucide-react-native";
 
-import ProductCard from "../components/ProductCard";
-import ProductFilter, { FilterOptions } from "../components/ProductFilter";
-import ProductSearch from "../components/ProductSearch";
-import ActiveFilters from "../components/ActiveFilters";
+import ProductCard from "../components/products/productCard/ProductCard";
+import ProductFilter, { FilterOptions } from "../components/products/productsFilter/ProductFilter";
+import ProductSearch from "../components/products/productCard/ProductSearch";
+import ActiveFilters from "../components/products/productsFilter/ActiveFilters";
 import CompareFloatingBar from "../components/CompareFloatingBar";
 import { useSearchStore } from "../store/searchStore";
 import { useProducts } from "@/hooks/useProducts";
@@ -26,9 +26,9 @@ import { useNumColumns } from "@/hooks/useNumColumns";
 import { Text } from "../components/ui/text";
 import { VStack } from "../components/ui/vstack";
 import { Button, ButtonText } from "../components/ui/button";
-import ResultsHeader from "../components/products/ResultsHeader";
-import NoResultsState from "../components/products/NoResultsState";
-import EmptyState from "../components/products/EmptyState";
+import ResultsHeader from "../components/products/productsFilter/ResultsHeader";
+import NoResultsState from "../components/products/productsFilter/NoResultsState";
+import EmptyState from "../components/products/productsFilter/EmptyState";
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);

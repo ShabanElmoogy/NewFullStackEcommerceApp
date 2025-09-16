@@ -2,7 +2,6 @@ import React from 'react';
 import {
   ScrollView,
   View,
-  Image,
   Pressable,
   ActivityIndicator,
   RefreshControl,
@@ -16,14 +15,12 @@ import { Button, ButtonText } from '@/components/ui/button';
 import {
   Package,
   Calendar,
-  CreditCard,
   ChevronRight,
   ShoppingBag,
   Clock,
   CheckCircle,
   Truck,
   AlertCircle,
-  Eye,
 } from 'lucide-react-native';
 import { useUserOrders } from '@/hooks/useOrders';
 import { useAuth } from '@/store/authStore';

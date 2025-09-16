@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { FilterOptions } from '@/components/ProductFilter';
+import { FilterOptions } from '@/components/products/productsFilter/ProductFilter';
 
 export interface Product {
   id: number;

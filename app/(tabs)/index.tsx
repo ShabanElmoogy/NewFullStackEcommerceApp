@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, StatusBar } from 'react-native';
+import { View } from 'react-native';
 import { useCart } from '@/store/cartStore';
 import { useWishlist } from '@/store/wishlistStore';
-import { useCompareStore } from '@/store/compareStore';
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';

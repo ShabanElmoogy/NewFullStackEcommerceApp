@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { Button, ButtonText } from '@/components/ui/button';
 import { Pressable } from '@/components/ui/pressable';
 import { useAuth } from '@/store/authStore';
 import { useTheme } from '@/hooks/useTheme';

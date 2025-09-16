@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Pressable, ScrollView, Image, Alert, Linking } from 'react-native';
+import { View, Pressable, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import Constants from 'expo-constants';
@@ -31,7 +31,6 @@ import {
 import { useAuth } from '@/store/authStore';
 import { useSettings } from '@/store/settingsStore';
 import { useLanguageStore } from '@/store/languageStore';
-import { RTLDemo } from '@/components/RTLDemo';
 import i18n from '@/utils/i18n';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {

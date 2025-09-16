@@ -15,7 +15,6 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { Badge, BadgeText } from '@/components/ui/badge';
 import { useCompareStore, Product } from '@/store/compareStore';
 import { useCart } from '@/store/cartStore';
-import { useToast } from '@/components/ui/toast';
 import { CustomToast } from '@/components/CustomToast';
 import { 
   ArrowLeft, 
@@ -41,7 +40,6 @@ const { width: screenWidth } = Dimensions.get('window');
 export default function CompareScreen() {
   const { compareList, removeFromCompare, clearCompare } = useCompareStore();
   const addToCart = useCart((state) => state.addProduct);
-  const toast = useToast();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'overview' | 'specs' | 'features'>('overview');
 
@@ -75,16 +73,17 @@ export default function CompareScreen() {
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
-    toast.show({
-      placement: "bottom",
-      duration: 2000,
-      render: ({ id }) => (
-        <CustomToast 
-          id={id} 
-          message={`${product.name} added to cart!`}
-        />
-      ),
-    });
+    // toast.show({
+    //   placement: "bottom",
+    //   duration: 2000,
+    //   render: ({ id }) => (
+    //     <CustomToast 
+    //       id={id} 
+    //       message={`${product.name} added to cart!`}
+    //     />
+    //   ),
+    // });
+    //TODO: Add Toast
   };
 
   const handleClearAll = () => {
