@@ -85,6 +85,15 @@ export default function SimpleSearchInput({
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
+
+      const trimmedImmediate = newText.trim();
+
+      // If input is cleared, trigger search immediately without debounce
+      if (trimmedImmediate === '') {
+        lastSearchedTextRef.current = '';
+        onSearch('');
+        return;
+      }
       
       // Set new timeout for auto-search
       debounceTimeoutRef.current = setTimeout(() => {
@@ -125,6 +134,11 @@ export default function SimpleSearchInput({
       clearTimeout(debounceTimeoutRef.current);
     }
     lastSearchedTextRef.current = '';
+
+    // Immediately trigger an empty search so results clear without delay
+    if (onSearch) {
+      onSearch('');
+    }
   };
 
   // Handle suggestion selection

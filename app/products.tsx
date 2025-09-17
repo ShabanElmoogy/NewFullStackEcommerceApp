@@ -96,11 +96,21 @@ export default function ProductsScreen() {
         onSale: false,
       };
       updatePartialFilters({ [key]: reset[key] });
+      // Keep the search input in sync when removing the search badge
+      if (key === 'searchQuery') {
+        setSearchQuery("");
+        clearSearchQuery();
+      }
     },
-    [updatePartialFilters]
+    [updatePartialFilters, setSearchQuery, clearSearchQuery]
   );
 
-  const handleClearAllFilters = useCallback(() => updateFilters(defaultFilters), [updateFilters, defaultFilters]);
+  const handleClearAllFilters = useCallback(() => {
+    updateFilters(defaultFilters);
+    // Also clear the global search store so the input resets
+    setSearchQuery("");
+    clearSearchQuery();
+  }, [updateFilters, defaultFilters, setSearchQuery, clearSearchQuery]);
 
   // Derived state
   const hasActiveFiltersOrSearch = useMemo(() => {

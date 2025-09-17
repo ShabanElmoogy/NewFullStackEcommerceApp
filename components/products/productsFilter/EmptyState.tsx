@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import { ShoppingBagIcon, RefreshCwIcon } from "lucide-react-native";
 import { VStack } from "../../ui/vstack";
 import { HStack } from "../../ui/hstack";
@@ -12,6 +13,20 @@ export interface EmptyStateProps {
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({ onRefresh, colors }) => (
+  <View
+    style={{
+      backgroundColor: colors.card,
+      borderRadius: 24,
+      padding: 20,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.12,
+      shadowRadius: 12,
+      elevation: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+    }}
+  >
   <VStack className="items-center max-w-xs self-center">
     <CircleIcon
       colors={colors}
@@ -24,13 +39,27 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onRefresh, colors }) => (
     <Text className="text-base text-center mb-6" style={{ color: colors.textSecondary }}>
       We're working hard to bring you amazing products. Check back soon!
     </Text>
-    <Button onPress={onRefresh} className="py-3.5 px-6 rounded-xl" style={{ backgroundColor: colors.primary }}>
+    <Button
+      onPress={onRefresh}
+      className="rounded-full mt-2"
+      style={{
+        backgroundColor: colors.primary,
+        height: 48,
+        paddingHorizontal: 20,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 4,
+      }}
+    >
       <HStack className="items-center justify-center gap-2">
         <RefreshCwIcon color="#fff" size={20} />
         <ButtonText className="text-white font-semibold">Refresh</ButtonText>
       </HStack>
     </Button>
   </VStack>
+  </View>
 );
 
 export default EmptyState;

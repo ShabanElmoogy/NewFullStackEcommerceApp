@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import { SearchIcon, XIcon, RefreshCwIcon } from "lucide-react-native";
 import { VStack } from "../../ui/vstack";
 import { HStack } from "../../ui/hstack";
@@ -15,33 +16,86 @@ export interface NoResultsStateProps {
 }
 
 const NoResultsState: React.FC<NoResultsStateProps> = ({ searchQuery, onClearSearch, onResetFilters, colors }) => (
-  <VStack className="items-center max-w-sm self-center">
+  <View
+    style={{
+      backgroundColor: colors.card,
+      borderRadius: 24,
+      padding: 20,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.12,
+      shadowRadius: 12,
+      elevation: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+    }}
+  >
+    <VStack className="items-center max-w-sm self-center">
     <CircleIcon colors={colors} icon={<SearchIcon color={colors.primary} size={40} />} tint={colors.primary + "20"} />
     <Text className="text-2xl font-bold text-center mb-2" style={{ color: colors.text }}>
       No results found
     </Text>
-    <Text className="text-base text-center mb-6" style={{ color: colors.textSecondary }}>
+    <Text className="text-base text-center mb-4" style={{ color: colors.textSecondary }}>
       {searchQuery.trim() ? `We couldn't find anything matching "${searchQuery}"` : "No products match your filters"}
     </Text>
+
+    {searchQuery.trim().length > 0 && (
+      <View
+        style={{
+          marginBottom: 16,
+          paddingVertical: 6,
+          paddingHorizontal: 12,
+          borderRadius: 9999,
+          backgroundColor: colors.primary + "15",
+          borderWidth: 1,
+          borderColor: colors.primary + "30",
+        }}
+      >
+        <HStack className="items-center gap-2">
+          <SearchIcon color={colors.primary} size={14} />
+          <Text style={{ color: colors.primary, fontWeight: "600" }}>
+            {searchQuery.trim()}
+          </Text>
+        </HStack>
+      </View>
+    )}
 
     <HStack className="gap-3 mb-6">
       {searchQuery.trim() && (
         <Button
           onPress={onClearSearch}
-          className="flex-1 py-3.5 rounded-xl border"
-          style={{ backgroundColor: colors.backgroundSecondary, borderColor: colors.border }}
+          className="flex-1 rounded-full border"
+          style={{
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            height: 48,
+            paddingHorizontal: 18,
+          }}
         >
           <HStack className="items-center justify-center gap-2">
-            <XIcon color={colors.textSecondary} size={18} />
+            <XIcon color={colors.textSecondary} size={20} />
             <ButtonText className="font-semibold" style={{ color: colors.textSecondary }}>
               Clear search
             </ButtonText>
           </HStack>
         </Button>
       )}
-      <Button onPress={onResetFilters} className="flex-1 py-3.5 rounded-xl" style={{ backgroundColor: colors.primary }}>
+      <Button
+        onPress={onResetFilters}
+        className="flex-1 rounded-full"
+        style={{
+          backgroundColor: colors.primary,
+          height: 48,
+          paddingHorizontal: 18,
+          shadowColor: colors.primary,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.25,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
+      >
         <HStack className="items-center justify-center gap-2">
-          <RefreshCwIcon color="#fff" size={18} />
+          <RefreshCwIcon color="#fff" size={20} />
           <ButtonText className="text-white font-semibold">Reset filters</ButtonText>
         </HStack>
       </Button>
@@ -49,6 +103,7 @@ const NoResultsState: React.FC<NoResultsStateProps> = ({ searchQuery, onClearSea
 
     <SuggestionBox colors={colors} />
   </VStack>
+  </View>
 );
 
 export default NoResultsState;
