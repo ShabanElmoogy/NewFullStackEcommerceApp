@@ -11,6 +11,7 @@ import Animated, {
   useAnimatedStyle, 
   withSpring
 } from 'react-native-reanimated';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface SearchBarProps {
   onNavigate?: (route: string) => void;
@@ -18,6 +19,7 @@ interface SearchBarProps {
 
 export default function SearchBar({ onNavigate }: SearchBarProps) {
   const [searchText, setSearchText] = useState('');
+  const debouncedSearch = useDebounce(searchText, 500);
   const scaleAnimation = useSharedValue(1);
   const { colors } = useTheme();
 
@@ -40,6 +42,14 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
       router.push('/products');
     }
   };
+
+  // Debounced navigation/search after typing stops
+  React.useEffect(() => {
+    const q = debouncedSearch.trim();
+    if (q.length === 0) return;
+    // avoid double navigating if already on products with same query would require router state; simple call is fine
+    handleSearch(q);
+  }, [debouncedSearch]);
 
   
   const handleClear = () => {
@@ -79,8 +89,8 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
           size="lg"
           onChangeText={handleSearchTextChange}
           onSearch={handleSearch}
-          onClear={handleClear}
           autoSearch={false}
+          onClear={handleClear}
           showSuggestions={false}
           className="flex-1"
         />
