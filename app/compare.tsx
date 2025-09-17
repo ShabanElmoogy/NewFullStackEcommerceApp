@@ -18,7 +18,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { 
   ArrowLeft, 
   X, 
-  Star, 
+  Star,
   ShoppingCart, 
   Check,
   Award,
@@ -84,6 +84,10 @@ export default function CompareScreen() {
       }
     }
   };
+
+  const goToProducts = () => {
+    router.push('/products');
+  }
 
   const handleRemoveProduct = (productId: number, productName: string) => {
     removeFromCompare(productId);
@@ -265,7 +269,7 @@ export default function CompareScreen() {
             </Text>
             
             <Pressable
-              onPress={handleBack}
+              onPress={goToProducts}
               style={{
                 backgroundColor: colors.primary,
                 paddingHorizontal: 32,
