@@ -11,11 +11,10 @@ import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Icon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
-import { Button, ButtonText } from '@/components/ui/button';
-import { Badge, BadgeText } from '@/components/ui/badge';
 import { useCompareStore, Product } from '@/store/compareStore';
 import { useCart } from '@/store/cartStore';
-import { CustomToast } from '@/components/CustomToast';
+import { useTheme } from '@/hooks/useTheme';
+
 import { 
   ArrowLeft, 
   X, 
@@ -26,69 +25,99 @@ import {
   DollarSign,
   Info,
   AlertTriangle,
-  Crown
+  Crown,
+  TrendingUp,
+  Package,
+  Zap,
+  Shield,
+  Heart,
+  Share2,
+  MoreVertical
 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { 
   SlideInRight, 
-  SlideOutRight 
+  SlideOutRight,
+  FadeIn,
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+  withSequence
 } from 'react-native-reanimated';
+import { Toast } from 'toastify-react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function CompareScreen() {
   const { compareList, removeFromCompare, clearCompare } = useCompareStore();
   const addToCart = useCart((state) => state.addProduct);
+  const { colors, isDark } = useTheme();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<'overview' | 'specs' | 'features'>('overview');
 
+  // Animation values
+  const headerOpacity = useSharedValue(1);
+  const tabScale = useSharedValue(1);
+
   const handleBack = () => {
     try {
-      setTimeout(() => {
-        if (router.canGoBack()) {
-          router.back();
-        } else {
-          router.push('/products');
-        }
-      }, 0);
+      // Check if we can go back to the previous screen
+      if (router.canGoBack()) {
+        router.back();
+        console.log("go back")
+      } else {
+        // If no previous screen, go to home tab
+        router.push('/(tabs)');
+        console.log("go error")
+
+      }
     } catch (error) {
       console.warn('Navigation error:', error);
-      setTimeout(() => {
-        try {
-          router.replace('/products');
-        } catch (fallbackError) {
-          console.warn('Fallback navigation error:', fallbackError);
-        }
-      }, 100);
+      // Fallback to home screen
+      try {
+        router.push('/(tabs)');
+      } catch (fallbackError) {
+        console.warn('Fallback navigation error:', fallbackError);
+      }
     }
   };
 
-  const handleRemoveProduct = (productId: number) => {
+  const handleRemoveProduct = (productId: number, productName: string) => {
     removeFromCompare(productId);
+    Toast.show({
+      type: "success",
+      text1: "🗑️ Product Removed",
+      text2: `${productName} removed from comparison`,
+      visibilityTime: 2000,
+    });
+    
     if (compareList.length <= 1) {
-      handleBack();
+      setTimeout(() => handleBack(), 500);
     }
   };
 
   const handleAddToCart = (product: Product) => {
     addToCart(product);
-    // toast.show({
-    //   placement: "bottom",
-    //   duration: 2000,
-    //   render: ({ id }) => (
-    //     <CustomToast 
-    //       id={id} 
-    //       message={`${product.name} added to cart!`}
-    //     />
-    //   ),
-    // });
-    //TODO: Add Toast
+    Toast.show({
+      type: "success",
+      text1: "🛒 Added to Cart",
+      text2: `${product.name} added successfully`,
+      visibilityTime: 2000,
+    });
   };
 
   const handleClearAll = () => {
     clearCompare();
-    handleBack();
+    Toast.show({
+      type: "success",
+      text1: "🧹 Comparison Cleared",
+      text2: "All products removed from comparison",
+      visibilityTime: 2000,
+    });
+    setTimeout(() => handleBack(), 500);
   };
 
   // Get best value product (lowest price)
@@ -157,23 +186,107 @@ export default function CompareScreen() {
     }
   }, [compareList]);
 
+  const animatedHeaderStyle = useAnimatedStyle(() => {
+    return {
+      opacity: headerOpacity.value,
+    };
+  });
+
   if (compareList.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 items-center justify-center px-6">
-        <View className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 items-center max-w-sm w-full">
-          <View className="w-20 h-20 bg-blue-50 rounded-full items-center justify-center mb-4">
-            <Icon as={Info} size="xl" className="text-blue-500" />
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <StatusBar 
+          barStyle={isDark ? "light-content" : "dark-content"} 
+          backgroundColor={colors.background} 
+        />
+        
+        <Animated.View 
+          entering={FadeIn.duration(600)}
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 24,
+          }}
+        >
+          <View 
+            style={{
+              backgroundColor: colors.card,
+              borderRadius: 24,
+              padding: 32,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 16,
+              elevation: 8,
+              alignItems: 'center',
+              maxWidth: 320,
+              width: '100%',
+              borderWidth: isDark ? 1 : 0,
+              borderColor: colors.border,
+            }}
+          >
+            <View 
+              style={{
+                width: 80,
+                height: 80,
+                backgroundColor: colors.primary + '15',
+                borderRadius: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 20,
+              }}
+            >
+              <Icon as={Package} size="xl" style={{ color: colors.primary }} />
+            </View>
+            
+            <Text 
+              style={{ 
+                color: colors.text,
+                fontSize: 24,
+                fontWeight: '700',
+                marginBottom: 8,
+                textAlign: 'center',
+              }}
+            >
+              No Products to Compare
+            </Text>
+            
+            <Text 
+              style={{ 
+                color: colors.textSecondary,
+                fontSize: 16,
+                marginBottom: 24,
+                textAlign: 'center',
+                lineHeight: 24,
+              }}
+            >
+              Add products to comparison from the products page to see detailed side-by-side comparisons
+            </Text>
+            
+            <Pressable
+              onPress={handleBack}
+              style={{
+                backgroundColor: colors.primary,
+                paddingHorizontal: 32,
+                paddingVertical: 16,
+                borderRadius: 16,
+                width: '100%',
+                alignItems: 'center',
+              }}
+            >
+              <Text 
+                style={{ 
+                  color: 'white',
+                  fontSize: 16,
+                  fontWeight: '600',
+                }}
+              >
+                Browse Products
+              </Text>
+            </Pressable>
           </View>
-          <Text className="text-xl font-bold text-gray-900 mb-2 text-center">
-            No Products to Compare
-          </Text>
-          <Text className="text-gray-500 mb-6 text-center leading-relaxed">
-            Add products to comparison from the products page to see detailed side-by-side comparisons
-          </Text>
-          <Button onPress={handleBack} className="bg-blue-500 w-full">
-            <ButtonText className="text-white font-semibold">Browse Products</ButtonText>
-          </Button>
-        </View>
+        </Animated.View>
       </View>
     );
   }
@@ -182,26 +295,61 @@ export default function CompareScreen() {
   const highestRated = getHighestRated();
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar 
+        barStyle={isDark ? "light-content" : "dark-content"} 
+        backgroundColor={colors.background} 
+      />
       
       {/* Enhanced Header */}
-      <View className="bg-white shadow-sm border-b border-gray-100">
-        <View className="px-4 py-4">
+      <Animated.View 
+        style={[
+          animatedHeaderStyle,
+          {
+            backgroundColor: colors.card,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: isDark ? 0.2 : 0.1,
+            shadowRadius: 8,
+            elevation: 4,
+            borderBottomWidth: isDark ? 1 : 0,
+            borderBottomColor: colors.border,
+          }
+        ]}
+      >
+        <View style={{ paddingTop: insets.top, paddingHorizontal: 16, paddingBottom: 16 }}>
           <HStack className="items-center justify-between mb-4">
             <HStack className="items-center" space="md">
               <Pressable
                 onPress={handleBack}
-                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100 active:bg-gray-200"
+                style={{
+                  width: 44,
+                  height: 44,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 22,
+                  backgroundColor: colors.surfaceSecondary,
+                }}
               >
-                <Icon as={ArrowLeft} size="md" className="text-gray-700" />
+                <Icon as={ArrowLeft} size="md" style={{ color: colors.text }} />
               </Pressable>
               
               <VStack>
-                <Text className="text-xl font-bold text-gray-900">
+                <Text 
+                  style={{ 
+                    color: colors.text,
+                    fontSize: 22,
+                    fontWeight: '700',
+                  }}
+                >
                   Product Comparison
                 </Text>
-                <Text className="text-sm text-gray-500">
+                <Text 
+                  style={{ 
+                    color: colors.textSecondary,
+                    fontSize: 14,
+                  }}
+                >
                   Compare {compareList.length} products side by side
                 </Text>
               </VStack>
@@ -209,14 +357,36 @@ export default function CompareScreen() {
 
             <Pressable
               onPress={handleClearAll}
-              className="px-4 py-2 rounded-lg bg-red-50 border border-red-200 active:bg-red-100"
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 12,
+                backgroundColor: colors.error + '15',
+                borderWidth: 1,
+                borderColor: colors.error + '30',
+              }}
             >
-              <Text className="text-red-600 font-semibold text-sm">Clear All</Text>
+              <Text 
+                style={{ 
+                  color: colors.error,
+                  fontSize: 14,
+                  fontWeight: '600',
+                }}
+              >
+                Clear All
+              </Text>
             </Pressable>
           </HStack>
 
           {/* Tab Navigation */}
-          <HStack className="bg-gray-100 rounded-lg p-1" space="xs">
+          <View 
+            style={{
+              backgroundColor: colors.surfaceSecondary,
+              borderRadius: 12,
+              padding: 4,
+              flexDirection: 'row',
+            }}
+          >
             {[
               { key: 'overview', label: 'Overview', icon: Award },
               { key: 'specs', label: 'Specifications', icon: Info },
@@ -224,44 +394,133 @@ export default function CompareScreen() {
             ].map((tab) => (
               <Pressable
                 key={tab.key}
-                onPress={() => setActiveTab(tab.key as any)}
-                className={`flex-1 flex-row items-center justify-center py-2 px-3 rounded-md ${
-                  activeTab === tab.key ? 'bg-white shadow-sm' : ''
-                }`}
+                onPress={() => {
+                  setActiveTab(tab.key as any);
+                  tabScale.value = withSequence(
+                    withTiming(0.95, { duration: 100 }),
+                    withTiming(1, { duration: 100 })
+                  );
+                }}
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingVertical: 12,
+                  paddingHorizontal: 12,
+                  borderRadius: 8,
+                  backgroundColor: activeTab === tab.key ? colors.card : 'transparent',
+                  shadowColor: activeTab === tab.key ? colors.shadow : 'transparent',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: activeTab === tab.key ? (isDark ? 0.2 : 0.1) : 0,
+                  shadowRadius: 4,
+                  elevation: activeTab === tab.key ? 2 : 0,
+                }}
               >
                 <Icon 
                   as={tab.icon} 
                   size="sm" 
-                  className={`mr-2 ${activeTab === tab.key ? 'text-blue-600' : 'text-gray-500'}`} 
+                  style={{ 
+                    color: activeTab === tab.key ? colors.primary : colors.textSecondary,
+                    marginRight: 8,
+                  }} 
                 />
-                <Text className={`font-medium text-sm ${
-                  activeTab === tab.key ? 'text-blue-600' : 'text-gray-500'
-                }`}>
+                <Text 
+                  style={{
+                    color: activeTab === tab.key ? colors.primary : colors.textSecondary,
+                    fontSize: 14,
+                    fontWeight: activeTab === tab.key ? '600' : '500',
+                  }}
+                >
                   {tab.label}
                 </Text>
               </Pressable>
             ))}
-          </HStack>
+          </View>
         </View>
-      </View>
+      </Animated.View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={{ flex: 1 }} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+        nestedScrollEnabled={true}
+      >
         {activeTab === 'overview' && (
-          <View className="p-4">
+          <Animated.View entering={FadeInDown.duration(400)} style={{ flex: 1, padding: 16 }}>
             {/* Quick Insights */}
             {bestValue && highestRated && (
-              <View className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
-                <Text className="text-lg font-bold text-gray-900 mb-3">Quick Insights</Text>
+              <View 
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 16,
+                  padding: 16,
+                  marginBottom: 16,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: isDark ? 0.1 : 0.05,
+                  shadowRadius: 8,
+                  elevation: 3,
+                  borderWidth: isDark ? 1 : 0,
+                  borderColor: colors.border,
+                }}
+              >
+                <HStack className="items-center mb-3">
+                  <Icon as={TrendingUp} size="md" style={{ color: colors.primary, marginRight: 8 }} />
+                  <Text 
+                    style={{ 
+                      color: colors.text,
+                      fontSize: 18,
+                      fontWeight: '600',
+                    }}
+                  >
+                    Quick Insights
+                  </Text>
+                </HStack>
+                
                 <HStack className="justify-between">
-                  <View className="flex-1 bg-green-50 rounded-lg p-3 mr-2">
+                  <View 
+                    style={{
+                      flex: 1,
+                      backgroundColor: colors.success + '10',
+                      borderRadius: 12,
+                      padding: 12,
+                      marginRight: 6,
+                      borderWidth: 1,
+                      borderColor: colors.success + '20',
+                    }}
+                  >
                     <HStack className="items-center mb-1">
-                      <Icon as={DollarSign} size="sm" className="text-green-600 mr-1" />
-                      <Text className="text-xs font-semibold text-green-600 uppercase tracking-wide">Best Value</Text>
+                      <Icon as={DollarSign} size="xs" style={{ color: colors.success, marginRight: 4 }} />
+                      <Text 
+                        style={{ 
+                          color: colors.success,
+                          fontSize: 10,
+                          fontWeight: '600',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        Best Value
+                      </Text>
                     </HStack>
-                    <Text className="font-bold text-gray-900 text-sm" numberOfLines={1}>
+                    <Text 
+                      style={{ 
+                        color: colors.text,
+                        fontSize: 12,
+                        fontWeight: '500',
+                        marginBottom: 2,
+                      }}
+                      numberOfLines={1}
+                    >
                       {bestValue.name}
                     </Text>
-                    <Text className="text-green-600 font-bold text-lg">
+                    <Text 
+                      style={{ 
+                        color: colors.success,
+                        fontSize: 16,
+                        fontWeight: '700',
+                      }}
+                    >
                       ${bestValue.discount 
                         ? (bestValue.price * (1 - bestValue.discount / 100)).toFixed(2)
                         : bestValue.price.toFixed(2)
@@ -269,307 +528,755 @@ export default function CompareScreen() {
                     </Text>
                   </View>
                   
-                  <View className="flex-1 bg-yellow-50 rounded-lg p-3 ml-2">
+                  <View 
+                    style={{
+                      flex: 1,
+                      backgroundColor: colors.warning + '10',
+                      borderRadius: 12,
+                      padding: 12,
+                      marginLeft: 6,
+                      borderWidth: 1,
+                      borderColor: colors.warning + '20',
+                    }}
+                  >
                     <HStack className="items-center mb-1">
-                      <Icon as={Star} size="sm" className="text-yellow-600 mr-1" />
-                      <Text className="text-xs font-semibold text-yellow-600 uppercase tracking-wide">Top Rated</Text>
+                      <Icon as={Star} size="xs" style={{ color: colors.warning, marginRight: 4 }} />
+                      <Text 
+                        style={{ 
+                          color: colors.warning,
+                          fontSize: 10,
+                          fontWeight: '600',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        Top Rated
+                      </Text>
                     </HStack>
-                    <Text className="font-bold text-gray-900 text-sm" numberOfLines={1}>
+                    <Text 
+                      style={{ 
+                        color: colors.text,
+                        fontSize: 12,
+                        fontWeight: '500',
+                        marginBottom: 2,
+                      }}
+                      numberOfLines={1}
+                    >
                       {highestRated.name}
                     </Text>
                     <HStack className="items-center">
-                      <Text className="text-yellow-600 font-bold text-lg mr-1">
+                      <Text 
+                        style={{ 
+                          color: colors.warning,
+                          fontSize: 16,
+                          fontWeight: '700',
+                          marginRight: 2,
+                        }}
+                      >
                         {highestRated.rating?.toFixed(1)}
                       </Text>
-                      <Icon as={Star} size="xs" className="text-yellow-500 fill-current" />
+                      <Icon as={Star} size="xs" style={{ color: colors.warning }} />
                     </HStack>
                   </View>
                 </HStack>
               </View>
             )}
 
-            {/* Product Cards Grid */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-              <HStack space="md" className="px-1">
-                {compareList.map((product, index) => (
-                  <Animated.View
-                    key={product.id}
-                    entering={SlideInRight.delay(index * 100)}
-                    exiting={SlideOutRight}
-                    className="w-72 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-                  >
-                    {/* Product Header */}
-                    <View className="relative">
+            {/* Product Cards - Vertical Layout */}
+            <VStack space="md">
+              {compareList.map((product, index) => (
+                <Animated.View
+                  key={product.id}
+                  entering={SlideInRight.delay(index * 100)}
+                  exiting={SlideOutRight}
+                  style={{
+                    backgroundColor: colors.card,
+                    borderRadius: 12,
+                    shadowColor: colors.shadow,
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: isDark ? 0.1 : 0.05,
+                    shadowRadius: 4,
+                    elevation: 2,
+                    borderWidth: isDark ? 1 : 0,
+                    borderColor: colors.border,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <HStack>
+                    {/* Product Image */}
+                    <View style={{ position: 'relative', width: 120, height: 120 }}>
                       {/* Remove button */}
                       <Pressable
-                        onPress={() => handleRemoveProduct(product.id)}
-                        className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 rounded-full items-center justify-center shadow-sm"
+                        onPress={() => handleRemoveProduct(product.id, product.name)}
+                        style={{
+                          position: 'absolute',
+                          top: 6,
+                          right: 6,
+                          zIndex: 10,
+                          width: 24,
+                          height: 24,
+                          backgroundColor: 'rgba(0,0,0,0.7)',
+                          borderRadius: 12,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
                       >
-                        <Icon as={X} size="sm" className="text-gray-600" />
+                        <Icon as={X} size="xs" style={{ color: 'white' }} />
                       </Pressable>
 
                       {/* Best badges */}
                       {bestValue && product.id === bestValue.id && (
-                        <View className="absolute top-3 left-3 z-10">
-                          <Badge className="bg-green-500">
-                            <Icon as={DollarSign} size="xs" className="text-white mr-1" />
-                            <BadgeText className="text-white text-xs font-bold">Best Value</BadgeText>
-                          </Badge>
+                        <View style={{ position: 'absolute', top: 6, left: 6, zIndex: 10 }}>
+                          <View 
+                            style={{
+                              backgroundColor: colors.success,
+                              borderRadius: 6,
+                              paddingHorizontal: 4,
+                              paddingVertical: 2,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Icon as={DollarSign} size="xs" style={{ color: 'white', marginRight: 1 }} />
+                            <Text style={{ color: 'white', fontSize: 8, fontWeight: '600' }}>
+                              Best
+                            </Text>
+                          </View>
                         </View>
                       )}
                       {highestRated && product.id === highestRated.id && product.id !== bestValue?.id && (
-                        <View className="absolute top-3 left-3 z-10">
-                          <Badge className="bg-yellow-500">
-                            <Icon as={Crown} size="xs" className="text-white mr-1" />
-                            <BadgeText className="text-white text-xs font-bold">Top Rated</BadgeText>
-                          </Badge>
+                        <View style={{ position: 'absolute', top: 6, left: 6, zIndex: 10 }}>
+                          <View 
+                            style={{
+                              backgroundColor: colors.warning,
+                              borderRadius: 6,
+                              paddingHorizontal: 4,
+                              paddingVertical: 2,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <Icon as={Crown} size="xs" style={{ color: 'white', marginRight: 1 }} />
+                            <Text style={{ color: 'white', fontSize: 8, fontWeight: '600' }}>
+                              Top
+                            </Text>
+                          </View>
                         </View>
                       )}
 
-                      {/* Product Image */}
-                      <View className="h-48 bg-gray-100">
+                      <View 
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: colors.surfaceSecondary,
+                        }}
+                      >
                         <Image
                           source={{ uri: product.image || 'https://via.placeholder.com/300x300?text=No+Image' }}
-                          className="w-full h-full"
+                          style={{ width: '100%', height: '100%' }}
                           alt={product.name}
-                          resizeMode="cover"
+                          resizeMode="contain"
                         />
                       </View>
 
                       {/* Product badges */}
-                      <View className="absolute bottom-3 left-3 flex-row gap-1">
+                      <View 
+                        style={{
+                          position: 'absolute',
+                          bottom: 4,
+                          left: 4,
+                          flexDirection: 'row',
+                          gap: 2,
+                        }}
+                      >
                         {product.isNew && (
-                          <Badge className="bg-blue-500">
-                            <BadgeText className="text-white text-xs font-semibold">NEW</BadgeText>
-                          </Badge>
+                          <View 
+                            style={{
+                              backgroundColor: colors.info,
+                              borderRadius: 4,
+                              paddingHorizontal: 3,
+                              paddingVertical: 1,
+                            }}
+                          >
+                            <Text style={{ color: 'white', fontSize: 7, fontWeight: '600' }}>
+                              NEW
+                            </Text>
+                          </View>
                         )}
                         {product.isTrending && (
-                          <Badge className="bg-orange-500">
-                            <BadgeText className="text-white text-xs font-semibold">TRENDING</BadgeText>
-                          </Badge>
+                          <View 
+                            style={{
+                              backgroundColor: '#FF6B35',
+                              borderRadius: 4,
+                              paddingHorizontal: 3,
+                              paddingVertical: 1,
+                            }}
+                          >
+                            <Text style={{ color: 'white', fontSize: 7, fontWeight: '600' }}>
+                              HOT
+                            </Text>
+                          </View>
                         )}
                         {product.discount && (
-                          <Badge className="bg-red-500">
-                            <BadgeText className="text-white text-xs font-semibold">-{product.discount}%</BadgeText>
-                          </Badge>
+                          <View 
+                            style={{
+                              backgroundColor: colors.error,
+                              borderRadius: 4,
+                              paddingHorizontal: 3,
+                              paddingVertical: 1,
+                            }}
+                          >
+                            <Text style={{ color: 'white', fontSize: 7, fontWeight: '600' }}>
+                              -{product.discount}%
+                            </Text>
+                          </View>
                         )}
                       </View>
                     </View>
 
                     {/* Product Info */}
-                    <VStack className="p-4" space="sm">
-                      <VStack space="xs">
-                        <Text className="font-bold text-gray-900 text-lg leading-tight" numberOfLines={2}>
-                          {product.name}
+                    <VStack style={{ flex: 1, padding: 12 }} space="xs">
+                      {/* Product Name */}
+                      <Text 
+                        style={{ 
+                          color: colors.text,
+                          fontSize: 14,
+                          fontWeight: '600',
+                          lineHeight: 18,
+                        }}
+                        numberOfLines={2}
+                      >
+                        {product.name}
+                      </Text>
+
+                      {/* Brand */}
+                      {product.brand && (
+                        <Text 
+                          style={{ 
+                            color: colors.textSecondary,
+                            fontSize: 11,
+                            fontWeight: '500',
+                          }}
+                        >
+                          by {product.brand}
                         </Text>
-                        {product.brand && (
-                          <Text className="text-sm text-gray-500 font-medium">
-                            by {product.brand}
-                          </Text>
-                        )}
-                      </VStack>
+                      )}
 
                       {/* Rating */}
                       {product.rating && (
-                        <HStack className="items-center bg-gray-50 rounded-lg px-3 py-2">
-                          <HStack className="items-center flex-1">
-                            <Icon as={Star} size="sm" className="text-yellow-500 fill-current mr-1" />
-                            <Text className="font-bold text-gray-900 mr-2">
-                              {product.rating.toFixed(1)}
-                            </Text>
-                            <Text className="text-sm text-gray-500">
-                              ({product.reviewCount || 0} reviews)
-                            </Text>
-                          </HStack>
+                        <HStack className="items-center" space="xs">
+                          <Icon as={Star} size="xs" style={{ color: colors.warning }} />
+                          <Text 
+                            style={{ 
+                              color: colors.text,
+                              fontSize: 11,
+                              fontWeight: '600',
+                            }}
+                          >
+                            {product.rating.toFixed(1)}
+                          </Text>
+                          <Text 
+                            style={{ 
+                              color: colors.textSecondary,
+                              fontSize: 10,
+                            }}
+                          >
+                            ({product.reviewCount || 0})
+                          </Text>
                         </HStack>
                       )}
 
                       {/* Price */}
-                      <VStack className="bg-blue-50 rounded-lg p-3" space="xs">
+                      <View>
                         {product.discount ? (
                           <VStack space="xs">
-                            <HStack className="items-center justify-between">
-                              <Text className="text-2xl font-bold text-blue-600">
+                            <HStack className="items-center" space="sm">
+                              <Text 
+                                style={{ 
+                                  color: colors.primary,
+                                  fontSize: 16,
+                                  fontWeight: '700',
+                                }}
+                              >
                                 ${(product.price * (1 - product.discount / 100)).toFixed(2)}
                               </Text>
-                              <Badge className="bg-red-500">
-                                <BadgeText className="text-white text-xs font-bold">
-                                  Save ${(product.price * (product.discount / 100)).toFixed(2)}
-                                </BadgeText>
-                              </Badge>
+                              <Text 
+                                style={{ 
+                                  color: colors.textTertiary,
+                                  fontSize: 11,
+                                  textDecorationLine: 'line-through',
+                                }}
+                              >
+                                ${product.price.toFixed(2)}
+                              </Text>
                             </HStack>
-                            <Text className="text-sm text-gray-500 line-through">
-                              Original: ${product.price.toFixed(2)}
+                            <Text 
+                              style={{ 
+                                color: colors.success,
+                                fontSize: 10,
+                                fontWeight: '600',
+                              }}
+                            >
+                              Save ${(product.price * (product.discount / 100)).toFixed(2)}
                             </Text>
                           </VStack>
                         ) : (
-                          <Text className="text-2xl font-bold text-blue-600">
+                          <Text 
+                            style={{ 
+                              color: colors.primary,
+                              fontSize: 16,
+                              fontWeight: '700',
+                            }}
+                          >
                             ${product.price.toFixed(2)}
                           </Text>
                         )}
-                      </VStack>
+                      </View>
 
                       {/* Stock Status */}
                       {product.stock !== undefined && (
-                        <HStack className="items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
-                          <HStack className="items-center">
-                            <View className={`w-3 h-3 rounded-full mr-2 ${
-                              product.stock > 10 ? 'bg-green-500' : 
-                              product.stock > 0 ? 'bg-yellow-500' : 'bg-red-500'
-                            }`} />
-                            <Text className={`text-sm font-medium ${
-                              product.stock > 10 ? 'text-green-600' : 
-                              product.stock > 0 ? 'text-yellow-600' : 'text-red-600'
-                            }`}>
-                              {product.stock > 10 ? 'In Stock' : 
-                               product.stock > 0 ? `Only ${product.stock} left` : 'Out of Stock'}
-                            </Text>
-                          </HStack>
-                          {product.stock > 0 && product.stock <= 5 && (
-                            <Icon as={AlertTriangle} size="sm" className="text-yellow-500" />
-                          )}
+                        <HStack className="items-center" space="xs">
+                          <View 
+                            style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: 3,
+                              backgroundColor: 
+                                product.stock > 10 ? colors.success : 
+                                product.stock > 0 ? colors.warning : colors.error,
+                            }}
+                          />
+                          <Text 
+                            style={{
+                              color: 
+                                product.stock > 10 ? colors.success : 
+                                product.stock > 0 ? colors.warning : colors.error,
+                              fontSize: 10,
+                              fontWeight: '500',
+                            }}
+                          >
+                            {product.stock > 10 ? 'In Stock' : 
+                             product.stock > 0 ? `${product.stock} left` : 'Out of Stock'}
+                          </Text>
                         </HStack>
                       )}
+                    </VStack>
 
-                      {/* Add to Cart Button */}
-                      <Button
+                    {/* Add to Cart Button */}
+                    <View style={{ justifyContent: 'center', paddingRight: 12 }}>
+                      <Pressable
                         onPress={() => handleAddToCart(product)}
                         disabled={product.stock === 0}
-                        className={`w-full mt-2 ${
-                          product.stock === 0 ? 'bg-gray-300' : 'bg-blue-500 active:bg-blue-600'
-                        }`}
+                        style={{
+                          backgroundColor: product.stock === 0 ? colors.surfaceTertiary : colors.primary,
+                          paddingVertical: 8,
+                          paddingHorizontal: 12,
+                          borderRadius: 8,
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minWidth: 80,
+                        }}
                       >
                         <Icon 
                           as={ShoppingCart} 
-                          size="sm" 
-                          className={`mr-2 ${product.stock === 0 ? 'text-gray-500' : 'text-white'}`} 
+                          size="xs" 
+                          style={{ 
+                            color: product.stock === 0 ? colors.textTertiary : 'white',
+                            marginRight: 4,
+                          }} 
                         />
-                        <ButtonText className={`font-semibold ${
-                          product.stock === 0 ? 'text-gray-500' : 'text-white'
-                        }`}>
-                          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                        </ButtonText>
-                      </Button>
-                    </VStack>
-                  </Animated.View>
-                ))}
-              </HStack>
-            </ScrollView>
-          </View>
+                        <Text 
+                          style={{
+                            color: product.stock === 0 ? colors.textTertiary : 'white',
+                            fontSize: 11,
+                            fontWeight: '600',
+                          }}
+                        >
+                          {product.stock === 0 ? 'Out' : 'Add'}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </HStack>
+                </Animated.View>
+              ))}
+            </VStack>
+          </Animated.View>
         )}
 
         {activeTab === 'specs' && (
-          <View className="p-4">
+          <Animated.View entering={FadeInDown.duration(400)} style={{ padding: 16 }}>
             {allSpecs.length > 0 ? (
-              <View className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <View className="bg-gray-50 px-4 py-3 border-b border-gray-100">
-                  <Text className="text-lg font-bold text-gray-900">Technical Specifications</Text>
-                  <Text className="text-sm text-gray-500">Compare detailed product specifications</Text>
+              <View 
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 20,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.1,
+                  shadowRadius: 12,
+                  elevation: 6,
+                  borderWidth: isDark ? 1 : 0,
+                  borderColor: colors.border,
+                  overflow: 'hidden',
+                }}
+              >
+                <View 
+                  style={{
+                    backgroundColor: colors.surfaceSecondary,
+                    paddingHorizontal: 20,
+                    paddingVertical: 16,
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border,
+                  }}
+                >
+                  <HStack className="items-center mb-2">
+                    <Icon as={Info} size="md" style={{ color: colors.primary, marginRight: 12 }} />
+                    <Text 
+                      style={{ 
+                        color: colors.text,
+                        fontSize: 20,
+                        fontWeight: '700',
+                      }}
+                    >
+                      Technical Specifications
+                    </Text>
+                  </HStack>
+                  <Text 
+                    style={{ 
+                      color: colors.textSecondary,
+                      fontSize: 14,
+                    }}
+                  >
+                    Compare detailed product specifications
+                  </Text>
                 </View>
                 
                 {allSpecs.map((spec, index) => (
-                  <View key={spec} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                    <View className="px-4 py-4">
-                      <Text className="font-semibold text-gray-900 mb-3 text-base">
+                  <View 
+                    key={spec} 
+                    style={{
+                      backgroundColor: index % 2 === 0 ? colors.card : colors.surfaceSecondary,
+                    }}
+                  >
+                    <View style={{ paddingHorizontal: 20, paddingVertical: 16 }}>
+                      <Text 
+                        style={{ 
+                          color: colors.text,
+                          fontSize: 16,
+                          fontWeight: '600',
+                          marginBottom: 12,
+                        }}
+                      >
                         {spec}
                       </Text>
                       <VStack space="sm">
                         {compareList.map((product) => (
                           <HStack key={`${product.id}-${spec}`} className="items-center justify-between">
                             <HStack className="items-center flex-1">
-                              <View className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center mr-3">
-                                <Text className="text-xs font-bold text-gray-600">
+                              <View 
+                                style={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: 16,
+                                  backgroundColor: colors.primary + '15',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  marginRight: 12,
+                                }}
+                              >
+                                <Text 
+                                  style={{ 
+                                    color: colors.primary,
+                                    fontSize: 12,
+                                    fontWeight: '700',
+                                  }}
+                                >
                                   {product.name.charAt(0)}
                                 </Text>
                               </View>
-                              <Text className="text-sm text-gray-600 flex-1" numberOfLines={1}>
+                              <Text 
+                                style={{ 
+                                  color: colors.textSecondary,
+                                  fontSize: 14,
+                                  flex: 1,
+                                }}
+                                numberOfLines={1}
+                              >
                                 {product.name}
                               </Text>
                             </HStack>
-                            <Text className="text-sm font-medium text-gray-900 ml-2">
+                            <Text 
+                              style={{ 
+                                color: colors.text,
+                                fontSize: 14,
+                                fontWeight: '600',
+                                marginLeft: 8,
+                              }}
+                            >
                               {product.specifications?.[spec] || 'Not specified'}
                             </Text>
                           </HStack>
                         ))}
                       </VStack>
                     </View>
-                    {index < allSpecs.length - 1 && <View className="h-px bg-gray-200 mx-4" />}
+                    {index < allSpecs.length - 1 && (
+                      <View 
+                        style={{ 
+                          height: 1,
+                          backgroundColor: colors.border,
+                          marginHorizontal: 20,
+                        }} 
+                      />
+                    )}
                   </View>
                 ))}
               </View>
             ) : (
-              <View className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 items-center">
-                <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
-                  <Icon as={Info} size="lg" className="text-gray-400" />
+              <View 
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 20,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.1,
+                  shadowRadius: 12,
+                  elevation: 6,
+                  borderWidth: isDark ? 1 : 0,
+                  borderColor: colors.border,
+                  padding: 32,
+                  alignItems: 'center',
+                }}
+              >
+                <View 
+                  style={{
+                    width: 64,
+                    height: 64,
+                    backgroundColor: colors.surfaceSecondary,
+                    borderRadius: 32,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 16,
+                  }}
+                >
+                  <Icon as={Info} size="lg" style={{ color: colors.textTertiary }} />
                 </View>
-                <Text className="text-lg font-semibold text-gray-900 mb-2">No Specifications Available</Text>
-                <Text className="text-gray-500 text-center">
+                <Text 
+                  style={{ 
+                    color: colors.text,
+                    fontSize: 20,
+                    fontWeight: '600',
+                    marginBottom: 8,
+                  }}
+                >
+                  No Specifications Available
+                </Text>
+                <Text 
+                  style={{ 
+                    color: colors.textSecondary,
+                    fontSize: 16,
+                    textAlign: 'center',
+                  }}
+                >
                   The selected products don't have detailed specifications to compare.
                 </Text>
               </View>
             )}
-          </View>
+          </Animated.View>
         )}
 
         {activeTab === 'features' && (
-          <View className="p-4">
+          <Animated.View entering={FadeInDown.duration(400)} style={{ padding: 16 }}>
             {allFeatures.length > 0 ? (
-              <View className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <View className="bg-gray-50 px-4 py-3 border-b border-gray-100">
-                  <Text className="text-lg font-bold text-gray-900">Features Comparison</Text>
-                  <Text className="text-sm text-gray-500">See which features are available in each product</Text>
+              <View 
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 20,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.1,
+                  shadowRadius: 12,
+                  elevation: 6,
+                  borderWidth: isDark ? 1 : 0,
+                  borderColor: colors.border,
+                  overflow: 'hidden',
+                }}
+              >
+                <View 
+                  style={{
+                    backgroundColor: colors.surfaceSecondary,
+                    paddingHorizontal: 20,
+                    paddingVertical: 16,
+                    borderBottomWidth: 1,
+                    borderBottomColor: colors.border,
+                  }}
+                >
+                  <HStack className="items-center mb-2">
+                    <Icon as={Check} size="md" style={{ color: colors.primary, marginRight: 12 }} />
+                    <Text 
+                      style={{ 
+                        color: colors.text,
+                        fontSize: 20,
+                        fontWeight: '700',
+                      }}
+                    >
+                      Features Comparison
+                    </Text>
+                  </HStack>
+                  <Text 
+                    style={{ 
+                      color: colors.textSecondary,
+                      fontSize: 14,
+                    }}
+                  >
+                    See which features are available in each product
+                  </Text>
                 </View>
                 
                 {allFeatures.map((feature, index) => (
-                  <View key={feature} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                    <View className="px-4 py-4">
-                      <Text className="font-semibold text-gray-900 mb-3 text-base">
+                  <View 
+                    key={feature} 
+                    style={{
+                      backgroundColor: index % 2 === 0 ? colors.card : colors.surfaceSecondary,
+                    }}
+                  >
+                    <View style={{ paddingHorizontal: 20, paddingVertical: 16 }}>
+                      <Text 
+                        style={{ 
+                          color: colors.text,
+                          fontSize: 16,
+                          fontWeight: '600',
+                          marginBottom: 12,
+                        }}
+                      >
                         {feature}
                       </Text>
                       <HStack className="justify-between">
                         {compareList.map((product) => (
-                          <View key={`${product.id}-${feature}`} className="flex-1 items-center">
-                            <View className="w-10 h-10 rounded-full bg-gray-100 items-center justify-center mb-2">
-                              <Text className="text-xs font-bold text-gray-600">
+                          <View key={`${product.id}-${feature}`} style={{ flex: 1, alignItems: 'center' }}>
+                            <View 
+                              style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 20,
+                                backgroundColor: colors.primary + '15',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                marginBottom: 8,
+                              }}
+                            >
+                              <Text 
+                                style={{ 
+                                  color: colors.primary,
+                                  fontSize: 12,
+                                  fontWeight: '700',
+                                }}
+                              >
                                 {product.name.charAt(0)}
                               </Text>
                             </View>
-                            <View className={`w-8 h-8 rounded-full items-center justify-center ${
-                              product.features?.includes(feature) ? 'bg-green-100' : 'bg-red-100'
-                            }`}>
+                            <View 
+                              style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 16,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: product.features?.includes(feature) 
+                                  ? colors.success + '15' 
+                                  : colors.error + '15',
+                                borderWidth: 1,
+                                borderColor: product.features?.includes(feature) 
+                                  ? colors.success + '30' 
+                                  : colors.error + '30',
+                              }}
+                            >
                               <Icon 
                                 as={product.features?.includes(feature) ? Check : X} 
                                 size="sm" 
-                                className={product.features?.includes(feature) ? 'text-green-600' : 'text-red-500'} 
+                                style={{ 
+                                  color: product.features?.includes(feature) ? colors.success : colors.error,
+                                }} 
                               />
                             </View>
-                            <Text className="text-xs text-gray-500 mt-1 text-center" numberOfLines={1}>
+                            <Text 
+                              style={{ 
+                                color: colors.textSecondary,
+                                fontSize: 12,
+                                marginTop: 4,
+                                textAlign: 'center',
+                              }}
+                              numberOfLines={1}
+                            >
                               {product.name.split(' ')[0]}
                             </Text>
                           </View>
                         ))}
                       </HStack>
                     </View>
-                    {index < allFeatures.length - 1 && <View className="h-px bg-gray-200 mx-4" />}
+                    {index < allFeatures.length - 1 && (
+                      <View 
+                        style={{ 
+                          height: 1,
+                          backgroundColor: colors.border,
+                          marginHorizontal: 20,
+                        }} 
+                      />
+                    )}
                   </View>
                 ))}
               </View>
             ) : (
-              <View className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 items-center">
-                <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
-                  <Icon as={Check} size="lg" className="text-gray-400" />
+              <View 
+                style={{
+                  backgroundColor: colors.card,
+                  borderRadius: 20,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.2 : 0.1,
+                  shadowRadius: 12,
+                  elevation: 6,
+                  borderWidth: isDark ? 1 : 0,
+                  borderColor: colors.border,
+                  padding: 32,
+                  alignItems: 'center',
+                }}
+              >
+                <View 
+                  style={{
+                    width: 64,
+                    height: 64,
+                    backgroundColor: colors.surfaceSecondary,
+                    borderRadius: 32,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 16,
+                  }}
+                >
+                  <Icon as={Check} size="lg" style={{ color: colors.textTertiary }} />
                 </View>
-                <Text className="text-lg font-semibold text-gray-900 mb-2">No Features Available</Text>
-                <Text className="text-gray-500 text-center">
+                <Text 
+                  style={{ 
+                    color: colors.text,
+                    fontSize: 20,
+                    fontWeight: '600',
+                    marginBottom: 8,
+                  }}
+                >
+                  No Features Available
+                </Text>
+                <Text 
+                  style={{ 
+                    color: colors.textSecondary,
+                    fontSize: 16,
+                    textAlign: 'center',
+                  }}
+                >
                   The selected products don't have feature lists to compare.
                 </Text>
               </View>
             )}
-          </View>
+          </Animated.View>
         )}
-
-        {/* Bottom spacing */}
-        <View className="h-20" />
       </ScrollView>
     </View>
   );

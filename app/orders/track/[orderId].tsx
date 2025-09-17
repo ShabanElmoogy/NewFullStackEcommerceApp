@@ -66,8 +66,8 @@ export default function OrderTrackingScreen() {
           <Text className="text-red-600 text-center mb-4">
             {error || 'Order not found'}
           </Text>
-          <Button onPress={() => router.back()}>
-            <ButtonText>Go Back</ButtonText>
+          <Button onPress={() => router.push('/(tabs)')}>
+            <ButtonText>Go Home</ButtonText>
           </Button>
         </View>
       </SafeAreaView>
@@ -89,7 +89,7 @@ export default function OrderTrackingScreen() {
               <Button
                 variant="ghost"
                 size="sm"
-                onPress={() => router.back()}
+                onPress={() => router.push('/(tabs)')}
                 className="p-2"
               >
                 <Icon as={ArrowLeft} size="sm" className="text-gray-600" />

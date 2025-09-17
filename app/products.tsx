@@ -15,7 +15,6 @@ import ProductCard from "../components/products/productCard/ProductCard";
 import ProductFilter, { FilterOptions } from "../components/products/productsFilter/ProductFilter";
 import ProductSearch from "../components/products/productCard/ProductSearch";
 import ActiveFilters from "../components/products/productsFilter/ActiveFilters";
-import CompareFloatingBar from "../components/CompareFloatingBar";
 import { useSearchStore } from "../store/searchStore";
 import { useProducts } from "@/hooks/useProducts";
 import { useProductFilter } from "@/hooks/useProductFilter";
@@ -222,7 +221,6 @@ export default function ProductsScreen() {
           )}
         </ScrollView>
       )}
-      <CompareFloatingBar />
     </View>
   );
 }
