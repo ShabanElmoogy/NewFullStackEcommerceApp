@@ -8,3 +8,7 @@ export * from "./OutOfStockOverlay";
 export * from "./LowStockBadge";
 export * from "./LowStockInline";
 export * from "./AddToCartButton";
+export * from "./useProductCard";
+export { default as ProductCard } from "./ProductCard";
+export { default as ProductCardGridView } from "./ProductCardGridView";
+export { default as ProductCardListView } from "./ProductCardListView";
