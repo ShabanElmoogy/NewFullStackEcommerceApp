@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, Dimensions } from 'react-native';
+import { View, ScrollView, Pressable, Dimensions, InteractionManager } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Icon } from '@/components/ui/icon';
@@ -29,6 +29,7 @@ import { useProductFilter } from '@/hooks/useProductFilter';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTheme } from '@/hooks/useTheme';
 import ProductCard from '@/components/products/productCard/ProductCard';
+import SegmentedTabs, { TabItem } from '@/components/ui/tabs/SegmentedTabs';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -118,6 +119,7 @@ export default function CategoryProductsSection({
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const { language } = useLanguageStore();
   const { colors, isDark } = useTheme();
+  const listRef = React.useRef<FlatList<any> | null>(null);
   
   // Animation values
   const sparkleRotation = useSharedValue(0);
@@ -195,6 +197,32 @@ export default function CategoryProductsSection({
   // Get products to display (filtered or trending)
   const productsToShow = selectedCategoryId ? filteredProducts : (allProducts?.slice(0, 8) || []);
 
+  // Build category tabs once data is available (hook order preserved above guards)
+  const categoryTabs: TabItem[] = React.useMemo(() => {
+    const base: TabItem[] = [{ key: 'all', label: 'All', icon: Sparkles }];
+    const list = (categories || []).filter((cat: any) => !cat.isDeleted);
+    return base.concat(
+      list.map((category: any) => {
+        const name = getCategoryName(category);
+        const cfg = getCategoryConfig(name, isDark);
+        return { key: String(category.id), label: name, icon: cfg.icon } as TabItem;
+      })
+    );
+  }, [categories, language, isDark]);
+
+  const activeTabKey = selectedCategoryId === null ? 'all' : String(selectedCategoryId);
+
+  // Reset list to start when active tab or data changes
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      try {
+        listRef.current?.scrollToOffset({ offset: 0, animated: false });
+      } catch {}
+    });
+    return () => task.cancel();
+  }, [activeTabKey, productsToShow.length]);
+
+  
   if (categoriesLoading || productsLoading) {
     return (
       <Animated.View 
@@ -238,6 +266,7 @@ export default function CategoryProductsSection({
     );
   }
 
+  
   return (
     <Animated.View
       entering={FadeInUp.delay(1000)}
@@ -255,73 +284,22 @@ export default function CategoryProductsSection({
           </VStack>
         </View>
 
-        {/* All badges in one bordered bar, each badge is an icon with its own color */}
-        <View
-          style={{
-            borderWidth: 2,
-            borderColor: colors.border,
-            borderRadius: 32,
-            marginHorizontal: 16,
-            marginBottom: 8,
-            overflow: 'hidden',
-            backgroundColor: colors.surface,
-          }}
-        >
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12 }}
-          >
-          {/* All icon badge */}
-          <Pressable
-            onPress={() => setSelectedCategoryId(null)}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingHorizontal: 14,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: selectedCategoryId === null ? colors.primary : colors.backgroundSecondary,
-              marginRight: 8,
-              opacity: selectedCategoryId === null ? 1 : 0.92,
-            }}
-          >
-            <Icon as={Sparkles} size="md" style={{ color: selectedCategoryId === null ? colors.textInverse : colors.textSecondary, marginRight: 6 }} />
-            <Text style={{ color: selectedCategoryId === null ? colors.textInverse : colors.textSecondary, fontWeight: '600', fontSize: 15 }}>All</Text>
-          </Pressable>
-
-          {categories?.filter(cat => !cat.isDeleted).map((category) => {
-            const isSelected = selectedCategoryId === category.id;
-            const config = getCategoryConfig(getCategoryName(category), isDark);
-            return (
-              <Pressable
-                key={category.id}
-                onPress={() => handleCategoryPress(category.id)}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  paddingHorizontal: 14,
-                  height: 44,
-                  borderRadius: 22,
-                  backgroundColor: isSelected ? config.color : config.lightColor,
-                  marginRight: 8,
-                  opacity: isSelected ? 1 : 0.92,
-                }}
-              >
-                <Icon as={config.icon} size="md" style={{ color: isSelected ? '#fff' : config.color, marginRight: 6 }} />
-                <Text style={{ color: isSelected ? '#fff' : config.color, fontWeight: '600', fontSize: 15 }}>{getCategoryName(category)}</Text>
-              </Pressable>
-            );
-          })}
-          </ScrollView>
+        {/* Categories as Segmented Tabs */}
+        <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+          <SegmentedTabs
+            tabs={categoryTabs}
+            activeKey={activeTabKey}
+            onChange={(key) => setSelectedCategoryId(key === 'all' ? null : parseInt(key))}
+            scrollable
+          />
         </View>
 
         {/* Enhanced Products Grid */}
         <View className="px-5">
           {productsToShow.length > 0 ? (
             <FlatList
+              key={activeTabKey}
+              ref={listRef}
               data={productsToShow}
               keyExtractor={item => item.id?.toString()}
               horizontal
