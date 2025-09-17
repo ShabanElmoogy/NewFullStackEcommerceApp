@@ -41,12 +41,7 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
     }
   };
 
-  const handleSuggestionPress = (suggestion: string) => {
-    setSearchText(suggestion);
-    setSearchQuery(suggestion);
-    handleSearch(suggestion);
-  };
-
+  
   const handleClear = () => {
     setSearchText('');
     clearSearchQuery();
@@ -86,9 +81,7 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
           onSearch={handleSearch}
           onClear={handleClear}
           autoSearch={false}
-          showSuggestions={true}
-          suggestions={['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Beauty']}
-          onSuggestionPress={handleSuggestionPress}
+          showSuggestions={false}
           className="flex-1"
         />
 
