@@ -18,22 +18,19 @@ export function CompareTabs({ activeTab, onChange }: CompareTabsProps) {
     { key: 'features' as const, label: 'Features', icon: Check },
   ];
   return (
-    <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
-      <View style={{ backgroundColor: colors.surfaceSecondary, borderRadius: 12, padding: 4, flexDirection: 'row' }}>
+    <View className="px-4 pb-3">
+      <View
+        className="flex-row rounded-xl p-1"
+        style={{ backgroundColor: colors.surfaceSecondary }}
+      >
         {tabs.map((tab) => {
           const selected = activeTab === tab.key;
           return (
             <Pressable
               key={tab.key}
               onPress={() => onChange(tab.key)}
+              className="flex-1 flex-row items-center justify-center py-3 px-3 rounded-lg"
               style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingVertical: 12,
-                paddingHorizontal: 12,
-                borderRadius: 8,
                 backgroundColor: selected ? colors.card : 'transparent',
                 shadowColor: selected ? colors.shadow : 'transparent',
                 shadowOffset: { width: 0, height: 2 },
@@ -42,8 +39,17 @@ export function CompareTabs({ activeTab, onChange }: CompareTabsProps) {
                 elevation: selected ? 2 : 0,
               }}
             >
-              <Icon as={tab.icon} size="sm" style={{ color: selected ? colors.primary : colors.textSecondary, marginRight: 8 }} />
-              <Text style={{ color: selected ? colors.primary : colors.textSecondary, fontSize: 14, fontWeight: selected ? '700' : '500' }}>{tab.label}</Text>
+              <Icon
+                as={tab.icon}
+                size="sm"
+                style={{ color: selected ? colors.primary : colors.textSecondary, marginRight: 8 }}
+              />
+              <Text
+                className={selected ? 'font-bold' : 'font-medium'}
+                style={{ color: selected ? colors.primary : colors.textSecondary, fontSize: 14 }}
+              >
+                {tab.label}
+              </Text>
             </Pressable>
           );
         })}

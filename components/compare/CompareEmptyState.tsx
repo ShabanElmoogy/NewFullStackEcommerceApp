@@ -12,29 +12,29 @@ export interface CompareEmptyStateProps {
 export function CompareEmptyState({ onBrowseProducts }: CompareEmptyStateProps) {
   const { colors, isDark } = useTheme();
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 }}>
-      <View style={{
-        backgroundColor: colors.card,
-        borderRadius: 24,
-        padding: 32,
-        shadowColor: colors.shadow,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: isDark ? 0.3 : 0.1,
-        shadowRadius: 16,
-        elevation: 8,
-        alignItems: 'center',
-        maxWidth: 320,
-        width: '100%',
-        borderWidth: isDark ? 1 : 0,
-        borderColor: colors.border,
-      }}>
-        <View style={{ width: 80, height: 80, backgroundColor: colors.primary + '15', borderRadius: 40, alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+    <View className="flex-1 items-center justify-center px-6" style={{ backgroundColor: colors.background }}>
+      <View
+        className="rounded-3xl p-8 items-center w-full max-w-xs"
+        style={{
+          backgroundColor: colors.card,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 16,
+          elevation: 8,
+          borderWidth: isDark ? 1 : 0,
+          borderColor: colors.border,
+        }}
+      >
+        <View className="w-20 h-20 rounded-full items-center justify-center mb-5" style={{ backgroundColor: colors.primary + '15' }}>
           <Icon as={Package} size="xl" style={{ color: colors.primary }} />
         </View>
-        <Text style={{ color: colors.text, fontSize: 24, fontWeight: '700', marginBottom: 8, textAlign: 'center' }}>No Products to Compare</Text>
-        <Text style={{ color: colors.textSecondary, fontSize: 16, marginBottom: 24, textAlign: 'center', lineHeight: 24 }}>Add products to comparison from the products page to see detailed side-by-side comparisons</Text>
-        <Pressable onPress={onBrowseProducts} style={{ backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 16, borderRadius: 16, width: '100%', alignItems: 'center' }}>
-          <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>Browse Products</Text>
+        <Text className="text-center font-bold mb-2" style={{ color: colors.text, fontSize: 24 }}>No Products to Compare</Text>
+        <Text className="text-center mb-6" style={{ color: colors.textSecondary, fontSize: 16, lineHeight: 24 }}>
+          Add products to comparison from the products page to see detailed side-by-side comparisons
+        </Text>
+        <Pressable onPress={onBrowseProducts} className="rounded-2xl py-4 w-full items-center" style={{ backgroundColor: colors.primary }}>
+          <Text className="font-semibold" style={{ color: 'white', fontSize: 16 }}>Browse Products</Text>
         </Pressable>
       </View>
     </View>

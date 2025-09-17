@@ -121,7 +121,7 @@ export default function CompareScreen() {
 
       {/* Header + Tabs */}
       <Animated.View style={[animatedHeaderStyle]}>
-        <View style={{ paddingTop: insets.top }}>
+        <View>
           <CompareHeader count={compareList.length} onBack={handleBack} onClearAll={handleClearAll} />
           <CompareTabs
             activeTab={activeTab}

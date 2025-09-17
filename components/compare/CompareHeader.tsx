@@ -26,41 +26,30 @@ export function CompareHeader({ count, onBack, onClearAll }: CompareHeaderProps)
         elevation: 4,
         borderBottomWidth: isDark ? 1 : 0,
         borderBottomColor: colors.border,
+        marginBottom : 10
       }}
     >
-      <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+      <View className="px-4 pb-4">
         <HStack className="items-center justify-between mb-4">
           <HStack className="items-center" space="md">
             <Pressable
               onPress={onBack}
-              style={{
-                width: 44,
-                height: 44,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 22,
-                backgroundColor: colors.surfaceSecondary,
-              }}
+              className="w-11 h-11 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.surfaceSecondary }}
             >
               <Icon as={ArrowLeft} size="md" style={{ color: colors.text }} />
             </Pressable>
             <VStack>
-              <Text style={{ color: colors.text, fontSize: 22, fontWeight: '700' }}>Product Comparison</Text>
-              <Text style={{ color: colors.textSecondary, fontSize: 14 }}>Compare {count} products side by side</Text>
+              <Text className="font-bold py-3" style={{ color: colors.text, fontSize: 22 }}>Product Comparison</Text>
+              <Text className="text-sm" style={{ color: colors.textSecondary }}>Compare {count} products side by side</Text>
             </VStack>
           </HStack>
           <Pressable
             onPress={onClearAll}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 12,
-              backgroundColor: colors.error + '15',
-              borderWidth: 1,
-              borderColor: colors.error + '30',
-            }}
+            className="px-4 py-2 rounded-xl border"
+            style={{ backgroundColor: colors.error + '15', borderColor: colors.error + '30' }}
           >
-            <Text style={{ color: colors.error, fontSize: 14, fontWeight: '600' }}>Clear All</Text>
+            <Text className="font-semibold" style={{ color: colors.error, fontSize: 14 }}>Clear All</Text>
           </Pressable>
         </HStack>
       </View>
