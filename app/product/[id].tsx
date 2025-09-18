@@ -15,7 +15,6 @@ import { Pressable, View } from 'react-native';
 import { useProduct } from '@/hooks/useProducts';
 import { ActivityIndicator, Animated } from 'react-native';
 import { useCart } from '@/store/cartStore';
-import { CustomToast } from "@/components/CustomToast";
 import WishlistButton from '@/components/products/productCard/WishlistButton';
 import { 
   Star, 
