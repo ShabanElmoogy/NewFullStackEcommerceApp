@@ -17,6 +17,7 @@ import { Icon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { Pressable } from '@/components/ui/pressable';
 import { Sparkles, Star, Crown } from 'lucide-react-native';
+import { useTheme } from '@/hooks/useTheme';
 import Animated, { 
   FadeInUp, 
   FadeIn,
@@ -68,6 +69,7 @@ const AnimatedBox = Animated.createAnimatedComponent(Box);
 export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
   const [activeSlide, setActiveSlide] = useState(0);
   const sparkleScale = useSharedValue(1);
+  const { colors } = useTheme();
 
   // Decorative sparkle icon animation (does not affect layout positioning).
   // Loops between 1 and 1.3 scale. If you want to pause this on first open,
@@ -178,11 +180,11 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
             onPress={() => goToSlide(i)}
           >
             <Box
-              className={`h-2 rounded-sm mx-1 ${
-                activeSlide === i 
-                  ? 'w-5 bg-blue-500' 
-                  : 'w-2 bg-gray-300'
-              }`}
+              className="h-2 rounded-sm mx-1"
+              style={{
+                width: activeSlide === i ? 20 : 8,
+                backgroundColor: activeSlide === i ? colors.primary : colors.border,
+              }}
             />
           </Pressable>
         ))}

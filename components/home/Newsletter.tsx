@@ -41,7 +41,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
   const containerStyle = useMemo(() => ({
     backgroundColor: isDark 
       ? colors.surfaceSecondary 
-      : `linear-gradient(135deg, ${colors.primary}15 0%, ${colors.primary}25 100%)`,
+      : colors.primary,
     borderRadius: 24,
     padding: 24,
     shadowColor: colors.primary,
@@ -184,7 +184,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
               <VStack className="flex-1">
                 <Text
                   className="font-black text-3xl leading-tight"
-                  style={{ color: isDark ? colors.text : '#FFFFFF' }}
+                  style={{ color: isDark ? colors.text : colors.textInverse }}
                 >
                   Stay in the Loop
                 </Text>
@@ -199,7 +199,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
                   />
                   <Text
                     className="text-sm font-semibold"
-                    style={{ color: isDark ? colors.primary : '#E0E7FF' }}
+                    style={{ color: isDark ? colors.primary : colors.textInverse }}
                   >
                     Join 50,000+ happy subscribers
                   </Text>
@@ -212,7 +212,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
           <Animated.View entering={doEnter ? FadeInDown.delay(2000).springify() : undefined}>
             <Text
               className="text-base leading-relaxed mb-5"
-              style={{ color: isDark ? colors.textSecondary : '#E5E7EB' }}
+              style={{ color: isDark ? colors.textSecondary : colors.textInverse }}
             >
               Get exclusive deals, early access to sales, and personalized recommendations. 
               <Text className="font-bold" style={{ color: colors.warning }}> Join the VIP club!</Text>
@@ -235,7 +235,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
                   <Icon as={benefit.icon} size={12} style={{ color: benefit.color, marginRight: 6 }} />
                   <Text
                     className="text-xs font-medium"
-                    style={{ color: isDark ? colors.textSecondary : '#F3F4F6' }}
+                    style={{ color: isDark ? colors.textSecondary : colors.textInverse }}
                   >
                     {benefit.text}
                   </Text>
@@ -257,7 +257,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
                     value={email}
                     onChangeText={setEmail}
                     placeholder="your.email@example.com"
-                    placeholderTextColor={isDark ? colors.textTertiary : '#9CA3AF'}
+                    placeholderTextColor={isDark ? colors.textTertiary : colors.textSecondary}
                     className="text-base py-4 font-medium"
                     style={{ color: inputStyle.color }}
                     keyboardType="email-address"
@@ -319,7 +319,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
                 </Text>
                 <Text
                   className="text-center text-sm leading-relaxed"
-                  style={{ color: isDark ? colors.textSecondary : '#6B7280' }}
+                  style={{ color: isDark ? colors.textSecondary : colors.textSecondary }}
                 >
                   Check your inbox for a special welcome gift and start saving today!
                 </Text>
@@ -333,7 +333,7 @@ export default function Newsletter({ disableInitialAnimation = false }: { disabl
               <Icon as={Shield} size={12} style={{ color: colors.success, marginRight: 6 }} />
               <Text
                 className="text-xs text-center font-medium"
-                style={{ color: isDark ? colors.textTertiary : '#D1D5DB' }}
+                style={{ color: isDark ? colors.textTertiary : colors.textInverse }}
               >
                 100% secure • Unsubscribe anytime • No spam, ever
               </Text>

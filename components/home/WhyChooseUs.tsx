@@ -10,15 +10,39 @@ import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const features = [
-  { icon: Truck, title: 'Free Shipping', subtitle: 'Orders over $50', color: '#10B981' },
-  { icon: Shield, title: 'Secure Payment', subtitle: '100% protected', color: '#3B82F6' },
-  { icon: Headphones, title: '24/7 Support', subtitle: 'Always here', color: '#8B5CF6' },
-  { icon: Award, title: 'Best Quality', subtitle: 'Premium only', color: '#F59E0B' },
-];
-
 export default function WhyChooseUs() {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
+
+  const features = [
+    { 
+      icon: Truck, 
+      title: 'Free Shipping', 
+      subtitle: 'Orders over $50', 
+      color: colors.success,
+      bgColor: isDark ? 'rgba(48, 209, 88, 0.15)' : 'rgba(52, 199, 89, 0.15)'
+    },
+    { 
+      icon: Shield, 
+      title: 'Secure Payment', 
+      subtitle: '100% protected', 
+      color: colors.primary,
+      bgColor: isDark ? 'rgba(10, 132, 255, 0.15)' : 'rgba(0, 122, 255, 0.15)'
+    },
+    { 
+      icon: Headphones, 
+      title: '24/7 Support', 
+      subtitle: 'Always here', 
+      color: colors.info,
+      bgColor: isDark ? 'rgba(10, 132, 255, 0.15)' : 'rgba(0, 122, 255, 0.15)'
+    },
+    { 
+      icon: Award, 
+      title: 'Best Quality', 
+      subtitle: 'Premium only', 
+      color: colors.warning,
+      bgColor: isDark ? 'rgba(255, 159, 10, 0.15)' : 'rgba(255, 149, 0, 0.15)'
+    },
+  ];
 
   return (
     <Animated.View
@@ -61,7 +85,7 @@ export default function WhyChooseUs() {
                   style={{
                     width: 56,
                     height: 56,
-                    backgroundColor: feature.color + '15',
+                    backgroundColor: feature.bgColor,
                     borderRadius: 28,
                     alignItems: 'center',
                     justifyContent: 'center',

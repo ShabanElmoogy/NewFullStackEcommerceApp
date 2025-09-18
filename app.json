@@ -23,6 +23,8 @@
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": [
           "en",
+          "ar",
+          "en",
           "ar"
         ]
       }
@@ -55,6 +57,23 @@
           "rootViewBackgroundColor": "#000000"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "expo-navigation-bar": {
+        "backgroundColor": "#000000",
+        "barStyle": "light",
+        "behavior": "inset-swipe"
+      },
+      "eas": {
+        "projectId": "d7841819-85a2-46f3-ba2a-5a43f147e39b"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d7841819-85a2-46f3-ba2a-5a43f147e39b"
+    }
   }
 }

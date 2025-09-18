@@ -113,16 +113,16 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           onAddToCart={handleAddToCart}
           onAddToWishlist={handleAddToWishlist}
         />
-        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         <TrendingProducts onNavigate={handleNavigation} />
-        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         <WhyChooseUs />
-        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         <AppStatistics />
-        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 16, marginHorizontal: 16 }} />
+        <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         <Newsletter disableInitialAnimation={firstOpen} />
       </Animated.ScrollView>

@@ -8,6 +8,7 @@ import { Badge, BadgeText } from '@/components/ui/badge';
 import { Image } from '@/components/ui/image';
 import { TrendingUp, Star, Heart, Plus, Flame } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useRTL } from '@/hooks/useRTL';
 import Animated, { 
   FadeInUp, 
   FadeInRight, 
@@ -24,47 +25,48 @@ interface TrendingProductsProps {
   onNavigate: (route: string) => void;
 }
 
-const trendingProducts = [
-  {
-    id: 1,
-    name: 'AirPods Pro Max',
-    price: 399.99,
-    originalPrice: 549.99,
-    discount: 27,
-    rating: 4.9,
-    reviews: 2847,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
-    badge: 'Best Seller',
-    badgeColor: '#F59E0B'
-  },
-  {
-    id: 2,
-    name: 'iPhone 15 Pro',
-    price: 999.99,
-    originalPrice: 1199.99,
-    discount: 17,
-    rating: 4.8,
-    reviews: 1923,
-    image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
-    badge: 'New',
-    badgeColor: '#10B981'
-  },
-  {
-    id: 3,
-    name: 'MacBook Air M3',
-    price: 1099.99,
-    originalPrice: 1299.99,
-    discount: 15,
-    rating: 4.9,
-    reviews: 856,
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
-    badge: 'Limited',
-    badgeColor: '#EF4444'
-  }
-];
-
 export default function TrendingProducts({ onNavigate }: TrendingProductsProps) {
   const { colors } = useTheme();
+  const { isRTL, getFlexDirection } = useRTL();
+
+  const trendingProducts = [
+    {
+      id: 1,
+      name: 'AirPods Pro Max',
+      price: 399.99,
+      originalPrice: 549.99,
+      discount: 27,
+      rating: 4.9,
+      reviews: 2847,
+      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
+      badge: 'Best Seller',
+      badgeColor: colors.warning
+    },
+    {
+      id: 2,
+      name: 'iPhone 15 Pro',
+      price: 999.99,
+      originalPrice: 1199.99,
+      discount: 17,
+      rating: 4.8,
+      reviews: 1923,
+      image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
+      badge: 'New',
+      badgeColor: colors.success
+    },
+    {
+      id: 3,
+      name: 'MacBook Air M3',
+      price: 1099.99,
+      originalPrice: 1299.99,
+      discount: 15,
+      rating: 4.9,
+      reviews: 856,
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop',
+      badge: 'Limited',
+      badgeColor: colors.error
+    }
+  ];
   const pulseScale = useSharedValue(1);
 
   React.useEffect(() => {
@@ -118,8 +120,17 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
           </View>
         </HStack>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <HStack space="md" className="px-1">
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ 
+            paddingHorizontal: 4, 
+            paddingRight: isRTL ? 4 : 20,
+            paddingLeft: isRTL ? 20 : 4
+          }}
+          style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+        >
+          <View style={{ flexDirection: getFlexDirection('row'), gap: 12 }}>
             {trendingProducts.map((product, index) => (
               <AnimatedPressable
                 key={product.id}
@@ -158,7 +169,7 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
                       paddingVertical: 4
                     }}>
                       <Text style={{
-                        color: '#FFFFFF',
+                        color: colors.textInverse,
                         fontWeight: 'bold',
                         fontSize: 12
                       }}>
@@ -265,7 +276,7 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
                 </VStack>
               </AnimatedPressable>
             ))}
-          </HStack>
+          </View>
         </ScrollView>
       </VStack>
     </Animated.View>

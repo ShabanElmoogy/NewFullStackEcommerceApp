@@ -1,5 +1,7 @@
 // Export all UI components
 export { default as SimpleSearchInput } from './SimpleSearchInput';
+export { default as ReusableDialog } from './ReusableDialog';
+export * from './ReusableDialog';
 
 // Re-export existing components
 export * from './text';

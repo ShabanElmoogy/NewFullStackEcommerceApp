@@ -24,6 +24,9 @@ export type AddToCartButtonProps = {
   onAdded?: () => void; // callback after successful add
   animate?: boolean; // default true
   successFlashMs?: number; // default 900
+  showPrice?: boolean; // default false - show total price in button
+  variant?: 'default' | 'outline'; // default 'default'
+  flex?: number; // for flex layout
 };
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({
@@ -42,6 +45,9 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   onAdded,
   animate = true,
   successFlashMs = 900,
+  showPrice = false,
+  variant = 'default',
+  flex,
 }) => {
   const addProduct = useCart((s) => s.addProduct);
   const { colors } = useTheme();
@@ -108,33 +114,83 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     onAdded?.();
   };
 
+  const totalPrice = (product.price * quantity).toFixed(2);
+  
   const currentLabel = !inStock
     ? outOfStockMessage
     : loading
     ? 'Adding...'
     : justAdded
     ? 'Added!'
+    : showPrice
+    ? `${label} • ${totalPrice}`
     : label;
 
   const CurrentIcon = !inStock ? ShoppingCart : loading ? Loader : justAdded ? Check : leftIcon;
 
-  const backgroundColor = !inStock
-    ? colors.backgroundSecondary
-    : justAdded
-    ? colors.success
-    : colors.primary;
+  const getButtonStyles = () => {
+    const baseStyle = { flex };
+    
+    if (variant === 'outline') {
+      return {
+        ...baseStyle,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        borderColor: !inStock 
+          ? colors.backgroundSecondary 
+          : justAdded 
+          ? colors.success 
+          : colors.primary,
+      };
+    }
+    
+    return {
+      ...baseStyle,
+      backgroundColor: !inStock
+        ? colors.backgroundSecondary
+        : justAdded
+        ? colors.success
+        : colors.primary,
+    };
+  };
+
+  const getTextColor = () => {
+    if (variant === 'outline') {
+      return !inStock 
+        ? 'text-typography-400' 
+        : justAdded 
+        ? 'text-success-600' 
+        : 'text-primary-600';
+    }
+    return !inStock ? 'text-typography-400' : 'text-white';
+  };
+
+  const getIconColor = () => {
+    if (variant === 'outline') {
+      return !inStock 
+        ? colors.backgroundSecondary 
+        : justAdded 
+        ? colors.success 
+        : colors.primary;
+    }
+    return !inStock ? colors.backgroundSecondary : '#FFFFFF';
+  };
 
   const content = (
     <Button
       size={size}
       onPress={handlePress}
       className={className}
-      style={[{ backgroundColor }, style as any]}
+      style={[getButtonStyles(), style as any]}
     >
       <Animated.View style={{ transform: [{ scale: animate ? iconScale : 1 }], marginRight: 8 }}>
-        <Icon as={CurrentIcon} size="xs" className={!inStock ? 'text-typography-400' : 'text-white'} />
+        <Icon 
+          as={CurrentIcon} 
+          size="xs" 
+          style={{ color: getIconColor() }}
+        />
       </Animated.View>
-      <ButtonText className={!inStock ? 'text-typography-400' : 'text-white font-semibold'}>
+      <ButtonText className={`${getTextColor()} font-semibold`}>
         {currentLabel}
       </ButtonText>
     </Button>

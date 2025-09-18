@@ -1,6 +1,6 @@
 import { useCart } from '@/store/cartStore';
 import React, { useEffect } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, View, StatusBar } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
@@ -16,10 +16,11 @@ import { Divider } from '@/components/ui/divider';
 import { Badge, BadgeText } from '@/components/ui/badge';
 import { useMutation } from '@tanstack/react-query';
 import { createOrder } from '@/api/orders';
-import { CustomToast } from '@/components/CustomToast';
 import { ConfirmationToast } from '@/components/ConfirmationToast';
 import { useAuth } from '@/store/authStore';
-import { SafeToast } from '@/components/SafeToast';
+import { useTheme } from '@/hooks/useTheme';
+import ReusableDialog from '@/components/ui/ReusableDialog';
+import { Modal, Animated, Dimensions } from 'react-native';
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
@@ -31,6 +32,59 @@ export default function CartScreen() {
 
   const isAuthenticated = useAuth(s => s.isAuthenticated);
   const setReturnUrl = useAuth(s => s.setReturnUrl);
+  
+  // Theme colors
+  const { colors, isDark } = useTheme();
+
+  // Dialog state for clear all confirmation
+  const [showClearDialog, setShowClearDialog] = React.useState(false);
+  const [isClearing, setIsClearing] = React.useState(false);
+
+  // Animation values
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const scaleAnim = React.useRef(new Animated.Value(0.8)).current;
+
+  // Screen dimensions
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+  // Debug effect to track state changes
+  React.useEffect(() => {
+    console.log('showClearDialog state changed to:', showClearDialog);
+    
+    if (showClearDialog) {
+      // Reset animation values and animate in
+      fadeAnim.setValue(0);
+      scaleAnim.setValue(0.8);
+      
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          tension: 100,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      // Animate out
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 0.8,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [showClearDialog, fadeAnim, scaleAnim]);
 
   const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
   const totalPrice = items
@@ -43,7 +97,7 @@ export default function CartScreen() {
   useEffect(() => {
     if (!isAuthenticated) {
       setReturnUrl('/cart');
-      router.replace('/(auth)/login');
+      router.replace('/login');
     }
   }, [isAuthenticated, setReturnUrl, router]);
 
@@ -122,39 +176,31 @@ export default function CartScreen() {
 
   const handleClearAllItems = () => {
     console.log('Clear all items clicked');
-    //TODO: Add Toast
-    // toast.show({
-    //   placement: "top",
-    //   duration: 8000,
-    //   render: ({ id }) => (
-    //     <SafeToast placement="top">
-    //       <ConfirmationToast
-    //         id={id}
-    //         title="Clear Cart"
-    //         message={`Are you sure you want to remove all ${totalQuantity} items from your cart? This action cannot be undone.`}
-    //         onConfirm={() => {
-    //           console.log('Clearing all items from cart');
-    //           resetCart();
-    //           toast.close(id);
-    //           toast.show({
-    //             placement: "bottom",
-    //             duration: 3000,
-    //             render: ({ id: successId }) => (
-    //               <CustomToast id={successId} message="Cart cleared successfully" />
-    //             ),
-    //           });
-    //         }}
-    //         onCancel={() => {
-    //           console.log('Clear all cancelled');
-    //           toast.close(id);
-    //         }}
-    //         confirmText="Clear All"
-    //         cancelText="Cancel"
-    //         type="danger"
-    //       />
-    //     </SafeToast>
-    //   ),
-    // });
+    console.log('Total quantity:', totalQuantity);
+    console.log('Current showClearDialog state before:', showClearDialog);
+    
+    // Force state update and ensure it's applied
+    setShowClearDialog(prev => {
+      console.log('Setting showClearDialog from', prev, 'to true');
+      return true;
+    });
+  };
+
+  const handleConfirmClear = async () => {
+    console.log('Clearing all items from cart');
+    setIsClearing(true);
+    
+    // Add a small delay for better UX
+    setTimeout(() => {
+      resetCart();
+      setIsClearing(false);
+      setShowClearDialog(false);
+    }, 500);
+  };
+
+  const handleCancelClear = () => {
+    console.log('Clear cancelled');
+    setShowClearDialog(false);
   };
 
   const onCheckOut = () => {
@@ -195,23 +241,43 @@ export default function CartScreen() {
   // Empty cart state
   if (items.length === 0) {
     return (
-      <View className="flex-1 justify-center items-center p-6 bg-background-0">
-        <VStack className="items-center" space="lg">
-          <View className="w-24 h-24 bg-background-100 rounded-full items-center justify-center">
-            <Icon as={ShoppingBag} size="xl" className="text-typography-400" />
-          </View>
-          <VStack className="items-center" space="sm">
-            <Heading size="xl" className="text-typography-900">Your cart is empty</Heading>
-            <Text className="text-typography-600 text-center max-w-[280px]">
-              Looks like you haven't added any items to your cart yet
-            </Text>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <VStack className="items-center" space="lg">
+            <View style={{
+              width: 96,
+              height: 96,
+              backgroundColor: colors.surfaceSecondary,
+              borderRadius: 48,
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Icon as={ShoppingBag} size="xl" style={{ color: colors.textTertiary }} />
+            </View>
+            <VStack className="items-center" space="sm">
+              <Heading size="xl" style={{ color: colors.text }}>Your cart is empty</Heading>
+              <Text style={{ 
+                color: colors.textSecondary, 
+                textAlign: 'center', 
+                maxWidth: 280 
+              }}>
+                Looks like you haven't added any items to your cart yet
+              </Text>
+            </VStack>
+            <Link href="/" asChild>
+              <Button 
+                size="lg" 
+                style={{ 
+                  backgroundColor: colors.primary,
+                  marginTop: 16
+                }}
+              >
+                <ButtonText style={{ color: colors.textInverse }}>Start Shopping</ButtonText>
+              </Button>
+            </Link>
           </VStack>
-          <Link href="/" asChild>
-            <Button size="lg" className="mt-4">
-              <ButtonText>Start Shopping</ButtonText>
-            </Button>
-          </Link>
-        </VStack>
+        </View>
       </View>
     );
   }
@@ -220,35 +286,59 @@ export default function CartScreen() {
     const itemTotal = item.quantity * item.product.price;
     
     return (
-      <Card className="p-4 mb-3 bg-background-0 border border-outline-200">
+      <View style={{
+        backgroundColor: colors.card,
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: colors.border,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      }}>
         <VStack space="md">
           <HStack space="md" className="items-start">
             {/* Product Image */}
             <View className="relative">
               <Image
                 source={{ uri: item.product.image || 'https://via.placeholder.com/80x80?text=No+Image' }}
-                className="w-20 h-20 rounded-lg"
+                style={{ width: 80, height: 80, borderRadius: 8 }}
                 alt={item.product.name}
                 resizeMode="cover"
               />
-              <Badge 
-                size="sm" 
-                variant="solid" 
-                className="absolute -top-2 -right-2 bg-primary-500"
-              >
-                <BadgeText className="text-white">{item.quantity}</BadgeText>
-              </Badge>
+              <View style={{
+                position: 'absolute',
+                top: -8,
+                right: -8,
+                backgroundColor: colors.primary,
+                borderRadius: 12,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                minWidth: 24,
+                alignItems: 'center'
+              }}>
+                <Text style={{ 
+                  color: colors.textInverse, 
+                  fontSize: 12, 
+                  fontWeight: 'bold' 
+                }}>
+                  {item.quantity}
+                </Text>
+              </View>
             </View>
 
             {/* Product Details */}
             <VStack className="flex-1" space="xs">
-              <Heading size="sm" className="text-typography-900 leading-tight">
+              <Heading size="sm" style={{ color: colors.text, lineHeight: 20 }}>
                 {item.product.name}
               </Heading>
-              <Text className="text-typography-600 text-sm">
+              <Text style={{ color: colors.textSecondary, fontSize: 14 }}>
                 ${item.product.price.toFixed(2)} each
               </Text>
-              <Text className="text-primary-600 font-semibold">
+              <Text style={{ color: colors.primary, fontWeight: '600' }}>
                 Total: ${itemTotal.toFixed(2)}
               </Text>
             </VStack>
@@ -256,47 +346,85 @@ export default function CartScreen() {
             {/* Remove Button */}
             <Pressable
               onPress={() => handleRemoveItem(item.product.id, item.product.name)}
-              className="p-2 rounded-full active:bg-background-100"
+              style={{
+                padding: 8,
+                borderRadius: 20,
+                backgroundColor: colors.surfaceSecondary,
+              }}
             >
-              <Icon as={Trash2} size="sm" className="text-error-500" />
+              <Icon as={Trash2} size="sm" style={{ color: colors.error }} />
             </Pressable>
           </HStack>
 
           {/* Quantity Controls */}
           <HStack className="justify-between items-center">
-            <Text className="text-typography-600 font-medium">Quantity:</Text>
-            <HStack className="items-center bg-background-50 rounded-lg p-1" space="xs">
+            <Text style={{ color: colors.textSecondary, fontWeight: '500' }}>Quantity:</Text>
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.surfaceSecondary,
+              borderRadius: 8,
+              padding: 4
+            }}>
               <Pressable
                 onPress={() => decreaseQuantity(item.product.id)}
-                className="w-8 h-8 bg-background-0 rounded-md items-center justify-center border border-outline-200 active:bg-background-100"
+                style={{
+                  width: 32,
+                  height: 32,
+                  backgroundColor: colors.card,
+                  borderRadius: 6,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  opacity: item.quantity <= 1 ? 0.5 : 1
+                }}
                 disabled={item.quantity <= 1}
               >
                 <Icon 
                   as={Minus} 
                   size="xs" 
-                  className={item.quantity <= 1 ? "text-typography-300" : "text-typography-700"} 
+                  style={{ 
+                    color: item.quantity <= 1 ? colors.textTertiary : colors.text 
+                  }} 
                 />
               </Pressable>
               
-              <Text className="min-w-[40px] text-center font-semibold text-typography-900">
+              <Text style={{
+                minWidth: 40,
+                textAlign: 'center',
+                fontWeight: '600',
+                color: colors.text,
+                marginHorizontal: 8
+              }}>
                 {item.quantity}
               </Text>
               
               <Pressable
                 onPress={() => increaseQuantity(item.product.id)}
-                className="w-8 h-8 bg-background-0 rounded-md items-center justify-center border border-outline-200 active:bg-background-100"
+                style={{
+                  width: 32,
+                  height: 32,
+                  backgroundColor: colors.card,
+                  borderRadius: 6,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.border
+                }}
               >
-                <Icon as={Plus} size="xs" className="text-typography-700" />
+                <Icon as={Plus} size="xs" style={{ color: colors.text }} />
               </Pressable>
-            </HStack>
+            </View>
           </HStack>
         </VStack>
-      </Card>
+      </View>
     );
   };
 
   return (
-    <View className="flex-1 bg-background-50">
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
       <FlatList
         data={items}
         renderItem={renderCartItem}
@@ -307,46 +435,82 @@ export default function CartScreen() {
           <VStack space="md" className="mb-4">
             <HStack className="justify-between items-center">
               <VStack>
-                <Heading size="lg" className="text-typography-900">
+                <Heading size="lg" style={{ color: colors.text }}>
                   Shopping Cart
                 </Heading>
-                <Badge variant="outline" size="md" className="self-start mt-1">
-                  <BadgeText>{totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}</BadgeText>
-                </Badge>
+                <View style={{
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  borderRadius: 16,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  alignSelf: 'flex-start',
+                  marginTop: 4
+                }}>
+                  <Text style={{ color: colors.textSecondary, fontSize: 14 }}>
+                    {totalQuantity} {totalQuantity === 1 ? 'item' : 'items'}
+                  </Text>
+                </View>
               </VStack>
               
               {/* Clear All Button */}
               <Pressable
                 onPress={handleClearAllItems}
-                className="flex-row items-center bg-error-50 px-3 py-2 rounded-lg border border-error-200 active:bg-error-100"
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  backgroundColor: colors.error + '15',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  borderWidth: 1,
+                  borderColor: colors.error + '30'
+                }}
               >
-                <Icon as={Trash} size="sm" className="text-error-600 mr-2" />
-                <Text className="text-error-600 font-medium text-sm">Clear All</Text>
+                <Icon as={Trash} size="sm" style={{ color: colors.error, marginRight: 8 }} />
+                <Text style={{ color: colors.error, fontWeight: '500', fontSize: 14 }}>
+                  Clear All
+                </Text>
               </Pressable>
             </HStack>
-            <Divider />
+            <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 8 }} />
           </VStack>
         }
         ListFooterComponent={
           <VStack space="lg" className="mt-4">
             {/* Order Summary */}
-            <Card className="p-4 bg-background-0 border border-outline-200">
+            <View style={{
+              backgroundColor: colors.card,
+              borderRadius: 12,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 2,
+            }}>
               <VStack space="md">
-                <Heading size="md" className="text-typography-900 mb-2">
+                <Heading size="md" style={{ color: colors.text, marginBottom: 8 }}>
                   Order Summary
                 </Heading>
                 
                 <VStack space="sm">
                   <HStack className="justify-between">
-                    <Text className="text-typography-600">Subtotal ({totalQuantity} items)</Text>
-                    <Text className="font-semibold">${subtotal.toFixed(2)}</Text>
+                    <Text style={{ color: colors.textSecondary }}>
+                      Subtotal ({totalQuantity} items)
+                    </Text>
+                    <Text style={{ fontWeight: '600', color: colors.text }}>
+                      ${subtotal.toFixed(2)}
+                    </Text>
                   </HStack>
                   
                   <HStack className="justify-between">
-                    <Text className="text-typography-600">Shipping</Text>
-                    <Text className="font-semibold">
+                    <Text style={{ color: colors.textSecondary }}>Shipping</Text>
+                    <Text style={{ fontWeight: '600', color: colors.text }}>
                       {shipping === 0 ? (
-                        <Text className="text-success-600">FREE</Text>
+                        <Text style={{ color: colors.success }}>FREE</Text>
                       ) : (
                         `${shipping.toFixed(2)}`
                       )}
@@ -354,27 +518,33 @@ export default function CartScreen() {
                   </HStack>
                   
                   <HStack className="justify-between">
-                    <Text className="text-typography-600">Tax</Text>
-                    <Text className="font-semibold">${tax.toFixed(2)}</Text>
+                    <Text style={{ color: colors.textSecondary }}>Tax</Text>
+                    <Text style={{ fontWeight: '600', color: colors.text }}>
+                      ${tax.toFixed(2)}
+                    </Text>
                   </HStack>
                   
-                  <Divider className="my-2" />
+                  <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 8 }} />
                   
                   <HStack className="justify-between">
-                    <Heading size="md" className="text-typography-900">Total</Heading>
-                    <Heading size="md" className="text-primary-600">
+                    <Heading size="md" style={{ color: colors.text }}>Total</Heading>
+                    <Heading size="md" style={{ color: colors.primary }}>
                       ${finalTotal.toFixed(2)}
                     </Heading>
                   </HStack>
                 </VStack>
 
                 {shipping > 0 && (
-                  <Text className="text-sm text-typography-500 mt-2">
+                  <Text style={{ 
+                    fontSize: 14, 
+                    color: colors.textTertiary, 
+                    marginTop: 8 
+                  }}>
                     💡 Add ${(100 - subtotal).toFixed(2)} more for free shipping!
                   </Text>
                 )}
               </VStack>
-            </Card>
+            </View>
 
             {/* Action Buttons */}
             <VStack space="sm">
@@ -382,18 +552,28 @@ export default function CartScreen() {
                 size="lg"
                 onPress={onCheckOut}
                 disabled={createOrderMutation.isPending}
-                className="bg-primary-600"
+                style={{
+                  backgroundColor: colors.primary,
+                  opacity: createOrderMutation.isPending ? 0.7 : 1
+                }}
               >
-                <Icon as={CreditCard} size="sm" className="text-white mr-2" />
-                <ButtonText className="text-white font-semibold">
+                <Icon as={CreditCard} size="sm" style={{ color: colors.textInverse, marginRight: 8 }} />
+                <ButtonText style={{ color: colors.textInverse, fontWeight: '600' }}>
                   {createOrderMutation.isPending ? 'Processing...' : 'Proceed to Checkout'}
                 </ButtonText>
               </Button>
               
               <Link href="/" asChild>
-                <Button variant="outline" size="lg">
-                  <Icon as={ArrowLeft} size="sm" className="text-primary-600 mr-2" />
-                  <ButtonText className="text-primary-600">Continue Shopping</ButtonText>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  style={{
+                    borderColor: colors.primary,
+                    backgroundColor: 'transparent'
+                  }}
+                >
+                  <Icon as={ArrowLeft} size="sm" style={{ color: colors.primary, marginRight: 8 }} />
+                  <ButtonText style={{ color: colors.primary }}>Continue Shopping</ButtonText>
                 </Button>
               </Link>
 
@@ -401,6 +581,159 @@ export default function CartScreen() {
           </VStack>
         }
       />
+
+      {/* Enhanced Clear All Confirmation Dialog */}
+      <Modal
+        visible={showClearDialog}
+        transparent={true}
+        animationType="none"
+        onRequestClose={handleCancelClear}
+        statusBarTranslucent={true}
+      >
+        <Animated.View style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: screenWidth,
+          height: screenHeight,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 20,
+          opacity: fadeAnim,
+        }}>
+          <Pressable 
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onPress={handleCancelClear}
+          />
+          
+          <Animated.View style={{
+            backgroundColor: colors.card,
+            borderRadius: 16,
+            padding: 24,
+            width: '90%',
+            maxWidth: 400,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.3,
+            shadowRadius: 20,
+            elevation: 10,
+            transform: [{ scale: scaleAnim }],
+          }}>
+            {/* Warning Icon */}
+            <View style={{
+              alignItems: 'center',
+              marginBottom: 20,
+            }}>
+              <View style={{
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: colors.error + '20',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: 16,
+              }}>
+                <Icon as={Trash} size="xl" style={{ color: colors.error }} />
+              </View>
+              
+              <Heading size="xl" style={{ 
+                color: colors.text, 
+                textAlign: 'center',
+                marginBottom: 8,
+              }}>
+                Clear Cart
+              </Heading>
+            </View>
+
+            {/* Message */}
+            <Text style={{ 
+              color: colors.textSecondary, 
+              fontSize: 16,
+              lineHeight: 24,
+              textAlign: 'center',
+              marginBottom: 32,
+            }}>
+              Are you sure you want to remove all{' '}
+              <Text style={{ fontWeight: 'bold', color: colors.text }}>
+                {totalQuantity} items
+              </Text>
+              {' '}from your cart? This action cannot be undone.
+            </Text>
+
+            {/* Action Buttons */}
+            <VStack space="md">
+              <Button
+                onPress={handleConfirmClear}
+                disabled={isClearing}
+                style={{
+                  backgroundColor: colors.error,
+                  opacity: isClearing ? 0.7 : 1,
+                  height: 48,
+                }}
+              >
+                <HStack space="sm" className="items-center">
+                  {isClearing ? (
+                    <View style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: 10,
+                      borderWidth: 2,
+                      borderColor: colors.textInverse + '30',
+                      borderTopColor: colors.textInverse,
+                    }} />
+                  ) : (
+                    <Icon as={Trash} size="sm" style={{ color: colors.textInverse }} />
+                  )}
+                  <ButtonText style={{ 
+                    color: colors.textInverse,
+                    fontSize: 16,
+                    fontWeight: '600',
+                  }}>
+                    {isClearing ? 'Clearing...' : 'Clear All Items'}
+                  </ButtonText>
+                </HStack>
+              </Button>
+              
+              <Button
+                variant="outline"
+                onPress={handleCancelClear}
+                disabled={isClearing}
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: 'transparent',
+                  height: 48,
+                  opacity: isClearing ? 0.5 : 1,
+                }}
+              >
+                <ButtonText style={{ 
+                  color: colors.textSecondary,
+                  fontSize: 16,
+                  fontWeight: '500',
+                }}>
+                  Cancel
+                </ButtonText>
+              </Button>
+            </VStack>
+          </Animated.View>
+        </Animated.View>
+      </Modal>
+
+      {/* Clear All Confirmation Dialog */}
+      {/* <ReusableDialog
+        isOpen={showClearDialog}
+        onClose={handleCancelClear}
+        title="Clear Cart"
+        message={`Are you sure you want to remove all ${totalQuantity} items from your cart? This action cannot be undone.`}
+        type="confirm"
+        onConfirm={handleConfirmClear}
+        confirmText="Clear All"
+        cancelText="Cancel"
+        showCloseButton={true}
+        closeOnBackdropPress={true}
+      /> */}
     </View>
   );
 }

@@ -4,16 +4,7 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Icon } from '@/components/ui/icon';
 import { FlatList } from 'react-native'
-import { 
-  Smartphone, 
-  Shirt, 
-  Home, 
-  Dumbbell, 
-  Book, 
-  Gamepad2,
-  Sparkles,
-  Gift,
-} from 'lucide-react-native';
+import { Sparkles, Gift } from 'lucide-react-native';
 import Animated, { 
   FadeInUp, 
   useAnimatedStyle,
@@ -30,6 +21,7 @@ import { useLanguageStore } from '@/store/languageStore';
 import { useTheme } from '@/hooks/useTheme';
 import ProductCard from '@/components/products/productCard/ProductCard';
 import SegmentedTabs, { TabItem } from '@/components/ui/tabs/SegmentedTabs';
+import { createCategoryTabs } from '@/utils/categoryUtils';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -40,84 +32,12 @@ interface CategoryProductsSectionProps {
   onAddToWishlist?: (product: any) => void;
 }
 
-// Enhanced category configuration with theme-aware colors
-const getCategoryConfig = (categoryName: string, isDark: boolean) => {
-  const configs = {
-    'Mobiles': {
-      icon: Smartphone,
-      light: { color: '#3B82F6', lightColor: '#DBEAFE' }, // Blue
-      dark: { color: '#60A5FA', lightColor: '#1E3A8A' },
-      emoji: '📱',
-    },
-    'Fashion': {
-      icon: Shirt,
-      light: { color: '#EC4899', lightColor: '#FCE7F3' }, // Pink
-      dark: { color: '#F472B6', lightColor: '#831843' },
-      emoji: '👕',
-    },
-    'Home': {
-      icon: Home,
-      light: { color: '#10B981', lightColor: '#D1FAE5' }, // Emerald
-      dark: { color: '#34D399', lightColor: '#064E3B' },
-      emoji: '🏠',
-    },
-    'Sports': {
-      icon: Dumbbell,
-      light: { color: '#F59E0B', lightColor: '#FEF3C7' }, // Amber
-      dark: { color: '#FBBF24', lightColor: '#78350F' },
-      emoji: '💪',
-    },
-    'Books': {
-      icon: Book,
-      light: { color: '#8B5CF6', lightColor: '#EDE9FE' }, // Violet
-      dark: { color: '#A78BFA', lightColor: '#4C1D95' },
-      emoji: '📚',
-    },
-    'Gaming': {
-      icon: Gamepad2,
-      light: { color: '#EF4444', lightColor: '#FEE2E2' }, // Red
-      dark: { color: '#F87171', lightColor: '#7F1D1D' },
-      emoji: '🎮',
-    },
-    'Electronics': {
-      icon: Smartphone,
-      light: { color: '#06B6D4', lightColor: '#CFFAFE' }, // Cyan
-      dark: { color: '#22D3EE', lightColor: '#164E63' },
-      emoji: '⚡',
-    },
-    'Beauty': {
-      icon: Sparkles,
-      light: { color: '#F97316', lightColor: '#FED7AA' }, // Orange
-      dark: { color: '#FB923C', lightColor: '#9A3412' },
-      emoji: '💄',
-    },
-    'default': {
-      icon: Sparkles,
-      light: { color: '#6B7280', lightColor: '#F3F4F6' }, // Gray
-      dark: { color: '#9CA3AF', lightColor: '#374151' },
-      emoji: '✨',
-    },
-  };
-
-  const configKey = Object.keys(configs).find(key => 
-    categoryName.toLowerCase().includes(key.toLowerCase())
-  ) as keyof typeof configs;
-  
-  const config = configs[configKey] || configs.default;
-  const themeColors = isDark ? config.dark : config.light;
-  
-  return {
-    ...config,
-    color: themeColors.color,
-    lightColor: themeColors.lightColor,
-  };
-};
 
 export default function CategoryProductsSection({ 
   onNavigate, 
 }: CategoryProductsSectionProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-  const { language } = useLanguageStore();
+  const { language, isRTL } = useLanguageStore();
   const { colors, isDark } = useTheme();
   const listRef = React.useRef<FlatList<any> | null>(null);
   
@@ -197,18 +117,18 @@ export default function CategoryProductsSection({
   // Get products to display (filtered or trending)
   const productsToShow = selectedCategoryId ? filteredProducts : (allProducts?.slice(0, 8) || []);
 
-  // Build category tabs once data is available (hook order preserved above guards)
+  // Build category tabs using the generic utility
   const categoryTabs: TabItem[] = React.useMemo(() => {
-    const base: TabItem[] = [{ key: 'all', label: 'All', icon: Sparkles }];
-    const list = (categories || []).filter((cat: any) => !cat.isDeleted);
-    return base.concat(
-      list.map((category: any) => {
-        const name = getCategoryName(category);
-        const cfg = getCategoryConfig(name, isDark);
-        return { key: String(category.id), label: name, icon: cfg.icon } as TabItem;
-      })
+    if (!categories) return [];
+    
+    return createCategoryTabs(
+      categories,
+      colors,
+      isDark,
+      getCategoryName,
+      (category) => String(category.id)
     );
-  }, [categories, language, isDark]);
+  }, [categories, colors, isDark, language]);
 
   const activeTabKey = selectedCategoryId === null ? 'all' : String(selectedCategoryId);
 
@@ -298,15 +218,23 @@ export default function CategoryProductsSection({
         <View className="px-5">
           {productsToShow.length > 0 ? (
             <FlatList
-              key={activeTabKey}
+              key={`${activeTabKey}-${isRTL}`}
               ref={listRef}
               data={productsToShow}
               keyExtractor={item => item.id?.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingRight: 20 }}
+              inverted={isRTL}
+              contentContainerStyle={{ 
+                paddingRight: isRTL ? 0 : 20,
+                paddingLeft: isRTL ? 20 : 0
+              }}
               renderItem={({ item }) => (
-                <View style={{ width: screenWidth - 56, marginRight: 16 }}>
+                <View style={{ 
+                  width: screenWidth - 56, 
+                  marginRight: isRTL ? 0 : 16,
+                  marginLeft: isRTL ? 16 : 0
+                }}>
                   <ProductCard product={item} viewMode="list" />
                 </View>
               )}
@@ -380,7 +308,7 @@ export default function CategoryProductsSection({
             >
               <Icon as={Sparkles} size="md" style={{ color: colors.textInverse, marginRight: 10 }} />
               <Text style={{ 
-                color: colors.textInverse, 
+                color: colors.text, 
                 fontWeight: 'bold', 
                 fontSize: 16, 
                 letterSpacing: 0.5 

@@ -3,20 +3,39 @@ import { View, Pressable } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
-import { Globe, Heart, ShoppingCart } from 'lucide-react-native';
+import { Globe, Heart, ShoppingCart, Sun, Moon, Monitor } from 'lucide-react-native';
 import { useWishlist } from '@/store/wishlistStore';
 import { useCart } from '@/store/cartStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTheme } from '@/hooks/useTheme';
+import { ColorScheme } from '@/constants/Colors';
 
 export default function GlobalHeader() {
   const wishlistCount = useWishlist((state) => state.totalItems());
   const cartCount = useCart((state) => state.totalQuantity());
   const { isRTL, language, toggleLanguage } = useLanguageStore();
   const pathname = usePathname();
-  const { colors, isDark } = useTheme();
+  const { colors, isDark, themePreference, setTheme } = useTheme();
 
   const isHome = pathname === '/' || pathname === '/(tabs)' || pathname === '/(tabs)/index';
+
+  const handleThemeToggle = () => {
+    const modes: (ColorScheme | 'system')[] = ['light', 'dark', 'system'];
+    const currentIndex = modes.indexOf(themePreference);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    setTheme(modes[nextIndex]);
+  };
+
+  const getThemeIcon = () => {
+    switch (themePreference) {
+      case 'light': return Sun;
+      case 'dark': return Moon;
+      case 'system': return Monitor;
+      default: return Sun;
+    }
+  };
+
+  const ThemeIcon = getThemeIcon();
 
   return (
     <View
@@ -50,6 +69,22 @@ export default function GlobalHeader() {
               }}
             >
               <Globe size={20} color={colors.success || '#10B981'} />
+            </View>
+          </Pressable>
+
+          {/* Theme Toggle */}
+          <Pressable onPress={handleThemeToggle} className="active:opacity-90">
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: (colors.warning || '#F59E0B') + '20',
+              }}
+            >
+              <ThemeIcon size={20} color={colors.warning || '#F59E0B'} />
             </View>
           </Pressable>
 
