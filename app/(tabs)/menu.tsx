@@ -217,7 +217,7 @@ export default function MenuScreen() {
       title: 'Profile',
       subtitle: 'Manage your account',
       href: '/profile',
-      tint: 'info',
+      tint: 'info' as const,
     },
     {
       icon: ShoppingCart,
@@ -225,7 +225,7 @@ export default function MenuScreen() {
       subtitle: 'Review your items',
       href: '/cart',
       badge: cartCount,
-      tint: 'primary',
+      tint: 'primary' as const,
     },
     {
       icon: Heart,
@@ -233,14 +233,14 @@ export default function MenuScreen() {
       subtitle: 'Your favorite items',
       href: '/wishlist',
       badge: wishlistCount,
-      tint: 'error',
+      tint: 'error' as const,
     },
     {
       icon: Package,
       title: 'Orders',
       subtitle: 'Track your purchases',
       href: '/orders',
-      tint: 'success',
+      tint: 'success' as const,
     },
   ];
 
@@ -250,28 +250,28 @@ export default function MenuScreen() {
       title: 'Search',
       subtitle: 'Find products quickly',
       href: '/search',
-      tint: 'info',
+      tint: 'info' as const,
     },
     {
       icon: Bell,
       title: 'Notifications',
       subtitle: 'Stay updated',
       href: '/notifications',
-      tint: 'warning',
+      tint: 'warning' as const,
     },
     {
       icon: CreditCard,
       title: 'Payment Methods',
       subtitle: 'Manage cards & payments',
       href: '/payment-methods',
-      tint: 'primary',
+      tint: 'primary' as const,
     },
     {
       icon: MapPin,
       title: 'Addresses',
       subtitle: 'Delivery locations',
       href: '/addresses',
-      tint: 'success',
+      tint: 'success' as const,
     },
   ];
 
@@ -281,7 +281,7 @@ export default function MenuScreen() {
       title: 'Language',
       subtitle: isRTL ? 'العربية' : 'English',
       onPress: toggleLanguage,
-      tint: 'info',
+      tint: 'info' as const,
       rightElement: (
         <View style={{
           backgroundColor: colors.primary + '20',
@@ -305,7 +305,7 @@ export default function MenuScreen() {
       title: 'Theme',
       subtitle: getThemeSubtitle(),
       onPress: toggleTheme,
-      tint: 'warning',
+      tint: 'warning' as const,
       rightElement: (
         <View style={{
           width: 48,
@@ -315,7 +315,7 @@ export default function MenuScreen() {
           padding: 2,
           justifyContent: 'center'
         }}>
-          <View style={{
+          <Animated.View style={{
             width: 20,
             height: 20,
             backgroundColor: colors.surface,
@@ -331,7 +331,7 @@ export default function MenuScreen() {
       title: 'Settings',
       subtitle: 'App preferences',
       href: '/settings',
-      tint: 'primary',
+      tint: 'primary' as const,
     },
   ];
 
@@ -341,14 +341,14 @@ export default function MenuScreen() {
       title: 'Help & Support',
       subtitle: 'Get assistance',
       href: '/help',
-      tint: 'success',
+      tint: 'success' as const,
     },
     {
       icon: Headphones,
       title: 'Contact Us',
       subtitle: '24/7 customer service',
       href: '/contact',
-      tint: 'primary',
+      tint: 'primary' as const,
     },
     {
       icon: Star,
@@ -357,14 +357,14 @@ export default function MenuScreen() {
       onPress: () => {
         // Handle app rating
       },
-      tint: 'warning',
+      tint: 'warning' as const,
     },
     {
       icon: Shield,
       title: 'Privacy Policy',
       subtitle: 'Your data protection',
       href: '/privacy',
-      tint: 'info',
+      tint: 'info' as const,
     },
   ];
 

@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
-  ActivityIndicator,
   FlatList,
   View,
   ScrollView,
@@ -28,6 +27,7 @@ import { Button, ButtonText } from "../components/ui/button";
 import ResultsHeader from "../components/products/productsFilter/ResultsHeader";
 import NoResultsState from "../components/products/productsFilter/NoResultsState";
 import EmptyState from "../components/products/productsFilter/EmptyState";
+import AppLoader from "@/components/AppLoader";
 
 export default function ProductsScreen() {
   const [refreshing, setRefreshing] = useState(false);
@@ -135,10 +135,10 @@ export default function ProductsScreen() {
   if (isLoading || !filtersLoaded || !viewModeLoaded) {
     return (
       <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="mt-4 text-base" style={{ color: colors.textSecondary }}>
-          Loading products...
-        </Text>
+        <AppLoader
+          message="Discovering Products"
+          subtitle="Finding the best deals just for you..."
+        />
       </View>
     );
   }

@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Pressable, Dimensions, InteractionManager } from 'react-native';
+import { View, Pressable, Dimensions, InteractionManager } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Icon } from '@/components/ui/icon';
 import { FlatList } from 'react-native'
 import { Sparkles, Gift } from 'lucide-react-native';
-import Animated, { 
-  FadeInUp, 
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-  interpolate
-} from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useCategories } from '@/hooks/useCategories';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
@@ -22,6 +14,7 @@ import { useTheme } from '@/hooks/useTheme';
 import ProductCard from '@/components/products/productCard/ProductCard';
 import SegmentedTabs, { TabItem } from '@/components/ui/tabs/SegmentedTabs';
 import { createCategoryTabs } from '@/utils/categoryUtils';
+import AppLoader from '@/components/AppLoader';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -41,11 +34,6 @@ export default function CategoryProductsSection({
   const { colors, isDark } = useTheme();
   const listRef = React.useRef<FlatList<any> | null>(null);
   
-  // Animation values
-  const sparkleRotation = useSharedValue(0);
-  const pulseScale = useSharedValue(1);
-  const headerGlow = useSharedValue(0);
-  
   // Fetch categories and products
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: allProducts, isLoading: productsLoading } = useProducts();
@@ -62,47 +50,6 @@ export default function CategoryProductsSection({
     maxPrice: '',
     sortBy: 'popularity'
   });
-
-  useEffect(() => {
-    // Sparkle rotation animation
-    sparkleRotation.value = withRepeat(
-      withTiming(360, { duration: 3000 }),
-      -1,
-      false
-    );
-
-    // Pulse animation
-    pulseScale.value = withRepeat(
-      withSequence(
-        withTiming(1.1, { duration: 1000 }),
-        withTiming(1, { duration: 1000 })
-      ),
-      -1,
-      true
-    );
-
-    // Header glow animation
-    headerGlow.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 2000 }),
-        withTiming(0, { duration: 2000 })
-      ),
-      -1,
-      true
-    );
-  }, []);
-
-  const sparkleAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${sparkleRotation.value}deg` }],
-  }));
-
-  const pulseAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pulseScale.value }],
-  }));
-
-  const headerGlowStyle = useAnimatedStyle(() => ({
-    shadowOpacity: interpolate(headerGlow.value, [0, 1], [0.12, 0.25]),
-  }));
 
   // Get category name based on language
   const getCategoryName = (category: any) => {
@@ -145,48 +92,13 @@ export default function CategoryProductsSection({
   
   if (categoriesLoading || productsLoading) {
     return (
-      <Animated.View 
-        entering={FadeInUp.delay(1000)}
-        className="px-5"
-      >
-        <Animated.View style={[
-          {
-            backgroundColor: colors.card,
-            borderRadius: 24,
-            padding: 32,
-            alignItems: 'center',
-            shadowColor: colors.primary,
-            shadowOffset: { width: 0, height: 8 },
-            shadowRadius: 20,
-            elevation: 10,
-          },
-          pulseAnimatedStyle
-        ]}>
-          <Animated.View style={sparkleAnimatedStyle}>
-            <View style={{
-              width: 60,
-              height: 60,
-              backgroundColor: colors.primary,
-              borderRadius: 30,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 16,
-            }}>
-              <Icon as={Sparkles} size="xl" style={{ color: colors.textInverse }} />
-            </View>
-          </Animated.View>
-          <Text style={{ color: colors.text, fontWeight: '600', fontSize: 18, marginBottom: 8 }}>
-            Discovering Products
-          </Text>
-          <Text style={{ color: colors.textSecondary, textAlign: 'center' }}>
-            Finding the best deals just for you...
-          </Text>
-        </Animated.View>
-      </Animated.View>
+      <AppLoader 
+        message="Discovering Products"
+        subtitle="Finding the best deals just for you..."
+      />
     );
   }
-
-  
+ 
   return (
     <Animated.View
       entering={FadeInUp.delay(1000)}
