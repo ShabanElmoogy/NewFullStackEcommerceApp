@@ -16,14 +16,14 @@ export function getApiError(error: any): ErrorToast {
   // Handle API errors with RFC 9110 format
   if (error?.response?.data) {
     const errorData = error.response.data;
-    
+    console.log("Error Data",errorData)
     // Extract message from errors object
     if (errorData.errors) {
       const firstError = Object.values(errorData.errors)[0];
       if (Array.isArray(firstError) && firstError.length > 0) {
         return {
           title: getErrorTitle(errorData.status),
-          message: firstError[0]
+          message: firstError[0]        
         };
       }
     }

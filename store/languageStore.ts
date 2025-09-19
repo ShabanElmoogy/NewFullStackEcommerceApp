@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { I18nManager, Platform } from 'react-native';
 import i18n, { getLanguage, setLanguage, getDeviceLanguage } from '../utils/i18n';
-import { apiService } from '../api/apiService';
 
 interface LanguageState {
   language: string;
@@ -9,11 +8,19 @@ interface LanguageState {
   toggleLanguage: () => void;
   initializeLanguage: () => Promise<void>;
   handleLanguageChange: (lang: string, showAlert?: boolean) => Promise<void>;
+  setCultureHeaderCallback: (callback: (lang: string) => void) => void;
 }
+
+// Callback for updating API service culture header
+let cultureHeaderCallback: ((lang: string) => void) | null = null;
 
 export const useLanguageStore = create<LanguageState>((set, get) => ({
   language: getDeviceLanguage(), // Initialize with device language
   isRTL: getDeviceLanguage() === 'ar', // Set RTL based on device language
+
+  setCultureHeaderCallback: (callback: (lang: string) => void) => {
+    cultureHeaderCallback = callback;
+  },
 
   initializeLanguage: async () => {
     const lang = await getLanguage();
@@ -40,9 +47,11 @@ export const useLanguageStore = create<LanguageState>((set, get) => ({
       isRTL,
     });
 
-    // Update API service culture header
+    // Update API service culture header via callback
     try {
-      apiService.setCultureHeader(lang);
+      if (cultureHeaderCallback) {
+        cultureHeaderCallback(lang);
+      }
     } catch (error) {
       console.warn('⚠️ Could not update API service culture header:', error);
     }

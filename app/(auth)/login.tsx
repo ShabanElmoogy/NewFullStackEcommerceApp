@@ -14,11 +14,11 @@ export default function LoginScreen() {
   const scrollViewRef = useRef<ScrollView | null>(null);
   const router = useRouter();
   const { colors, isDark } = useTheme();
-  
+
   const isLoggedIn = useAuth(s => !!s.user);
   const returnUrl = useAuth(s => s.returnUrl);
   const clearReturnUrl = useAuth(s => s.clearReturnUrl);
-  
+
   const { control, handleSubmit, isValid, isLoading } = useLoginForm();
 
   const handlePasswordFocus = () => {
@@ -38,24 +38,24 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <StatusBar 
-        barStyle={isDark ? "light-content" : "dark-content"} 
-        backgroundColor={colors.background} 
+      <StatusBar
+        barStyle={isDark ? "light-content" : "dark-content"}
+        backgroundColor={colors.background}
       />
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 100}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 120}
       >
-        <ScrollView 
+        <ScrollView
           ref={scrollViewRef}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 50 }}
           showsVerticalScrollIndicator={false}
           style={{ backgroundColor: colors.background }}
           keyboardShouldPersistTaps="handled">
-            
+
           <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}>
-            
+
             <LoginHeader />
 
             <View
@@ -85,6 +85,15 @@ export default function LoginScreen() {
                 />
 
                 {/* Password Field - Using Reusable Controlled Component */}
+                <ControlledPasswordInput<LoginFormData>
+                  name="password"
+                  control={control}
+                  label="Password"
+                  placeholder="Enter your password"
+                  showLabel={false}
+                  onFocus={handlePasswordFocus}
+                />
+
                 <ControlledPasswordInput<LoginFormData>
                   name="password"
                   control={control}

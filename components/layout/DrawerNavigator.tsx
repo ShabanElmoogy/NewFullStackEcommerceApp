@@ -40,7 +40,6 @@ export function DrawerNavigator() {
       <Drawer.Screen name="orders" options={{ title: 'Orders' }} />
       <Drawer.Screen name="cart" options={{ title: 'Cart' }} />
       <Drawer.Screen name="wishlist" options={{ title: 'Wishlist' }} />
-      <Drawer.Screen name="rtl-test" options={{ title: 'RTL Test' }} />
     </Drawer>
 
   );

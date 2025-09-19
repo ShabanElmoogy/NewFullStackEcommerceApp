@@ -44,7 +44,7 @@ export const useRegisterForm = () => {
       // Here you would typically make an API call to register the user
       
       // Navigate to success screen or login
-      router.replace('/(auth)/login');
+      router.replace('/login');
     } catch (error) {
       console.error('Registration error:', error);
       // Handle API errors here

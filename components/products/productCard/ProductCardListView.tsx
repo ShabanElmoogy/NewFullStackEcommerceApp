@@ -5,12 +5,10 @@ import { Text } from "../../ui/text";
 import WishlistButton from "./WishlistButton";
 import CompareButton from "./CompareButton";
 import { useTheme } from "@/hooks/useTheme";
-import {
-  ProductLinkWrapper,
-  AddToCartButton,
-  ProductRating,
-  ProductPrice,
-} from "./ProductCardParts";
+import { ProductLinkWrapper } from "./ProductLinkWrapper";
+import { AddToCartButton } from "./AddToCartButton";
+import { ProductRating } from "./ProductRating";
+import { ProductPrice } from "./ProductPrice";
 import { Product } from "./types";
 import { useProductCard } from "./useProductCard";
 

@@ -1,26 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { BASE_URLS } from '@/constants';
-import { useLanguageStore } from '@/store/languageStore';
 
-// RFC 9110 Problem Details error format (from your API)
-export interface ProblemDetails {
-  type?: string;
-  title?: string;
-  status?: number;
-  detail?: string;
-  instance?: string;
-  errors?: Record<string, string[]>;
-}
-
-// Simplified API Error interface
-export interface ApiError extends Error {
-  status?: number;
-  title?: string;
-  type?: string;
-  detail?: string;
-  errors?: Record<string, string[]>;
-  fieldErrors?: Record<string, string[]>;
-}
 
 // Request configuration interface
 export interface RequestConfig extends AxiosRequestConfig {
@@ -30,6 +10,7 @@ export interface RequestConfig extends AxiosRequestConfig {
 class ApiService {
   private axiosInstance: AxiosInstance;
   private authToken: string | null = null;
+  private languageGetter: (() => string) | null = null;
 
   constructor() {
     this.axiosInstance = axios.create({
@@ -55,12 +36,12 @@ class ApiService {
 
         // Add Culture header based on current app language
         try {
-          const currentLanguage = useLanguageStore.getState().language;
+          const currentLanguage = this.languageGetter ? this.languageGetter() : 'en';
           config.headers.Culture = currentLanguage || 'en'; // Default to 'en' if no language is set
         } catch (error) {
           // Fallback to 'en' if there's any issue accessing the language store
           config.headers.Culture = 'en';
-                  }
+        }
 
         
         return config;
@@ -73,13 +54,12 @@ class ApiService {
     // Response interceptor
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
-        
         return response;
       },
       (error: AxiosError) => {
         // Handle common errors
         this.handleError(error);
-        return Promise.reject(this.formatError(error));
+        return Promise.reject(error);
       }
     );
   }
@@ -106,56 +86,7 @@ class ApiService {
     }
   }
 
-  private formatError(error: AxiosError): ApiError {
-    const response = error.response;
-    
-    if (response?.data) {
-      const problemDetails = response.data as ProblemDetails;
-      
-      // Check if it's RFC 9110 Problem Details format
-      if (problemDetails.type || problemDetails.title || problemDetails.status || problemDetails.errors) {
-        return this.createApiError(problemDetails, response.status);
-      }
-    }
-
-    // Fallback for non-Problem Details errors
-    return this.createApiError({
-      title: 'Request Failed',
-      status: response?.status,
-      errors: { general: [error.message || 'An unexpected error occurred'] }
-    }, response?.status);
-  }
-
-  private createApiError(problemDetails: ProblemDetails, statusCode?: number): ApiError {
-    // Get the main error message
-    let message = 'An error occurred';
-    
-    if (problemDetails.errors) {
-      // Get the first error message from the errors object
-      const firstErrorMessages = Object.values(problemDetails.errors)[0];
-      if (firstErrorMessages && firstErrorMessages.length > 0) {
-        message = firstErrorMessages[0];
-      }
-    } else if (problemDetails.title) {
-      message = problemDetails.title;
-    } else if (problemDetails.detail) {
-      message = problemDetails.detail;
-    }
-
-    // Create a proper Error object
-    const apiError = new Error(message) as ApiError;
-    apiError.name = 'ApiError';
-    apiError.status = problemDetails.status || statusCode;
-    apiError.title = problemDetails.title;
-    apiError.type = problemDetails.type;
-    apiError.detail = problemDetails.detail;
-    apiError.errors = problemDetails.errors;
-    apiError.fieldErrors = problemDetails.errors; // Alias for easier access
-
-    
-    return apiError;
-  }
-
+  
   // Authentication methods
   setAuthToken(token: string) {
     this.authToken = token;
@@ -170,9 +101,13 @@ class ApiService {
   }
 
   // Culture/Language methods
+  setLanguageGetter(getter: () => string) {
+    this.languageGetter = getter;
+  }
+
   getCurrentCulture(): string {
     try {
-      return useLanguageStore.getState().language || 'en';
+      return this.languageGetter ? this.languageGetter() : 'en';
     } catch (error) {
       return 'en';
     }
@@ -244,26 +179,7 @@ class ApiService {
     return axios.isCancel(error);
   }
 
-  // Simplified error utility methods
-  static isApiError(error: any): error is ApiError {
-    return error && error.name === 'ApiError';
   }
-
-  static getErrorMessage(error: ApiError): string {
-    return error.message;
-  }
-
-  static getFieldErrors(error: ApiError): Record<string, string[]> | null {
-    return error.fieldErrors || null;
-  }
-
-  static getAllErrorMessages(error: ApiError): string[] {
-    if (error.fieldErrors) {
-      return Object.values(error.fieldErrors).flat();
-    }
-    return [error.message];
-  }
-}
 
 // Create and export a singleton instance
 export const apiService = new ApiService();

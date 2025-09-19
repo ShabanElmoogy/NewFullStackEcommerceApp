@@ -6,16 +6,14 @@ import { VStack } from "../../ui/vstack";
 import { Text } from "../../ui/text";
 import WishlistButton from "./WishlistButton";
 import CompareButton from "./CompareButton";
-import {
-  ProductLinkWrapper,
-  QuickViewButton,
-  AddToCartButton,
-  ProductRating,
-  ProductPrice,
-  ProductBadges,
-  OutOfStockOverlay,
-  LowStockBadge,
-} from "./ProductCardParts";
+import { ProductLinkWrapper } from "./ProductLinkWrapper";
+import { QuickViewButton } from "./QuickViewButton";
+import { AddToCartButton } from "./AddToCartButton";
+import { ProductRating } from "./ProductRating";
+import { ProductPrice } from "./ProductPrice";
+import { ProductBadges } from "./ProductBadges";
+import { OutOfStockOverlay } from "./OutOfStockOverlay";
+import { LowStockBadge } from "./LowStockBadge";
 import { Product } from "./types";
 import { useProductCard } from "./useProductCard";
 

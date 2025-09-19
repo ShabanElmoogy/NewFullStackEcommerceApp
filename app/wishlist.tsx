@@ -36,7 +36,7 @@ export default function WishlistScreen() {
   useEffect(() => {
     if (!isAuthenticated) {
       setReturnUrl('/wishlist');
-      router.replace('/(auth)/login');
+      router.replace('/login');
     }
   }, [isAuthenticated, setReturnUrl, router]);
 

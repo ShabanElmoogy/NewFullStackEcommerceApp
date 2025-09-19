@@ -15,6 +15,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '@/constants/Colors';
 import ToastManager, { Toast } from 'toastify-react-native'
 import { toastConfig } from './toastConfig'
+import { apiService } from '@/api/apiService';
+import { useLanguageStore } from '@/store/languageStore';
 
 
 const queryClient = new QueryClient();
@@ -51,14 +53,16 @@ function AppContent() {
           <GlobalHeader />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
             <Stack.Screen name="cart" options={{ headerShown: false }} />
+            <Stack.Screen name="compare" options={{ headerShown: false }} />
             <Stack.Screen name="wishlist" options={{ headerShown: false }} />
             <Stack.Screen name="orders" options={{ headerShown: false }} />
+            <Stack.Screen name="orders/track/[orderId]" options={{ headerShown: false }} />
             <Stack.Screen name="profile" options={{ headerShown: false }} />
-            <Stack.Screen name="product" options={{ headerShown: false }} />
-            <Stack.Screen name="order" options={{ headerShown: false }} />
-            <Stack.Screen name="rtl-test" options={{ headerShown: false }} />
+            <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
           </Stack>
         </GestureHandlerRootView>
         <ToastManager config={toastConfig} />
@@ -72,6 +76,17 @@ function AppContent() {
 // -------------------
 export default function RootLayout() {
   const systemColorScheme = useColorScheme();
+
+  // Initialize API service and language store connection
+  useEffect(() => {
+    // Set up the language getter for API service
+    apiService.setLanguageGetter(() => useLanguageStore.getState().language);
+    
+    // Set up the culture header callback for language store
+    useLanguageStore.getState().setCultureHeaderCallback((lang: string) => {
+      apiService.setCultureHeader(lang);
+    });
+  }, []);
 
   useEffect(() => {
     if (Platform.OS === 'android') {

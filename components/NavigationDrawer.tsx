@@ -141,7 +141,7 @@ export default function NavigationDrawer({ isOpen, onClose }: NavigationDrawerPr
           ) : (
             <Button
               className="w-full gap-2"
-              onPress={() => handleNavigation('/(auth)/login')}
+              onPress={() => handleNavigation('/login')}
             >
               <ButtonText>Sign In</ButtonText>
               <ButtonIcon as={LogIn} />

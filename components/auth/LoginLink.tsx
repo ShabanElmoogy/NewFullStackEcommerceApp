@@ -10,7 +10,7 @@ export const LoginLink = () => {
   return (
     <HStack className="items-center justify-center mt-6" space="xs">
       <Text className="text-typography-600">Already have an account?</Text>
-      <Pressable onPress={() => router.replace('/(auth)/login')}>
+      <Pressable onPress={() => router.replace('/login')}>
         <Text className="text-primary-600 font-semibold">Sign In</Text>
       </Pressable>
     </HStack>
