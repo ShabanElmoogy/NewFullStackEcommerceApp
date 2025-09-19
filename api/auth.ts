@@ -19,13 +19,11 @@ export interface RegisterRequest {
 export interface AuthResponse {
   token: string;
   refreshToken: string;
-  user: {
-    id: string;
-    userName: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-  };
+  id: string;
+  userName: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
   expiresAt: string;
 }
 

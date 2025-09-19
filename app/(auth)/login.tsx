@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Pressable } from '@/components/ui/pressable';
+import { Icon } from '@/components/ui/icon';
 import { useAuth } from '@/store/authStore';
 import { useTheme } from '@/hooks/useTheme';
 import { Redirect, useRouter } from 'expo-router';
@@ -9,6 +10,7 @@ import { View, ScrollView, SafeAreaView, StatusBar, KeyboardAvoidingView, Platfo
 import { useLoginForm } from '@/hooks/useLoginForm';
 import { LoginFormData } from '@/utils/validation/loginSchema';
 import { ControlledInput, ControlledPasswordInput, LoginHeader, FormDivider, SocialLogin, LegalFooter } from '@/components/auth';
+import { LogIn } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -94,15 +96,6 @@ export default function LoginScreen() {
                   onFocus={handlePasswordFocus}
                 />
 
-                <ControlledPasswordInput<LoginFormData>
-                  name="password"
-                  control={control}
-                  label="Password"
-                  placeholder="Enter your password"
-                  showLabel={false}
-                  onFocus={handlePasswordFocus}
-                />
-
                 <View className="items-end">
                   <Text style={{
                     color: colors.primary,
@@ -122,11 +115,20 @@ export default function LoginScreen() {
                     height: 56,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    flexDirection: 'row',
+                    gap: 8,
                     opacity: (!isValid || isLoading) ? 0.6 : 1,
                   }}
                   onPress={handleSubmit}
                   disabled={!isValid || isLoading}
                 >
+                  {!isLoading && (
+                    <Icon 
+                      as={LogIn} 
+                      size="md" 
+                      color={colors.text}
+                    />
+                  )}
                   <Text style={{
                     color: colors.text,
                     fontWeight: '600',

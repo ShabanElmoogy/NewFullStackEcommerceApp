@@ -21,7 +21,7 @@ export function useLogin() {
       Toast.show({
         type: ToastType.SUCCESS,
         text1: '🎉 Welcome Back!',
-        text2: `Hello ${data.user.userName || data.user.email}`,
+        text2: `Hello ${data.userName || data.email}`,
         visibilityTime: 3000,
       });
 

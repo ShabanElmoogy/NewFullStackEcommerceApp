@@ -1,125 +1,16 @@
 import '@/global.css';
-import React, { useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Platform, useColorScheme } from 'react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { RTLWrapper } from '@/components/layout';
-import { Stack } from 'expo-router';
-import GlobalHeader from '@/components/layout/GlobalHeader';
-import { ThemeProvider, useTheme } from '@/hooks/useTheme';
-import * as NavigationBar from 'expo-navigation-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '@/constants/Colors';
-import ToastManager, { Toast } from 'toastify-react-native'
-import { toastConfig } from './toastConfig'
-import { apiService } from '@/api/apiService';
-import { useLanguageStore } from '@/store/languageStore';
+import React from 'react';
+import { AppProviders } from '@/components/providers';
+import { AppContent } from '@/components/layout/AppContent';
+import { useAppInitialization } from '@/hooks/useAppInitialization';
 
-
-const queryClient = new QueryClient();
-
-// -------------------
-// Inner component
-// -------------------
-function AppContent() {
-  const { colors, isDark } = useTheme();
-
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      const setupNavigationBar = async () => {
-        try {
-          await NavigationBar.setBackgroundColorAsync(colors.background);
-          // ✅ Dark → أزرار فاتحة (أبيض), Light → أزرار غامقة (أسود)
-          await NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark');
-        } catch (error) {
-        }
-      };
-
-      setupNavigationBar();
-    }
-  }, [colors.background, isDark]);
-
-  return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      edges={['top']}
-    >
-      <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={colors.background} />
-      <GluestackUIProvider mode={isDark ? 'dark' : 'light'}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <GlobalHeader />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
-            <Stack.Screen name="cart" options={{ headerShown: false }} />
-            <Stack.Screen name="compare" options={{ headerShown: false }} />
-            <Stack.Screen name="wishlist" options={{ headerShown: false }} />
-            <Stack.Screen name="orders" options={{ headerShown: false }} />
-            <Stack.Screen name="orders/track/[orderId]" options={{ headerShown: false }} />
-            <Stack.Screen name="profile" options={{ headerShown: false }} />
-            <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
-            <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
-          </Stack>
-        </GestureHandlerRootView>
-        <ToastManager config={toastConfig} />
-      </GluestackUIProvider>
-    </SafeAreaView>
-  );
-}
-
-// -------------------
-// Root Layout
-// -------------------
 export default function RootLayout() {
-  const systemColorScheme = useColorScheme();
-
-  // Initialize API service and language store connection
-  useEffect(() => {
-    // Set up the language getter for API service
-    apiService.setLanguageGetter(() => useLanguageStore.getState().language);
-    
-    // Set up the culture header callback for language store
-    useLanguageStore.getState().setCultureHeaderCallback((lang: string) => {
-      apiService.setCultureHeader(lang);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      const initializeNavigationBar = async () => {
-        try {
-          const savedTheme = await AsyncStorage.getItem('@theme_preference');
-          const themePreference = savedTheme || 'system';
-
-          const actualTheme =
-            themePreference === 'system'
-              ? (systemColorScheme ?? 'light')
-              : themePreference;
-
-          const isDarkMode = actualTheme === 'dark';
-          const colors = Colors[actualTheme];
-
-          await NavigationBar.setBackgroundColorAsync(colors.background);
-          await NavigationBar.setButtonStyleAsync(isDarkMode ? 'light' : 'dark');
-        } catch (error) {
-        }
-      };
-
-      initializeNavigationBar();
-    }
-  }, [systemColorScheme]);
+  // Handle app initialization (API service setup, navigation bar, etc.)
+  useAppInitialization();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <RTLWrapper>
-          <AppContent />
-        </RTLWrapper>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <AppProviders>
+      <AppContent />
+    </AppProviders>
   );
 }

@@ -16,7 +16,7 @@ export function LoginHeader() {
         paddingTop: 60,
         paddingBottom: 20,
         paddingHorizontal: 24,
-        marginBottom: 150,
+        marginBottom: 30,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
       }}
