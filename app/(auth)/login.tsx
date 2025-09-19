@@ -81,6 +81,7 @@ export default function LoginScreen() {
                   name="email"
                   control={control}
                   label="Email"
+                  icon={LogIn}
                   placeholder="Enter your user name"
                   autoComplete="email"
                   showLabel={false}
@@ -123,9 +124,9 @@ export default function LoginScreen() {
                   disabled={!isValid || isLoading}
                 >
                   {!isLoading && (
-                    <Icon 
-                      as={LogIn} 
-                      size="md" 
+                    <Icon
+                      as={LogIn}
+                      size="md"
                       color={colors.text}
                     />
                   )}
