@@ -75,11 +75,9 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
   // Memoized callback functions to prevent child re-renders
   const handleAddToCart = useCallback((product: any) => {
-    console.log('Add to cart:', product);
   }, []);
 
   const handleAddToWishlist = useCallback((product: any) => {
-    console.log('Add to wishlist:', product);
   }, []);
 
   const handleProductPress = useCallback((productId: number) => {

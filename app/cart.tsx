@@ -65,11 +65,9 @@ export default function CartScreen() {
         quantity: item.quantity,
         price: item.product.price,
       }));
-      console.log('Order items:', orderItems);
       return createOrder(orderItems);
     },
     onSuccess: (data) => {
-      console.log('Order created successfully:', data);
       resetCart();
 
       Toast.show({
@@ -125,7 +123,6 @@ export default function CartScreen() {
   };
 
   const handleCancelCheckout = () => {
-    console.log('Order cancelled');
     setShowCheckoutDialog(false);
   };
 

@@ -146,7 +146,6 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
               </Text>
               <Pressable
                 onPress={() => {
-                  console.log('Removing filter:', filter.key);
                   onRemoveFilter(filter.key);
                 }}
                 style={{
@@ -168,7 +167,6 @@ export default function ActiveFilters({ filters, onRemoveFilter, onClearAll }: A
           {activeFilters.length > 1 && (
             <Pressable
               onPress={() => {
-                console.log('Clearing all filters');
                 onClearAll();
               }}
               style={{

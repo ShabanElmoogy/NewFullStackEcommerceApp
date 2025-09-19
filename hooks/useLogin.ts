@@ -2,6 +2,9 @@ import { useMutation } from '@tanstack/react-query';
 import { login } from '@/api/auth';
 import { useAuth } from '@/store/authStore';
 import { useRouter } from 'expo-router';
+import { Toast } from 'toastify-react-native';
+import { ToastType } from '@/types/toastType';
+import { getApiError } from '@/utils/errorUtils';
 
 export function useLogin() {
   const router = useRouter();
@@ -14,6 +17,14 @@ export function useLogin() {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
     onSuccess: (data) => {
+      // Show success toast
+      Toast.show({
+        type: ToastType.SUCCESS,
+        text1: '🎉 Welcome Back!',
+        text2: `Hello ${data.user.userName || data.user.email}`,
+        visibilityTime: 3000,
+      });
+
       setUser(data);
       setToken(data.token);
       
@@ -27,7 +38,14 @@ export function useLogin() {
       }
     },
     onError: (error) => {
-      console.error('Login error:', error);
+      const errorData = getApiError(error);
+      
+      Toast.show({
+        type: ToastType.ERROR,
+        text1: errorData.title,
+        text2: errorData.message,
+        visibilityTime: 4000,
+      });
     },
   });
 

@@ -113,7 +113,6 @@ export const ReusableDialog: React.FC<ReusableDialogProps> = ({
   const dialogColors = getDialogColors(type, colors);
 
   // Debug logging
-  console.log('ReusableDialog render - isOpen:', isOpen, 'title:', title);
 
   const handleBackdropPress = () => {
     if (closeOnBackdropPress) {

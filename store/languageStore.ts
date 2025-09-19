@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { I18nManager, Platform } from 'react-native';
 import i18n, { getLanguage, setLanguage, getDeviceLanguage } from '../utils/i18n';
+import { apiService } from '../api/apiService';
 
 interface LanguageState {
   language: string;
@@ -38,6 +39,13 @@ export const useLanguageStore = create<LanguageState>((set, get) => ({
       language: lang,
       isRTL,
     });
+
+    // Update API service culture header
+    try {
+      apiService.setCultureHeader(lang);
+    } catch (error) {
+      console.warn('⚠️ Could not update API service culture header:', error);
+    }
 
     // For web platform
     if (Platform.OS === 'web') {

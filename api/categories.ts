@@ -1,5 +1,7 @@
+import { apiService } from './apiService';
 import { CATEGORY_URLS } from '@/constants';
 
+// Keep existing interfaces but update them to use the new API service
 export interface Category {
   id: number;
   nameAr: string;
@@ -23,68 +25,35 @@ export interface CategoryRequest {
   nameEn: string;
 }
 
+// Category API functions using the new API service
 export async function listCategories(): Promise<Category[]> {
-  const res = await fetch(CATEGORY_URLS.GET_ALL);
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch categories: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  return data;
+  return await apiService.get<Category[]>(CATEGORY_URLS.GET_ALL);
 }
 
 export async function getCategory(id: string | number): Promise<Category> {
-  const res = await fetch(CATEGORY_URLS.GET_BY_ID(id));
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch category: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  return data;
+  return await apiService.get<Category>(CATEGORY_URLS.GET_BY_ID(id));
 }
 
 export async function createCategory(category: CategoryRequest): Promise<Category> {
-  const res = await fetch(CATEGORY_URLS.CREATE, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(category),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to create category: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  return data;
+  return await apiService.post<Category>(CATEGORY_URLS.CREATE, category, { requiresAuth: true });
 }
 
 export async function updateCategory(id: string | number, category: CategoryRequest): Promise<Category> {
-  const res = await fetch(CATEGORY_URLS.UPDATE(id), {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ ...category, id }),
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to update category: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  return data;
+  const updateData = { ...category, id };
+  return await apiService.put<Category>(CATEGORY_URLS.UPDATE, updateData, { requiresAuth: true });
 }
 
 export async function deleteCategory(id: string | number): Promise<void> {
-  const res = await fetch(CATEGORY_URLS.DELETE(id), {
-    method: 'DELETE',
-  });
+  await apiService.delete(CATEGORY_URLS.DELETE(id), { requiresAuth: true });
+}
 
-  if (!res.ok) {
-    throw new Error(`Failed to delete category: ${res.status} ${res.statusText}`);
-  }
+// Helper functions
+export async function getCategoriesWithSubcategories(): Promise<Category[]> {
+  const categories = await listCategories();
+  return categories.filter(cat => !cat.isDeleted);
+}
+
+export async function getActiveCategories(): Promise<Category[]> {
+  const categories = await listCategories();
+  return categories.filter(cat => !cat.isDeleted);
 }

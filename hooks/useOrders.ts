@@ -9,14 +9,12 @@ export function useUserOrders() {
   const query = useQuery<Order[]>({
     queryKey: ['orders', 'user', user?.id || user?.userId],
     queryFn: () => {
-      console.log('useUserOrders: Fetching orders for user:', user);
       return getUserOrders();
     },
     enabled: isAuthenticated && !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     retry: (failureCount, error) => {
-      console.log('useUserOrders: Retry attempt', failureCount, 'Error:', error);
       return failureCount < 3;
     },
   });
@@ -30,7 +28,6 @@ export function useUserOrders() {
 
   useEffect(() => {
     if (query.isSuccess && query.data) {
-      console.log('useUserOrders: Query successful, orders count:', query.data.length);
     }
   }, [query.isSuccess, query.data]);
 
@@ -43,14 +40,12 @@ export function useOrder(orderId: number) {
   const query = useQuery<Order>({
     queryKey: ['orders', orderId],
     queryFn: () => {
-      console.log('useOrder: Fetching order details for ID:', orderId);
       return getOrderById(orderId);
     },
     enabled: isAuthenticated && !!orderId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
     retry: (failureCount, error) => {
-      console.log('useOrder: Retry attempt', failureCount, 'Error:', error);
       return failureCount < 3;
     }
   });
@@ -64,7 +59,6 @@ export function useOrder(orderId: number) {
 
   useEffect(() => {
     if (query.isSuccess && query.data) {
-      console.log('useOrder: Query successful, order data:', query.data);
     }
   }, [query.isSuccess, query.data]);
 

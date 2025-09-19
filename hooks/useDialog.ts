@@ -50,14 +50,12 @@ export const useDialog = (): UseDialogReturn => {
   const [dialogState, setDialogState] = useState<DialogState>(initialState);
 
   const showDialog = useCallback((config: Partial<DialogState>) => {
-    console.log('useDialog showDialog called with:', config);
     setDialogState(prev => {
       const newState = {
         ...prev,
         ...config,
         isOpen: true,
       };
-      console.log('useDialog new state:', newState);
       return newState;
     });
   }, []);

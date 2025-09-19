@@ -42,7 +42,6 @@ export const useRegisterForm = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Here you would typically make an API call to register the user
-      console.log('Registration data:', data);
       
       // Navigate to success screen or login
       router.replace('/(auth)/login');

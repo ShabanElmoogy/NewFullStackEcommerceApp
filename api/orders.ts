@@ -1,6 +1,8 @@
+import { apiService } from './apiService';
 import { useAuth } from "../store/authStore"; // adjust import path
 import { ORDER_URLS } from '@/constants';
 
+// Keep existing interfaces
 export interface OrderItem {
   id: number;
   orderId: number;
@@ -25,19 +27,28 @@ export interface Order {
   isDeleted: boolean;
 }
 
-export async function createOrder(items: any[]) {
-  const token = useAuth.getState().token;
+export interface CreateOrderRequest {
+  status: string;
+  stripePaymentIntentId?: string | null;
+  items: {
+    productId: number;
+    quantity: number;
+    price: number;
+  }[];
+}
 
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
+export interface UpdateOrderStatusRequest {
+  status: string;
+}
 
+// Order API functions using the new API service
+export async function createOrder(items: any[]): Promise<Order> {
   if (!items || items.length === 0) {
     throw new Error('No items provided for order creation');
   }
 
   // Format the request body according to the API specification
-  const orderData = {
+  const orderData: CreateOrderRequest = {
     status: "New",
     stripePaymentIntentId: null,
     items: items.map(item => ({
@@ -47,35 +58,13 @@ export async function createOrder(items: any[]) {
     }))
   };
 
-  console.log('Creating order with data:', JSON.stringify(orderData, null, 2));
 
-  const res = await fetch(ORDER_URLS.CREATE, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(orderData)
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error('Failed to create order:', res.status, res.statusText, errorText);
-    throw new Error(`Failed to create order: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  console.log('Order created successfully:', data);
-  return data;
+  const response = await apiService.post<Order>(ORDER_URLS.CREATE, orderData, { requiresAuth: true });
+  return response;
 }
 
 export async function getUserOrders(): Promise<Order[]> {
-  const { token, user } = useAuth.getState();
-
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
+  const { user } = useAuth.getState();
 
   if (!user) {
     throw new Error('No user found in auth store');
@@ -88,28 +77,11 @@ export async function getUserOrders(): Promise<Order[]> {
     throw new Error('No user ID found in user object');
   }
 
-  console.log('Fetching orders for user:', userId);
 
-  const res = await fetch(ORDER_URLS.GET_BY_USER_ID(userId), {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error('Failed to fetch orders:', res.status, res.statusText, errorText);
-    throw new Error(`Failed to fetch user orders: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  console.log('Orders fetched successfully:', data);
+  const response = await apiService.get<Order[]>(ORDER_URLS.GET_BY_USER_ID(userId), { requiresAuth: true });
   
   // Ensure each order has items array
-  const ordersWithItems = data.map((order: any) => ({
+  const ordersWithItems = response.map((order: any) => ({
     ...order,
     items: order.items || []
   }));
@@ -118,41 +90,38 @@ export async function getUserOrders(): Promise<Order[]> {
 }
 
 export async function getOrderById(orderId: number): Promise<Order> {
-  const token = useAuth.getState().token;
-
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
-
   if (!orderId || isNaN(orderId)) {
     throw new Error('Invalid order ID');
   }
 
-  console.log('Fetching order details for ID:', orderId);
 
-  const res = await fetch(ORDER_URLS.GET_BY_ID(orderId), {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) {
-    const errorText = await res.text();
-    console.error('Failed to fetch order:', res.status, res.statusText, errorText);
-    throw new Error(`Failed to fetch order: ${res.status} ${res.statusText}`);
-  }
-
-  const data = await res.json();
-  console.log('Order details fetched successfully:', data);
+  const response = await apiService.get<Order>(ORDER_URLS.GET_BY_ID(orderId), { requiresAuth: true });
   
   // Ensure order has items array
   const orderWithItems = {
-    ...data,
-    items: data.items || []
+    ...response,
+    items: response.items || []
   };
   
   return orderWithItems;
+}
+
+export async function updateOrderStatus(orderId: number, status: string): Promise<Order> {
+  const updateData: UpdateOrderStatusRequest = { status };
+  return await apiService.put<Order>(ORDER_URLS.UPDATE_STATUS(orderId), updateData, { requiresAuth: true });
+}
+
+export async function cancelOrder(orderId: number): Promise<void> {
+  await apiService.post(ORDER_URLS.CANCEL(orderId), {}, { requiresAuth: true });
+}
+
+// Helper functions
+export async function getOrdersByStatus(status: string): Promise<Order[]> {
+  const orders = await getUserOrders();
+  return orders.filter(order => order.status.toLowerCase() === status.toLowerCase());
+}
+
+export async function getActiveOrders(): Promise<Order[]> {
+  const orders = await getUserOrders();
+  return orders.filter(order => !order.isDeleted);
 }

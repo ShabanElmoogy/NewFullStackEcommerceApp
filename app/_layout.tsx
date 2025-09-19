@@ -33,7 +33,6 @@ function AppContent() {
           // ✅ Dark → أزرار فاتحة (أبيض), Light → أزرار غامقة (أسود)
           await NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark');
         } catch (error) {
-          console.log('Navigation bar setup error:', error);
         }
       };
 
@@ -92,7 +91,6 @@ export default function RootLayout() {
           await NavigationBar.setBackgroundColorAsync(colors.background);
           await NavigationBar.setButtonStyleAsync(isDarkMode ? 'light' : 'dark');
         } catch (error) {
-          console.log('Failed to initialize navigation bar:', error);
         }
       };
 

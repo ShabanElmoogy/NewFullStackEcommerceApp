@@ -15,7 +15,6 @@ export function BasicSearchExample() {
         value={searchQuery}
         placeholder="Search anything..."
         onChangeText={setSearchQuery}
-        onSearch={(query) => console.log('Searching for:', query)}
       />
     </VStack>
   );
@@ -42,12 +41,10 @@ export function AutoSearchExample() {
         onChangeText={setSearchQuery}
         autoSearch={true}
         searchDelay={300}
-        onSearch={(query) => console.log('Auto searching for:', query)}
         showSuggestions={true}
         suggestions={suggestions}
         onSuggestionPress={(suggestion) => {
           setSearchQuery(suggestion);
-          console.log('Selected suggestion:', suggestion);
         }}
       />
     </VStack>
@@ -155,7 +152,6 @@ export function HeaderSearchExample() {
         autoSearch={true}
         onSearch={(query) => {
           // Navigate to search results
-          console.log('Navigate to search results for:', query);
         }}
       />
     </View>
@@ -168,14 +164,12 @@ export function CustomSearchExample() {
 
   const handleSearch = (query: string) => {
     // Custom search logic
-    console.log('Custom search logic for:', query);
     // Could navigate to different screens based on query
     // Could filter different data sources
     // Could trigger API calls
   };
 
   const handleClear = () => {
-    console.log('Search cleared');
     // Custom clear logic
   };
 
@@ -188,8 +182,6 @@ export function CustomSearchExample() {
         onChangeText={setSearchQuery}
         onSearch={handleSearch}
         onClear={handleClear}
-        onFocus={() => console.log('Search focused')}
-        onBlur={() => console.log('Search blurred')}
         variant="rounded"
         size="lg"
       />

@@ -42,7 +42,6 @@ const DialogExamples: React.FC = () => {
         {
           text: 'Save Draft',
           onPress: () => {
-            console.log('Draft saved');
             hideDialog();
           },
           variant: 'outline',
@@ -51,7 +50,6 @@ const DialogExamples: React.FC = () => {
         {
           text: 'Publish',
           onPress: () => {
-            console.log('Published');
             hideDialog();
           },
           variant: 'solid',
@@ -90,7 +88,6 @@ const DialogExamples: React.FC = () => {
       'Delete Item',
       'Are you sure you want to delete this item? This action cannot be undone.',
       () => {
-        console.log('Item deleted');
         showSuccessDialog('Deleted', 'Item has been deleted successfully.');
       },
       'Delete',
@@ -164,7 +161,6 @@ const DialogExamples: React.FC = () => {
                 'Save Changes',
                 'Do you want to save your changes before leaving?',
                 () => {
-                  console.log('Changes saved');
                   showSuccessDialog('Saved', 'Your changes have been saved.');
                 },
                 'Save',

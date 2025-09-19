@@ -1,24 +1,109 @@
+import { apiService } from './apiService';
 import { AUTH_URLS } from '@/constants';
 
-export async function login(userName: string, password: string) {
-  const res = await fetch(AUTH_URLS.LOGIN, {
-    method: 'POST',
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      userName,
-      password
-    })
+// Types for authentication
+export interface LoginRequest {
+  userName: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  userName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  refreshToken: string;
+  user: {
+    id: string;
+    userName: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+  };
+  expiresAt: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  email: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+// Authentication API functions
+export async function login(userName: string, password: string): Promise<AuthResponse> {
+  const response = await apiService.post<AuthResponse>(AUTH_URLS.LOGIN, {
+    userName,
+    password
   });
 
-  const data = await res.json();
-
-  // optional: handle response
-  if (!res.ok) {
-    throw new Error(`Login failed: ${res.status}`);
+  // Set the auth token for future requests
+  if (response.token) {
+    apiService.setAuthToken(response.token);
   }
 
-  return data; // return parsed response
+  return response;
+}
+
+export async function register(userData: RegisterRequest): Promise<AuthResponse> {
+  const response = await apiService.post<AuthResponse>(AUTH_URLS.REGISTER, userData);
+
+  // Set the auth token for future requests
+  if (response.token) {
+    apiService.setAuthToken(response.token);
+  }
+
+  return response;
+}
+
+export async function refreshToken(refreshTokenData: RefreshTokenRequest): Promise<AuthResponse> {
+  const response = await apiService.post<AuthResponse>(AUTH_URLS.REFRESH_TOKEN, refreshTokenData);
+
+  // Update the auth token
+  if (response.token) {
+    apiService.setAuthToken(response.token);
+  }
+
+  return response;
+}
+
+export async function logout(): Promise<void> {
+  try {
+    await apiService.post(AUTH_URLS.LOGOUT);
+  } finally {
+    // Clear the auth token regardless of the response
+    apiService.clearAuthToken();
+  }
+}
+
+export async function forgotPassword(email: string): Promise<void> {
+  await apiService.post(AUTH_URLS.FORGOT_PASSWORD, { email });
+}
+
+export async function resetPassword(resetData: ResetPasswordRequest): Promise<void> {
+  await apiService.post(AUTH_URLS.RESET_PASSWORD, resetData);
+}
+
+// Helper function to check if user is authenticated
+export function isAuthenticated(): boolean {
+  return apiService.getAuthToken() !== null;
+}
+
+// Helper function to get current auth token
+export function getAuthToken(): string | null {
+  return apiService.getAuthToken();
 }

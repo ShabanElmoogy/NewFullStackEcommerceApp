@@ -12,6 +12,15 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "skipLibCheck": true,
+    "strict": false,
+    "noEmit": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "types": [
       "react"
     ],
@@ -24,8 +33,25 @@
       ]
     }
   },
-  "exclude": [
-    "node_modules"
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "nativewind-env.d.ts"
   ],
-  "extends": "expo/tsconfig.base"
+  "exclude": [
+    "node_modules",
+    "node_modules/**/*",
+    "**/node_modules/**",
+    "**/.expo/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/coverage/**"
+  ],
+  "extends": "expo/tsconfig.base",
+  "ts-node": {
+    "esm": true
+  }
 }

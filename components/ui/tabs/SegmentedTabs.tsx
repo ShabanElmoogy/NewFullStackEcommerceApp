@@ -41,7 +41,6 @@ export default function SegmentedTabs({ tabs, activeKey, onChange, scrollable = 
           },
           () => {
             // Fallback if measureLayout fails
-            console.log('Failed to measure tab layout');
           }
         );
       }

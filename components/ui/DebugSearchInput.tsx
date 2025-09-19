@@ -20,24 +20,20 @@ export default function DebugSearchInput({
 
   // Sync with external value
   useEffect(() => {
-    console.log('DebugSearchInput: External value changed to:', value);
     setInternalValue(value);
   }, [value]);
 
   const handleChangeText = (text: string) => {
-    console.log('DebugSearchInput: Text changed to:', text);
     setInternalValue(text);
     onChangeText?.(text);
   };
 
   const handleClear = () => {
-    console.log('DebugSearchInput: Clear button pressed');
     setInternalValue('');
     onChangeText?.('');
     onClear?.();
   };
 
-  console.log('DebugSearchInput: Rendering with internalValue:', internalValue, 'externalValue:', value);
 
   return (
     <View style={{ marginBottom: 8 }}>

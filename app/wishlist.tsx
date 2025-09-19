@@ -45,7 +45,6 @@ export default function WishlistScreen() {
   };
   
   const handleAddToCart = (product: any) => {
-    console.log('Adding to cart from wishlist:', product.name);
     addToCart(product);
     //TODO: Add Toast
     // toast.show({
@@ -58,7 +57,6 @@ export default function WishlistScreen() {
   };
 
   const handleClearWishlist = () => {
-    console.log('Clear wishlist clicked');
       //TODO: Add Toast
 
     // toast.show({
@@ -70,7 +68,6 @@ export default function WishlistScreen() {
     //       title="Clear Wishlist"
     //       message={`Remove all ${totalItems} items from your wishlist?`}
     //       onConfirm={() => {
-    //         console.log('Clearing wishlist');
     //         clearWishlist();
     //         toast.close(id);
     //         toast.show({
@@ -82,7 +79,6 @@ export default function WishlistScreen() {
     //         });
     //       }}
     //       onCancel={() => {
-    //         console.log('Clear cancelled');
     //         toast.close(id);
     //       }}
     //       confirmText="Clear All"
