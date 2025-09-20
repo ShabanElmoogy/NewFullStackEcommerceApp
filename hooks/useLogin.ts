@@ -9,7 +9,7 @@ import { getApiError } from '@/utils/errorUtils';
 export function useLogin() {
   const router = useRouter();
   const setUser = useAuth(s => s.setUser);
-  const setToken = useAuth(s => s.setToken);
+  const setTokens = useAuth(s => s.setTokens);
   const returnUrl = useAuth(s => s.returnUrl);
   const clearReturnUrl = useAuth(s => s.clearReturnUrl);
 
@@ -26,7 +26,7 @@ export function useLogin() {
       });
 
       setUser(data);
-      setToken(data.token);
+      setTokens(data.token, data.refreshToken);
       
       // Handle redirect after successful login
       if (returnUrl) {

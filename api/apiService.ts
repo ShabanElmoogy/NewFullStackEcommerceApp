@@ -178,28 +178,42 @@ class ApiService {
       return null;
     }
 
-
     try {
       const response = await axios.post(`${BASE_URLS.API_URL}/Auth/RefreshToken`, {
         token: this.authToken,
         refreshToken: this.refreshToken,
       });
 
-      
       const { token, refreshToken } = response.data;
       
       if (token && refreshToken) {
-        
         this.setTokens(token, refreshToken);
+        
+        // Update the auth store with new tokens
+        try {
+          const { useAuth } = await import('@/store/authStore');
+          useAuth.getState().setTokens(token, refreshToken);
+        } catch (error) {
+          console.warn('Failed to update auth store with new tokens:', error);
+        }
+        
         return { token, refreshToken };
       } else {
         return null;
       }
       
     } catch (error: any) {
-      
       // If refresh fails, clear tokens
       this.clearAuthToken();
+      
+      // Clear tokens from auth store as well
+      try {
+        const { useAuth } = await import('@/store/authStore');
+        useAuth.getState().logout();
+      } catch (error) {
+        console.warn('Failed to clear auth store:', error);
+      }
+      
       return null;
     }
   }

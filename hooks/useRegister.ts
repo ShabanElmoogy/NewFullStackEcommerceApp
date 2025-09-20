@@ -9,7 +9,7 @@ import { getApiError } from '@/utils/errorUtils';
 export function useRegister() {
   const router = useRouter();
   const setUser = useAuth(s => s.setUser);
-  const setToken = useAuth(s => s.setToken);
+  const setTokens = useAuth(s => s.setTokens);
 
   const registerMutation = useMutation({
     mutationFn: (userData: RegisterRequest) => register(userData),
@@ -23,7 +23,7 @@ export function useRegister() {
       });
 
       setUser(data);
-      setToken(data.token);
+      setTokens(data.token, data.refreshToken);
       
       // Navigate to home after successful registration
       router.replace('/');
