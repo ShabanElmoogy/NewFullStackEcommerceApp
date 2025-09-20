@@ -44,20 +44,12 @@ export interface ResetPasswordRequest {
 
 // Authentication API functions
 export async function login(userName: string, password: string): Promise<AuthResponse> {
-  console.log('🚀 [Auth] Starting login process for user:', userName);
   
   const response = await apiService.post<AuthResponse>(AUTH_URLS.LOGIN, {
     userName,
     password
   });
 
-  console.log('✅ [Auth] Login successful, received tokens (FULL):');
-  console.log('  - Token:', response.token || 'null');
-  console.log('  - Refresh Token:', response.refreshToken || 'null');
-  console.log('  - Expires At:', response.expiresAt);
-  console.log('  - User ID:', response.id);
-  console.log('  - Username:', response.userName);
-  console.log('  - Email:', response.email);
 
   // Set both tokens for future requests
   if (response.token && response.refreshToken) {
@@ -68,13 +60,9 @@ export async function login(userName: string, password: string): Promise<AuthRes
 }
 
 export async function register(userData: RegisterRequest): Promise<AuthResponse> {
-  console.log('📝 [Auth] Starting registration process for user:', userData.userName);
   
   const response = await apiService.post<AuthResponse>(AUTH_URLS.REGISTER, userData);
 
-  console.log('✅ [Auth] Registration successful, received tokens');
-  console.log('  - Token:', response.token ? `${response.token.substring(0, 20)}...` : 'null');
-  console.log('  - Refresh Token:', response.refreshToken ? `${response.refreshToken.substring(0, 20)}...` : 'null');
 
   // Set both tokens for future requests
   if (response.token && response.refreshToken) {
@@ -85,14 +73,9 @@ export async function register(userData: RegisterRequest): Promise<AuthResponse>
 }
 
 export async function refreshToken(refreshTokenData: RefreshTokenRequest): Promise<AuthResponse> {
-  console.log('🔄 [Auth] Manual refresh token request initiated');
-  console.log('  - Refresh Token:', refreshTokenData.refreshToken ? `${refreshTokenData.refreshToken.substring(0, 20)}...` : 'null');
   
   const response = await apiService.post<AuthResponse>(AUTH_URLS.REFRESH_TOKEN, refreshTokenData);
 
-  console.log('✅ [Auth] Manual refresh successful, received new tokens');
-  console.log('  - New Token:', response.token ? `${response.token.substring(0, 20)}...` : 'null');
-  console.log('  - New Refresh Token:', response.refreshToken ? `${response.refreshToken.substring(0, 20)}...` : 'null');
 
   // Update both tokens
   if (response.token && response.refreshToken) {
@@ -103,17 +86,13 @@ export async function refreshToken(refreshTokenData: RefreshTokenRequest): Promi
 }
 
 export async function logout(): Promise<void> {
-  console.log('👋 [Auth] Starting logout process...');
   
   try {
     await apiService.post(AUTH_URLS.LOGOUT);
-    console.log('✅ [Auth] Logout API call successful');
   } catch (error) {
-    console.log('⚠️ [Auth] Logout API call failed, but continuing with token cleanup');
   } finally {
     // Clear the auth token regardless of the response
     apiService.clearAuthToken();
-    console.log('🧹 [Auth] Logout completed, tokens cleared');
   }
 }
 

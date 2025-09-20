@@ -12,8 +12,7 @@ import { useRouter, Link } from 'expo-router';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CreditCard, Trash } from 'lucide-react-native';
 import { Image } from '@/components/ui/image';
 import { Icon } from '@/components/ui/icon';
-import { useMutation } from '@tanstack/react-query';
-import { createOrder } from '@/api/orders';
+import { useCartCheckout } from '@/hooks/useCartCheckout';
 import { useAuth } from '@/store/authStore';
 import { useTheme } from '@/hooks/useTheme';
 import { Toast } from 'toastify-react-native';
@@ -58,37 +57,8 @@ export default function CartScreen() {
     }
   }, [isAuthenticated, setReturnUrl, router]);
 
-  const createOrderMutation = useMutation({
-    mutationFn: () => {
-      const orderItems = items.map((item) => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-        price: item.product.price,
-      }));
-      return createOrder(orderItems);
-    },
-    onSuccess: (data) => {
-      resetCart();
-
-      Toast.show({
-        type: ToastType.SUCCESS,
-        text1: "🛒 Added to Cart!",
-        text2: "Order placed successfully! 🎉",
-        visibilityTime: 3000,
-      });
-      
-      router.push('/');
-    },
-
-    onError: (error) => {      
-      Toast.show({
-        type: ToastType.SUCCESS,
-        text1: "🛒 Added to Cart!",
-        text2: `Failed to place order: ${error.message}`,
-        visibilityTime: 3000,
-      });
-    }
-  });
+  // Use the cart checkout hook
+  const { createOrder, isCreatingOrder } = useCartCheckout();
 
   const handleRemoveItem = (productId: number, productName: string) => {
     removeProduct(productId);
@@ -119,7 +89,7 @@ export default function CartScreen() {
 
   const handleConfirmCheckout = () => {
     setShowCheckoutDialog(false);
-    createOrderMutation.mutate();
+    createOrder();
   };
 
   const handleCancelCheckout = () => {
@@ -481,15 +451,15 @@ export default function CartScreen() {
           <Button
             size="lg"
             onPress={onCheckOut}
-            disabled={createOrderMutation.isPending}
+            disabled={isCreatingOrder}
             style={{
               backgroundColor: colors.primary,
-              opacity: createOrderMutation.isPending ? 0.7 : 1
+              opacity: isCreatingOrder ? 0.7 : 1
             }}
           >
             <Icon as={CreditCard} size="sm" style={{ color: colors.textInverse, marginRight: 8 }} />
             <ButtonText style={{ color: colors.textInverse, fontWeight: '600' }}>
-              {createOrderMutation.isPending ? 'Processing...' : 'Proceed to Checkout'}
+              {isCreatingOrder ? 'Processing...' : 'Proceed to Checkout'}
             </ButtonText>
           </Button>
 
@@ -763,15 +733,15 @@ export default function CartScreen() {
             <VStack space="md">
               <Button
                 onPress={handleConfirmCheckout}
-                disabled={createOrderMutation.isPending}
+                disabled={isCreatingOrder}
                 style={{
                   backgroundColor: colors.primary,
-                  opacity: createOrderMutation.isPending ? 0.7 : 1,
+                  opacity: isCreatingOrder ? 0.7 : 1,
                   height: 48,
                 }}
               >
                 <HStack space="sm" className="items-center">
-                  {createOrderMutation.isPending ? (
+                  {isCreatingOrder ? (
                     <View style={{
                       width: 20,
                       height: 20,
@@ -788,7 +758,7 @@ export default function CartScreen() {
                     fontSize: 16,
                     fontWeight: '600',
                   }}>
-                    {createOrderMutation.isPending ? 'Processing...' : 'Place Order'}
+                    {isCreatingOrder ? 'Processing...' : 'Place Order'}
                   </ButtonText>
                 </HStack>
               </Button>
@@ -796,12 +766,12 @@ export default function CartScreen() {
               <Button
                 variant="outline"
                 onPress={handleCancelCheckout}
-                disabled={createOrderMutation.isPending}
+                disabled={isCreatingOrder}
                 style={{
                   borderColor: colors.border,
                   backgroundColor: 'transparent',
                   height: 48,
-                  opacity: createOrderMutation.isPending ? 0.5 : 1,
+                  opacity: isCreatingOrder ? 0.5 : 1,
                 }}
               >
                 <ButtonText style={{
