@@ -5,15 +5,12 @@ import { VStack } from '@/components/ui/vstack';
 import { Icon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 import { Pressable } from '@/components/ui/pressable';
-import { LucideIcon } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import { CarouselSlideData } from './types';
 import Animated, { 
   FadeIn,
   FadeOut,
-  useAnimatedStyle, 
-  SharedValue
 } from 'react-native-reanimated';
 
 interface CarouselSlideProps {
@@ -85,7 +82,7 @@ export default function CarouselSlide({
                   as={slide.icon} 
                   size="xl" 
                   className="drop-shadow-sm"
-                  style={{ color: colors.textInverse }}
+                  style={{ color: '#FFFFFF' }}
                 />
               </Animated.View>
             ) : (
@@ -93,7 +90,7 @@ export default function CarouselSlide({
                 as={slide.icon} 
                 size="xl" 
                 className="drop-shadow-sm"
-                style={{ color: colors.textInverse }}
+                style={{ color: '#FFFFFF' }}
               />
             )}
           </Box>
@@ -102,19 +99,19 @@ export default function CarouselSlide({
           <VStack space="xs" className="max-w-xs">
             <Text 
               className="text-3xl font-bold drop-shadow-lg leading-tight"
-              style={{ color: colors.textInverse }}
+              style={{ color: '#FFFFFF' }}
             >
               {title}
             </Text>
             <Text 
               className="text-lg font-semibold drop-shadow-md"
-              style={{ color: colors.textInverse }}
+              style={{ color: '#FFFFFF' }}
             >
               {subtitle}
             </Text>
             <Text 
               className="text-sm mb-3 drop-shadow-sm leading-relaxed opacity-90"
-              style={{ color: colors.textInverse }}
+              style={{ color: '#FFFFFF' }}
             >
               {description}
             </Text>

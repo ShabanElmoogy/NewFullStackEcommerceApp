@@ -4,6 +4,7 @@ import { Text } from '@/components/ui/text';
 import { Icon } from '@/components/ui/icon';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
+import { useTranslation } from 'react-i18next';
 import { 
   ShoppingCart, 
   CheckCircle, 
@@ -14,10 +15,11 @@ import {
   Clock,
 } from 'lucide-react-native';
 import { 
-  ORDER_TIMELINE_STEPS, 
   ORDER_STATUS_COLORS, 
   getStatusIndex, 
   isStatusCompleted,
+  getTranslatedTimelineSteps,
+  getTranslatedStatusName,
   OrderStatus 
 } from '@/constants/orderStatus';
 
@@ -43,7 +45,9 @@ export function OrderTimeline({
   updatedDate, 
   className = '' 
 }: OrderTimelineProps) {
+  const { t } = useTranslation();
   const currentIndex = getStatusIndex(currentStatus);
+  const translatedTimelineSteps = getTranslatedTimelineSteps(t);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
@@ -59,11 +63,11 @@ export function OrderTimeline({
   return (
     <View className={`bg-white rounded-lg p-4 ${className}`}>
       <Text className="text-lg font-semibold text-gray-900 mb-4">
-        Order Timeline
+        {t('orders.orderTimeline', 'Order Timeline')}
       </Text>
       
       <VStack className="space-y-4">
-        {ORDER_TIMELINE_STEPS.map((step, index) => {
+        {translatedTimelineSteps.map((step, index) => {
           const isCompleted = isStatusCompleted(currentStatus, step.status);
           const isCurrent = step.status === currentStatus;
           const isPending = index > currentIndex;
@@ -112,7 +116,7 @@ export function OrderTimeline({
                     {isCurrent && (
                       <View className="bg-blue-100 px-2 py-1 rounded-full">
                         <Text className="text-xs font-medium text-blue-800">
-                          Current
+                          {t('orders.current', 'Current')}
                         </Text>
                       </View>
                     )}
@@ -134,7 +138,7 @@ export function OrderTimeline({
                         : isCurrent && updatedDate 
                         ? formatDate(updatedDate)
                         : isCompleted 
-                        ? 'Completed' 
+                        ? t('orders.completed', 'Completed')
                         : ''
                       }
                     </Text>
@@ -150,18 +154,18 @@ export function OrderTimeline({
       <View className="mt-6 p-3 bg-gray-50 rounded-lg">
         <HStack className="items-center justify-between">
           <VStack>
-            <Text className="text-sm text-gray-600">Current Status</Text>
+            <Text className="text-sm text-gray-600">{t('orders.currentStatus', 'Current Status')}</Text>
             <Text 
               className="font-semibold"
               style={{ color: ORDER_STATUS_COLORS[currentStatus] }}
             >
-              {currentStatus}
+              {getTranslatedStatusName(t, currentStatus)}
             </Text>
           </VStack>
           
           {updatedDate && (
             <VStack className="items-end">
-              <Text className="text-sm text-gray-600">Last Updated</Text>
+              <Text className="text-sm text-gray-600">{t('orders.lastUpdated', 'Last Updated')}</Text>
               <Text className="text-sm font-medium text-gray-900">
                 {formatDate(updatedDate)}
               </Text>

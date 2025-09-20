@@ -1598,3 +1598,6 @@ const UnlockIcon = createIcon({
 
 UnlockIcon.displayName = 'UnlockIcon';
 export { UnlockIcon };
+
+// RTL-aware components
+export { RTLChevronRight } from './RTLChevronRight';

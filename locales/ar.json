@@ -68,6 +68,32 @@
     "leftToRight": "من اليسار إلى اليمين",
     "rightToLeft": "من اليمين إلى اليسار"
   },
+  "orders": {
+    "trackYourOrders": "تتبع طلباتك",
+    "orderPlaced": "تم تقديم الطلب",
+    "beingProcessed": "قيد المعالجة",
+    "orderShipped": "تم شحن الطلب",
+    "outForDelivery": "في طريقه للتسليم",
+    "ordersPending": "طلبات معلقة",
+    "orderNumber": "طلب رقم #",
+    "openingOrders": "جاري فتح الطلبات...",
+    "tapToViewAllPendingOrders": "اضغط لعرض جميع الطلبات المعلقة",
+    "orderTimeline": "الجدول الزمني للطلب",
+    "current": "الحالي",
+    "completed": "مكتمل",
+    "currentStatus": "الحالة الحالية",
+    "lastUpdated": "آخر تحديث",
+    "status": {
+      "new": "جديد",
+      "confirmed": "مؤكد",
+      "processing": "قيد المعالجة",
+      "shipped": "تم الشحن",
+      "outForDelivery": "في طريقه للتسليم",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي",
+      "returned": "مرتجع"
+    }
+  },
   "heroCarousel": {
     "slides": {
       "summerSale": {

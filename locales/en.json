@@ -71,6 +71,32 @@
     "leftToRight": "Left to Right",
     "rightToLeft": "Right to Left"
   },
+  "orders": {
+    "trackYourOrders": "Track Your Orders",
+    "orderPlaced": "Order placed",
+    "beingProcessed": "Being processed",
+    "orderShipped": "Order shipped",
+    "outForDelivery": "Out for delivery",
+    "ordersPending": "orders pending",
+    "orderNumber": "Order #",
+    "openingOrders": "Opening orders...",
+    "tapToViewAllPendingOrders": "Tap to view all pending orders",
+    "orderTimeline": "Order Timeline",
+    "current": "Current",
+    "completed": "Completed",
+    "currentStatus": "Current Status",
+    "lastUpdated": "Last Updated",
+    "status": {
+      "new": "New",
+      "confirmed": "Confirmed",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "outForDelivery": "Out for Delivery",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned"
+    }
+  },
   "heroCarousel": {
     "slides": {
       "summerSale": {
