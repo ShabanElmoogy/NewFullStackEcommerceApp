@@ -1,67 +1,20 @@
-import React, { useState } from 'react';
-import { useSearchStore } from '../../store/searchStore';
-import { View, Pressable } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { HStack } from '@/components/ui/hstack';
-import { Filter } from 'lucide-react-native';
 import { router } from 'expo-router';
-import SimpleSearchInput from '@/components/ui/SimpleSearchInput';
 import { useTheme } from '@/hooks/useTheme';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
-  withSpring
-} from 'react-native-reanimated';
-import { useDebounce } from '@/hooks/useDebounce';
+import SearchInput from './searchbar/SearchInput';
+import FilterButton from './FilterButton';
 
 interface SearchBarProps {
   onNavigate?: (route: string) => void;
+  className?: string;
 }
 
-export default function SearchBar({ onNavigate }: SearchBarProps) {
-  const [searchText, setSearchText] = useState('');
-  const debouncedSearch = useDebounce(searchText, 500);
-  const scaleAnimation = useSharedValue(1);
+export default function SearchBar({ onNavigate, className }: SearchBarProps) {
   const { colors } = useTheme();
 
-  const setSearchQuery = useSearchStore((state) => state.setSearchQuery);
-  const clearSearchQuery = useSearchStore((state) => state.clearSearchQuery);
-
-  const handleSearchTextChange = (text: string) => {
-    setSearchText(text);
-    setSearchQuery(text);
-    if (text === '') clearSearchQuery();
-  };
-
-  const handleSearch = (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
-    setSearchQuery(searchQuery.trim());
-    setSearchText('');
-    if (onNavigate) {
-      onNavigate('/products');
-    } else {
-      router.push('/products');
-    }
-  };
-
-  // Debounced navigation/search after typing stops
-  React.useEffect(() => {
-    const q = debouncedSearch.trim();
-    if (q.length === 0) return;
-    // avoid double navigating if already on products with same query would require router state; simple call is fine
-    handleSearch(q);
-  }, [debouncedSearch]);
-
-  
-  const handleClear = () => {
-    setSearchText('');
-    clearSearchQuery();
-  };
-
   const handleFilterPress = () => {
-    scaleAnimation.value = withSpring(0.95, { damping: 10, stiffness: 200 }, () => {
-      scaleAnimation.value = withSpring(1, { damping: 10, stiffness: 200 });
-    });
-    
     const route = '/products?showFilters=true';
     if (onNavigate) {
       onNavigate(route);
@@ -70,53 +23,26 @@ export default function SearchBar({ onNavigate }: SearchBarProps) {
     }
   };
 
-  const filterButtonStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scaleAnimation.value }],
-  }));
-
   return (
-    <View style={{
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      backgroundColor: colors.backgroundSecondary
-    }}>
-      <HStack className="items-center" space="sm">
-        {/* Search Input */}
-        <SimpleSearchInput
-          value={searchText}
-          placeholder="Search products..."
+    <View
+      className={`px-4 py-3 w-full safe-area-top ${className || ''}`}
+      style={{ backgroundColor: colors.backgroundSecondary }}
+    >
+      <HStack className="items-center justify-between gap-3 w-full max-w-screen-xl mx-auto">
+        {/* Search Input Component */}
+        <SearchInput
+          onNavigate={onNavigate}
           variant="rounded"
           size="lg"
-          onChangeText={handleSearchTextChange}
-          onSearch={handleSearch}
-          autoSearch={false}
-          onClear={handleClear}
-          showSuggestions={false}
-          className="flex-1"
+          className="flex-1 min-w-0 max-w-none"
         />
 
-        {/* Filter Button */}
-        <Animated.View style={filterButtonStyle}>
-          <Pressable onPress={handleFilterPress} style={{ opacity: 0.8 }}>
-            <View style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: colors.surface,
-              alignItems: 'center',
-              justifyContent: 'center',
-              shadowColor: colors.shadow,
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 3,
-              borderWidth: 1,
-              borderColor: colors.border
-            }}>
-              <Filter size={20} color={colors.textSecondary} />
-            </View>
-          </Pressable>
-        </Animated.View>
+        {/* Filter Button Component */}
+        <FilterButton
+          onPress={handleFilterPress}
+          size={48}
+          iconSize={20}
+        />
       </HStack>
     </View>
   );

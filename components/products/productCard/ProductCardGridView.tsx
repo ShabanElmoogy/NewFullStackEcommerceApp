@@ -8,6 +8,7 @@ import WishlistButton from "./WishlistButton";
 import CompareButton from "./CompareButton";
 import { ProductLinkWrapper } from "./ProductLinkWrapper";
 import { QuickViewButton } from "./QuickViewButton";
+import ShareButton from "./ShareButton";
 import { AddToCartButton } from "./AddToCartButton";
 import { ProductRating } from "./ProductRating";
 import { ProductPrice } from "./ProductPrice";
@@ -48,6 +49,7 @@ export default function ProductCardGridView({ product, onPress }: ProductCardGri
           <WishlistButton product={product} size="sm" />
           <CompareButton product={product} size="sm" variant="icon" />
           <QuickViewButton product={product} onPress={onPress} />
+          <ShareButton product={product} />
         </View>
 
         <ProductLinkWrapper product={product} onPress={onPress} className="flex-1">

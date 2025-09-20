@@ -44,7 +44,6 @@ export function ClearCartDialog({
           backgroundColor: colors.card,
           shadowColor: colors.shadow,
         }}>
-          {/* Warning Icon */}
           <View className="items-center mb-5">
             <View className="w-15 h-15 rounded-full items-center justify-center mb-4" style={{
               backgroundColor: colors.error + '20',
@@ -59,7 +58,6 @@ export function ClearCartDialog({
             </Heading>
           </View>
 
-          {/* Message */}
           <Text className="text-center mb-8 text-base leading-6" style={{
             color: colors.textSecondary,
           }}>
@@ -70,7 +68,6 @@ export function ClearCartDialog({
             {' '}from your cart? This action cannot be undone.
           </Text>
 
-          {/* Action Buttons */}
           <VStack space="md">
             <Button
               onPress={onConfirm}
@@ -88,10 +85,10 @@ export function ClearCartDialog({
                     borderTopColor: colors.textInverse,
                   }} />
                 ) : (
-                  <Icon as={Trash} size="sm" style={{ color: colors.textInverse }} />
+                  <Icon as={Trash} size="sm" style={{ color: colors.text }} />
                 )}
                 <ButtonText className="text-base font-semibold" style={{
-                  color: colors.textInverse,
+                  color: colors.text,
                 }}>
                   {isClearing ? 'Clearing...' : 'Clear All Items'}
                 </ButtonText>
@@ -109,7 +106,7 @@ export function ClearCartDialog({
               }}
             >
               <ButtonText className="text-base font-medium" style={{
-                color: colors.textSecondary,
+                color: colors.text,
               }}>
                 Cancel
               </ButtonText>

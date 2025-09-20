@@ -45,7 +45,7 @@ export function CartItem({ item, onRemove, onIncreaseQuantity, onDecreaseQuantit
               backgroundColor: colors.primary,
             }}>
               <Text className="text-xs font-bold" style={{
-                color: colors.textInverse,
+                color: colors.text,
               }}>
                 {item.quantity}
               </Text>

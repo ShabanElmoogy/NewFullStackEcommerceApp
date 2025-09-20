@@ -12,3 +12,4 @@ export * from "./useProductCard";
 export { default as ProductCard } from "./ProductCard";
 export { default as ProductCardGridView } from "./ProductCardGridView";
 export { default as ProductCardListView } from "./ProductCardListView";
+export { default as ShareButton } from "./ShareButton";

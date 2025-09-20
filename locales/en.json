@@ -1,4 +1,26 @@
 {
+  "home": {
+    "welcome": "Welcome",
+    "featuredProducts": "Featured Products",
+    "categories": "Categories",
+    "newArrivals": "New Arrivals",
+    "bestSellers": "Best Sellers",
+    "specialOffers": "Special Offers",
+    "viewAll": "View All",
+    "shopNow": "Shop Now",
+    "discountBanner": "Up to 50% Off",
+    "freeShipping": "Free Shipping",
+    "searchPlaceholder": "Search products...",
+    "noProductsFound": "No products found",
+    "loadMore": "Load More",
+    "refreshing": "Refreshing...",
+    "seeMore": "See More",
+    "bestSellers": "Best Sellers",
+    "newArrivals": "New Arrivals",
+    "specialOffers": "Special Offers",
+    "trendingNow": "Trending Now",
+    "hot": "Hot"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
@@ -11,7 +33,8 @@
     "search": "Search",
     "back": "Back",
     "next": "Next",
-    "done": "Done"
+    "done": "Done",
+    "shop": "Shop"
   },
   "navigation": {
     "home": "Home",

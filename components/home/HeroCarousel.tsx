@@ -1,13 +1,3 @@
-/**
- * HeroCarousel
- * - Displays a promotional carousel with three slides.
- * - Uses Reanimated for entrance transitions and a decorative sparkle loop.
- * - The first slide and wrapper apply entering animations (FadeInUp/FadeIn).
- *   If you need to stop initial entrance animations on first app load,
- *   gate the `entering` props with a flag (e.g., `disableInitialAnimation`).
- * - Auto-advances every 4s via setInterval; cleans up on unmount.
- * 
- */
 import React, { useState, useEffect } from 'react';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';

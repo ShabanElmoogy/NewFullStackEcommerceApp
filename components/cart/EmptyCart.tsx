@@ -20,7 +20,7 @@ export function EmptyCart() {
           <View className="w-24 h-24 rounded-full items-center justify-center" style={{
             backgroundColor: colors.surfaceSecondary,
           }}>
-            <Icon as={ShoppingBag} size="xl" style={{ color: colors.textTertiary }} />
+            <Icon as={ShoppingBag} size="xl" style={{ color: colors.text }} />
           </View>
           <VStack className="items-center" space="sm">
             <Heading size="xl" style={{ color: colors.text }}>Your cart is empty</Heading>
@@ -38,7 +38,8 @@ export function EmptyCart() {
                 backgroundColor: colors.primary,
               }}
             >
-              <ButtonText style={{ color: colors.textInverse }}>Start Shopping</ButtonText>
+              <Icon as={ShoppingBag} size="xl" style={{ color: colors.text }} />
+              <ButtonText style={{ color: colors.text }}>Start Shopping</ButtonText>
             </Button>
           </Link>
         </VStack>

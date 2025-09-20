@@ -220,7 +220,7 @@ export default function CategoryProductsSection({
             >
               <Icon as={Sparkles} size="md" style={{ color: colors.textInverse, marginRight: 10 }} />
               <Text style={{ 
-                color: colors.text, 
+                color: "white", 
                 fontWeight: 'bold', 
                 fontSize: 16, 
                 letterSpacing: 0.5 

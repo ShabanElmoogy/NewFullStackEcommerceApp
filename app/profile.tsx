@@ -26,6 +26,7 @@ import {
   Shield,
   LogOut,
   ChevronRight,
+  Languages,
 } from 'lucide-react-native';
 
 import { useAuth } from '@/store/authStore';

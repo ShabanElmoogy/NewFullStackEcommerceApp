@@ -7,6 +7,7 @@ import CompareButton from "./CompareButton";
 import { useTheme } from "@/hooks/useTheme";
 import { ProductLinkWrapper } from "./ProductLinkWrapper";
 import { AddToCartButton } from "./AddToCartButton";
+import ShareButton from "./ShareButton";
 import { ProductRating } from "./ProductRating";
 import { ProductPrice } from "./ProductPrice";
 import { Product } from "./types";
@@ -167,6 +168,7 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
                     size="sm" 
                     variant="icon"
                   />
+                  <ShareButton product={product} />
                 </View>
               </View>
 

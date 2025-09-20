@@ -167,6 +167,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   });
 
   if (variant === "compact") {
+    const compactTextColor = isOutOfStock ? colors.textTertiary : '#FFFFFF';
     return (
       <Pressable
         onPress={handleAddToCart}
@@ -195,7 +196,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             <Icon 
               as={icon} 
               size="xs" 
-              style={{ color: textColor }} 
+              style={{ color: compactTextColor }} 
               {...iconProps} 
             />
           </Animated.View>
@@ -203,7 +204,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
           <Icon 
             as={icon} 
             size="xs" 
-            style={{ color: textColor }} 
+            style={{ color: compactTextColor }} 
             {...iconProps} 
           />
         )}
@@ -213,7 +214,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             marginLeft: 4, 
             fontSize: 12, 
             fontWeight: "600", 
-            color: textColor 
+            color: compactTextColor 
           }}
         >
           {text}

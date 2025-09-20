@@ -13,6 +13,7 @@ export function AppStack() {
       <Stack.Screen name="orders" options={{ headerShown: false }} />
       <Stack.Screen name="orders/track/[orderId]" options={{ headerShown: false }} />
       <Stack.Screen name="profile" options={{ headerShown: false }} />
+      <Stack.Screen name="translate" options={{ headerShown: false }} />
       <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
     </Stack>

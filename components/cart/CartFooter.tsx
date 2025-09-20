@@ -38,8 +38,8 @@ export function CartFooter({ onCheckout, isCreatingOrder }: CartFooterProps) {
             opacity: isCreatingOrder ? 0.7 : 1
           }}
         >
-          <Icon as={CreditCard} size="sm" className="mr-2" style={{ color: colors.textInverse }} />
-          <ButtonText className="font-semibold" style={{ color: colors.textInverse }}>
+          <Icon as={CreditCard} size="sm" className="mr-2" style={{ color: colors.text }} />
+          <ButtonText className="font-semibold" style={{ color: colors.text }}>
             {isCreatingOrder ? 'Processing...' : 'Proceed to Checkout'}
           </ButtonText>
         </Button>
@@ -53,8 +53,8 @@ export function CartFooter({ onCheckout, isCreatingOrder }: CartFooterProps) {
               borderColor: colors.primary,
             }}
           >
-            <Icon as={ArrowLeft} size="sm" className="mr-2" style={{ color: colors.primary }} />
-            <ButtonText style={{ color: colors.primary }}>Continue Shopping</ButtonText>
+            <Icon as={ArrowLeft} size="sm" className="mr-2" style={{ color: colors.text }} />
+            <ButtonText style={{ color: colors.text }}>Continue Shopping</ButtonText>
           </Button>
         </Link>
       </VStack>

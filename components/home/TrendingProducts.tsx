@@ -9,6 +9,7 @@ import { Image } from '@/components/ui/image';
 import { TrendingUp, Star, Heart, Plus, Flame } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useRTL } from '@/hooks/useRTL';
+import { useTranslation } from 'react-i18next';
 import Animated, { 
   FadeInUp, 
   FadeInRight, 
@@ -28,6 +29,7 @@ interface TrendingProductsProps {
 export default function TrendingProducts({ onNavigate }: TrendingProductsProps) {
   const { colors } = useTheme();
   const { isRTL, getFlexDirection } = useRTL();
+  const { t } = useTranslation();
 
   const trendingProducts = [
     {
@@ -100,7 +102,7 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
               fontWeight: 'bold',
               color: colors.text
             }}>
-              Trending Now
+              {t('home.trendingNow')}
             </Text>
           </HStack>
           <View style={{
@@ -116,7 +118,7 @@ export default function TrendingProducts({ onNavigate }: TrendingProductsProps) 
               color: colors.warning,
               fontWeight: '600',
               fontSize: 12
-            }}>Hot</Text>
+            }}>{t('home.hot')}</Text>
           </View>
         </HStack>
 

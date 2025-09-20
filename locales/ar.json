@@ -1,4 +1,23 @@
 {
+  "home": {
+    "welcome": "مرحباً",
+    "featuredProducts": "المنتجات المميزة",
+    "categories": "الفئات",
+    "newArrivals": "وصل حديثاً",
+    "bestSellers": "الأكثر مبيعاً",
+    "specialOffers": "عروض خاصة",
+    "viewAll": "عرض الكل",
+    "shopNow": "تسوق الآن",
+    "discountBanner": "خصم يصل إلى 50%",
+    "freeShipping": "شحن مجاني",
+    "searchPlaceholder": "البحث عن المنتجات...",
+    "noProductsFound": "لم يتم العثور على منتجات",
+    "loadMore": "تحميل المزيد",
+    "refreshing": "جاري التحديث...",
+    "seeMore": "المزيد",
+    "trendingNow": "الأكثر رواجاً",
+    "hot": "ساخن"
+  },
   "common": {
     "loading": "جاري التحميل...",
     "error": "خطأ",
@@ -11,7 +30,8 @@
     "search": "بحث",
     "back": "رجوع",
     "next": "التالي",
-    "done": "تم"
+    "done": "تم",
+    "shop": "متجر"
   },
   "navigation": {
     "home": "الرئيسية",

@@ -3,8 +3,7 @@
  * Provides theme context and utilities for dark/light mode
  */
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useColorScheme } from 'react-native';
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors, ColorScheme, ThemeColors } from '@/constants/Colors';
 
@@ -14,8 +13,8 @@ interface ThemeContextType {
   isDark: boolean;
   isLight: boolean;
   toggleTheme: () => void;
-  setTheme: (theme: ColorScheme | 'system') => void;
-  themePreference: ColorScheme | 'system';
+  setTheme: (theme: ColorScheme) => void;
+  themePreference: ColorScheme;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -27,29 +26,31 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const systemColorScheme = useColorScheme();
-  const [themePreference, setThemePreference] = useState<ColorScheme | 'system'>('system');
+  const [themePreference, setThemePreference] = useState<ColorScheme>('light');
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // Determine the actual color scheme based on preference
-  const colorScheme: ColorScheme = 
-    themePreference === 'system' 
-      ? (systemColorScheme ?? 'light')
-      : themePreference;
-
-  const colors = Colors[colorScheme];
-  const isDark = colorScheme === 'dark';
-  const isLight = colorScheme === 'light';
+  const colorScheme = themePreference;
+  const colors = useMemo(() => Colors[colorScheme], [colorScheme]);
+  const isDark = useMemo(() => colorScheme === 'dark', [colorScheme]);
+  const isLight = useMemo(() => colorScheme === 'light', [colorScheme]);
 
   // Load theme preference from storage
   useEffect(() => {
     const loadThemePreference = async () => {
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
-          setThemePreference(savedTheme as ColorScheme | 'system');
+        if (savedTheme && ['light', 'dark'].includes(savedTheme)) {
+          setThemePreference(savedTheme as ColorScheme);
+        } else {
+          // Default to light if no preference is saved
+          setThemePreference('light');
         }
       } catch (error) {
         console.warn('Failed to load theme preference:', error);
+        // Fallback to light theme on error
+        setThemePreference('light');
+      } finally {
+        setIsLoaded(true);
       }
     };
 
@@ -57,7 +58,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }, []);
 
   // Save theme preference to storage
-  const saveThemePreference = async (theme: ColorScheme | 'system') => {
+  const saveThemePreference = async (theme: ColorScheme) => {
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, theme);
     } catch (error) {
@@ -65,17 +66,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   };
 
-  const setTheme = (theme: ColorScheme | 'system') => {
+  const setTheme = useCallback((theme: ColorScheme) => {
     setThemePreference(theme);
     saveThemePreference(theme);
-  };
+  }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = isDark ? 'light' : 'dark';
     setTheme(newTheme);
-  };
+  }, [isDark, setTheme]);
 
-  const value: ThemeContextType = {
+  const value: ThemeContextType = useMemo(() => ({
     colorScheme,
     colors,
     isDark,
@@ -83,9 +84,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     toggleTheme,
     setTheme,
     themePreference,
-  };
+  }), [colorScheme, colors, isDark, isLight, toggleTheme, setTheme, themePreference]);
 
-  
+  // Don't render until theme preference is loaded
+  if (!isLoaded) {
+    return null;
+  }
+
   return (
     <ThemeContext.Provider value={value}>
       {children}

@@ -8,6 +8,7 @@ import { Image } from '@/components/ui/image';
 import { ChevronRight, Smartphone, Shirt, Home, Dumbbell, Book, Gamepad2 } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { useRTL } from '@/hooks/useRTL';
+import { useTranslation } from 'react-i18next';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -19,6 +20,7 @@ interface CategoriesSectionProps {
 export default function CategoriesSection({ onNavigate }: CategoriesSectionProps) {
   const { colors } = useTheme();
   const { isRTL, getFlexDirection } = useRTL();
+  const { t } = useTranslation();
 
   const categories = [
     { name: 'Electronics', icon: Smartphone, color: colors.primary, items: '2.1k+', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&h=200&fit=crop' },
@@ -41,7 +43,7 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
             fontWeight: 'bold',
             color: colors.text
           }}>
-            Shop by Category
+            {t('home.categories')}
           </Text>
           <Pressable onPress={() => onNavigate('/products')}>
             <HStack className="items-center">
@@ -50,7 +52,7 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
                 fontWeight: '600',
                 marginRight: 4
               }}>
-                View All
+                {t('home.viewAll')}
               </Text>
               <Icon as={ChevronRight} size="sm" style={{ color: colors.primary }} />
             </HStack>
