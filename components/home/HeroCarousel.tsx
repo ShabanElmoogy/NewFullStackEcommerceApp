@@ -1,65 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '@/components/ui/box';
-import { Text } from '@/components/ui/text';
-import { VStack } from '@/components/ui/vstack';
-import { HStack } from '@/components/ui/hstack';
-import { Icon } from '@/components/ui/icon';
-import { Image } from '@/components/ui/image';
-import { Pressable } from '@/components/ui/pressable';
-import { Sparkles, Star, Crown } from 'lucide-react-native';
-import { useTheme } from '@/hooks/useTheme';
-import Animated, { 
-  FadeInUp, 
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle, 
-  useSharedValue, 
-  withRepeat, 
-  withSequence, 
-  withTiming
-} from 'react-native-reanimated';
+import { Sparkles } from 'lucide-react-native';
+import { useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import CarouselContainer from './hero-carousel/CarouselContainer';
+import CarouselSlide from './hero-carousel/CarouselSlide';
+import CarouselPagination from './hero-carousel/CarouselPagination';
+import { HeroCarouselProps } from './hero-carousel/types';
+import { defaultSlides } from './hero-carousel/data';
 
-interface HeroCarouselProps {
-  onNavigate: (route: string) => void;
-}
-
-// Slides content shown by the carousel. Extend/modify to add or remove slides.
-const slides = [
-  {
-    id: '1',
-    title: 'Summer Sale',
-    subtitle: 'Up to 70% Off',
-    description: 'Get the best deals on fashion items',
-    buttonText: 'Shop Now',
-    icon: Sparkles,
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop&crop=center'
-  },
-  {
-    id: '2',
-    title: 'New Arrivals',
-    subtitle: 'Fresh Collection',
-    description: 'Discover the latest trends',
-    buttonText: 'Explore',
-    icon: Star,
-    image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1200&h=600&fit=crop&crop=center'
-  },
-  {
-    id: '3',
-    title: 'Tech Deals',
-    subtitle: 'Smart Savings',
-    description: 'Latest gadgets at best prices',
-    buttonText: 'Browse',
-    icon: Crown,
-    image: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1200&h=600&fit=crop&crop=center'
-  }
-];
-
-const AnimatedBox = Animated.createAnimatedComponent(Box);
-
-export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
+export default function HeroCarousel({ 
+  onNavigate, 
+  slides = defaultSlides,
+  autoSlideInterval = 4000,
+  className 
+}: HeroCarouselProps) {
   const [activeSlide, setActiveSlide] = useState(0);
   const sparkleScale = useSharedValue(1);
-  const { colors } = useTheme();
 
   // Decorative sparkle icon animation (does not affect layout positioning).
   // Loops between 1 and 1.3 scale. If you want to pause this on first open,
@@ -79,106 +35,46 @@ export default function HeroCarousel({ onNavigate }: HeroCarouselProps) {
     transform: [{ scale: sparkleScale.value }],
   }));
 
-  // Auto slide: automatically advance slides every 4 seconds.
+  // Auto slide: automatically advance slides every specified interval.
   // To pause on user interaction or visibility (e.g., screen out of focus),
   // add guards based on focus/visibility state.
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % slides.length);
-    }, 4000);
+    }, autoSlideInterval);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length, autoSlideInterval]);
 
   // Jump to a specific slide (used by pagination dots).
   const goToSlide = (index: number) => {
     setActiveSlide(index);
-    
+  };
+
+  const handleSlidePress = () => {
+    onNavigate('/products');
   };
   
   const currentSlide = slides[activeSlide];
 
-  // Rendering: wrapper and slide use `entering` transitions.
   return (
-    <AnimatedBox entering={FadeInUp.delay(300)} className="mt-6">
+    <CarouselContainer className={className}>
       {/* Single Slide Display */}
       <Box className="mx-4" style={{ height: 220 }}>
-        <AnimatedBox
+        <CarouselSlide
           key={`slide-${activeSlide}`}
-          entering={FadeIn.duration(500)} 
-          exiting={FadeOut.duration(300)}
-        >
-          <Pressable
-            onPress={() => onNavigate('/products')}
-            className="w-full h-full rounded-3xl overflow-hidden bg-black"
-            style={{ height: 220 }}
-          >
-            <Image
-              source={{ uri: currentSlide.image }}
-              className="w-full h-full absolute"
-              resizeMode="cover"
-              alt={currentSlide.title}
-            />
-
-            <Box className="flex-1 p-5 justify-end" 
-                 style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
-              
-              {/* Icon */}
-              <Box 
-                className="absolute top-5 left-5 rounded-full p-2.5"
-                style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
-              >
-                {currentSlide.icon === Sparkles ? (
-                  <Animated.View style={sparkleAnimatedStyle}>
-                    <Icon as={currentSlide.icon} size="xl" className="text-white" />
-                  </Animated.View>
-                ) : (
-                  <Icon as={currentSlide.icon} size="xl" className="text-white" />
-                )}
-              </Box>
-
-              {/* Content */}
-              <VStack space="xs">
-                <Text className="text-white text-3xl font-bold">
-                  {currentSlide.title}
-                </Text>
-                <Text className="text-white text-lg font-semibold">
-                  {currentSlide.subtitle}
-                </Text>
-                <Text className="text-gray-100 text-sm mb-3">
-                  {currentSlide.description}
-                </Text>
-
-                <Pressable
-                  onPress={() => onNavigate('/products')}
-                  className="bg-white px-5 py-2.5 rounded-full self-start"
-                >
-                  <Text className="font-bold text-gray-800">
-                    {currentSlide.buttonText}
-                  </Text>
-                </Pressable>
-              </VStack>
-            </Box>
-          </Pressable>
-        </AnimatedBox>
+          slide={currentSlide}
+          onPress={handleSlidePress}
+          sparkleAnimatedStyle={sparkleAnimatedStyle}
+          isSparkleSlide={currentSlide.icon === Sparkles}
+        />
       </Box>
 
-      {/* Pagination Dots: tap to jump to a slide. Active slide renders wider indicator. */}
-      <HStack space="sm" className="justify-center mt-3 py-2">
-        {slides.map((_, i) => (
-          <Pressable
-            key={i}
-            onPress={() => goToSlide(i)}
-          >
-            <Box
-              className="h-2 rounded-sm mx-1"
-              style={{
-                width: activeSlide === i ? 20 : 8,
-                backgroundColor: activeSlide === i ? colors.primary : colors.border,
-              }}
-            />
-          </Pressable>
-        ))}
-      </HStack>
-    </AnimatedBox>
+      {/* Pagination Dots */}
+      <CarouselPagination
+        totalSlides={slides.length}
+        activeSlide={activeSlide}
+        onSlidePress={goToSlide}
+      />
+    </CarouselContainer>
   );
 }

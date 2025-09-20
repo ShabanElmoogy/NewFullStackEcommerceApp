@@ -70,5 +70,27 @@
     "languageSelection": "Language Selection",
     "leftToRight": "Left to Right",
     "rightToLeft": "Right to Left"
+  },
+  "heroCarousel": {
+    "slides": {
+      "summerSale": {
+        "title": "Summer Sale",
+        "subtitle": "Up to 70% Off",
+        "description": "Get the best deals on fashion items",
+        "buttonText": "Shop Now"
+      },
+      "newArrivals": {
+        "title": "New Arrivals",
+        "subtitle": "Fresh Collection",
+        "description": "Discover the latest trends",
+        "buttonText": "Explore"
+      },
+      "techDeals": {
+        "title": "Tech Deals",
+        "subtitle": "Smart Savings",
+        "description": "Latest gadgets at best prices",
+        "buttonText": "Browse"
+      }
+    }
   }
 }
