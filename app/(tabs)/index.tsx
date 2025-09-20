@@ -16,6 +16,7 @@ import TrendingProducts from '../../components/home/TrendingProducts';
 import WhyChooseUs from '../../components/home/WhyChooseUs';
 import AppStatistics from '../../components/home/AppStatistics';
 import Newsletter from '../../components/home/Newsletter';
+import OrderTrackingCard from '../../components/home/OrderTrackingCard';
 
 interface HomePageProps {
   onNavigate?: (route: string) => void;
@@ -98,6 +99,10 @@ export default function HomePage({ onNavigate }: HomePageProps) {
         <SearchBar onNavigate={handleNavigation} />
 
         <HeroCarousel onNavigate={handleNavigation} />
+        
+        {/* Order Tracking Card - Shows only when user has non-received orders */}
+        <OrderTrackingCard onNavigate={handleNavigation} />
+        
         <View style={{ height: 1, backgroundColor: colors.border, marginVertical: 20, marginHorizontal: 16 }} />
 
         {/* <FlashSale onNavigate={handleNavigation} /> */}

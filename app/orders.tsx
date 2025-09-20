@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   ScrollView,
   View,
@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
@@ -27,6 +27,7 @@ import { useAuth } from '@/store/authStore';
 import { Order, OrderItem } from '@/api/orders';
 import { useOrdersFilter } from '@/hooks/useOrdersFilter';
 import { OrdersFilter, OrdersSearch } from '@/components/orders';
+import { ORDER_STATUS } from '@/constants/orderStatus';
 
 // Status color mapping
 const getStatusColor = (status: string) => {
@@ -209,6 +210,7 @@ const EmptyState = () => (
 export default function OrdersScreen() {
   const { user, isAuthenticated } = useAuth();
   const { data: orders, isLoading, error, refetch } = useUserOrders();
+  const params = useLocalSearchParams();
   
   // Filter and search functionality
   const {
@@ -221,6 +223,25 @@ export default function OrdersScreen() {
     setSearchQuery,
     hasActiveFilters,
   } = useOrdersFilter(orders);
+
+  // Handle URL parameters to auto-filter for non-received orders
+  useEffect(() => {
+    if (params.filter === 'non-received') {
+      // Set filter to show only non-received orders
+      const nonReceivedStatuses = [
+        ORDER_STATUS.NEW,
+        ORDER_STATUS.CONFIRMED,
+        ORDER_STATUS.PROCESSING,
+        ORDER_STATUS.SHIPPED,
+        ORDER_STATUS.OUT_FOR_DELIVERY,
+      ];
+      
+      setFilters(prev => ({
+        ...prev,
+        status: nonReceivedStatuses,
+      }));
+    }
+  }, [params.filter, setFilters]);
 
   if (!isAuthenticated) {
     return (
@@ -339,11 +360,13 @@ export default function OrdersScreen() {
       {/* Header */}
       <View style={{ paddingHorizontal: 16, paddingVertical: 20 }}>
         <Text style={{ fontSize: 24, fontWeight: '800', color: '#111827', marginBottom: 4 }}>
-          My Orders
+          {params.filter === 'non-received' ? 'Track Your Orders' : 'My Orders'}
         </Text>
         <Text style={{ fontSize: 14, color: '#6B7280' }}>
-          {filteredCount} of {totalCount} order{totalCount !== 1 ? 's' : ''}
-          {hasActiveFilters || searchQuery.trim() ? ' (filtered)' : ''}
+          {params.filter === 'non-received' 
+            ? `${filteredCount} pending order${filteredCount !== 1 ? 's' : ''}`
+            : `${filteredCount} of ${totalCount} order${totalCount !== 1 ? 's' : ''}${hasActiveFilters || searchQuery.trim() ? ' (filtered)' : ''}`
+          }
         </Text>
       </View>
 
