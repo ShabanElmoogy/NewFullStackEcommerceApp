@@ -4,6 +4,7 @@ import { Text } from '../ui/text';
 import { VStack } from '../ui/vstack';
 import { CheckCircle } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface SortOption {
   value: string;
@@ -18,11 +19,12 @@ interface SortFilterProps {
 
 export default function SortFilter({ sortBy, onSortChange, sortOptions }: SortFilterProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View className="px-5 mb-6">
       <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
-        Sort By
+        {t('productFilter.titles.sortBy')}
       </Text>
       <VStack className="gap-2">
         {sortOptions.map((option) => {

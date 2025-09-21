@@ -201,7 +201,15 @@ export default function CategoryProductsSection({
         {productsToShow.length > 0 && (
           <View style={{ alignItems: 'center' }}>
             <Pressable
-              onPress={() => onNavigate('/products')}
+              onPress={() => {
+                if (selectedCategoryId) {
+                  const selectedCategory = categories?.find(c => c.id === selectedCategoryId);
+                  const categoryName = selectedCategory ? getCategoryName(selectedCategory) : '';
+                  onNavigate(`/products?categoryId=${selectedCategoryId}&categoryName=${encodeURIComponent(categoryName)}`);
+                } else {
+                  onNavigate('/products');
+                }
+              }}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',

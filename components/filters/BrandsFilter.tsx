@@ -3,6 +3,7 @@ import { View, Pressable } from 'react-native';
 import { Text } from '../ui/text';
 import { useTheme } from '@/hooks/useTheme';
 import { getColorForSelectedItem } from '@/utils/selectedColors';
+import { useTranslation } from 'react-i18next';
 
 interface BrandOption {
   value: string;
@@ -25,11 +26,12 @@ export default function BrandsFilter({
   isDark,
 }: BrandsFilterProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View className="px-5 mb-6">
       <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
-        Brands
+        {t('productFilter.titles.brands')}
       </Text>
       <View className="flex-row flex-wrap gap-2">
         {brands.map((option) => {

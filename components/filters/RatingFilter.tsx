@@ -4,6 +4,7 @@ import { Text } from '../ui/text';
 import { HStack } from '../ui/hstack';
 import { StarIcon } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface RatingFilterProps {
   minRating: number;
@@ -12,11 +13,12 @@ interface RatingFilterProps {
 
 export default function RatingFilter({ minRating, onRatingChange }: RatingFilterProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View className="px-5 mb-6">
       <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
-        Minimum Rating
+        {t('productFilter.titles.minimumRating')}
       </Text>
       <HStack className="gap-3 flex-wrap">
         {[1, 2, 3, 4, 5].map((rating) => {

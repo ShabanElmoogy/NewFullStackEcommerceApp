@@ -34,7 +34,8 @@
     "back": "Back",
     "next": "Next",
     "done": "Done",
-    "shop": "Shop"
+    "shop": "Shop",
+    "refresh": "Refresh"
   },
   "navigation": {
     "home": "Home",
@@ -64,7 +65,30 @@
   "products": {
     "addToCart": "Add to Cart",
     "addToWishlist": "Add to Wishlist",
-    "removeFromWishlist": "Remove from Wishlist"
+    "removeFromWishlist": "Remove from Wishlist",
+    "browseCategory": "Browse products in this category",
+    "categoryProducts": "Category Products",
+    "loading": {
+      "title": "Discovering Products",
+      "subtitle": "Finding the best deals just for you..."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "tryAgain": "Try Again"
+    },
+    "empty": {
+      "noProducts": "No products available",
+      "noProductsSubtitle": "Check back later for new arrivals",
+      "noResults": "No products found",
+      "noResultsSubtitle": "Try adjusting your search or filters",
+      "clearSearch": "Clear Search",
+      "resetFilters": "Reset Filters",
+      "startShopping": "Start Shopping"
+    },
+    "refresh": {
+      "pullToRefresh": "Pull to refresh",
+      "refreshing": "Refreshing..."
+    }
   },
   "settings": {
     "languageSelection": "Language Selection",
@@ -95,6 +119,26 @@
       "delivered": "Delivered",
       "cancelled": "Cancelled",
       "returned": "Returned"
+    },
+    "statusTitles": {
+      "new": "Order Placed",
+      "confirmed": "Order Confirmed",
+      "processing": "Processing",
+      "shipped": "Shipped",
+      "outForDelivery": "Out for Delivery",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "returned": "Returned"
+    },
+    "statusDescriptions": {
+      "new": "Your order has been placed successfully",
+      "confirmed": "Your order has been confirmed and is being prepared",
+      "processing": "Your order is being processed and packed",
+      "shipped": "Your order has been shipped and is on its way",
+      "outForDelivery": "Your order is out for delivery",
+      "delivered": "Your order has been delivered successfully",
+      "cancelled": "Your order has been cancelled",
+      "returned": "Your order has been returned"
     }
   },
   "heroCarousel": {
@@ -117,6 +161,49 @@
         "description": "Latest gadgets at best prices",
         "buttonText": "Browse"
       }
+    }
+  },
+  "productFilter": {
+    "titles": {
+      "filterAndSort": "Filter & Sort",
+      "filterProducts": "Filter Products",
+      "categories": "Categories",
+      "brands": "Brands",
+      "priceRange": "Price Range",
+      "minimumRating": "Minimum Rating",
+      "availabilityOffers": "Availability & Offers",
+      "stockStatus": "Stock Status",
+      "sortBy": "Sort By"
+    },
+    "price": {
+      "minPrice": "Min price",
+      "maxPrice": "Max price"
+    },
+    "availability": {
+      "onSaleOnly": "On Sale Only",
+      "stockOptions": {
+        "all": "All",
+        "inStock": "In Stock",
+        "outOfStock": "Out of Stock"
+      }
+    },
+    "sortOptions": {
+      "nameAZ": "Name (A-Z)",
+      "priceLowHigh": "Price: Low to High",
+      "priceHighLow": "Price: High to Low",
+      "newestFirst": "Newest First",
+      "highestRated": "Highest Rated",
+      "mostPopular": "Most Popular"
+    },
+    "results_one": "{{count}} product found",
+    "results_other": "{{count}} products found",
+    "loading": {
+      "loadingCategories": "Loading categories...",
+      "noCategories": "No categories available"
+    },
+    "actions": {
+      "reset": "Reset",
+      "applyFilters": "Apply Filters"
     }
   }
 }

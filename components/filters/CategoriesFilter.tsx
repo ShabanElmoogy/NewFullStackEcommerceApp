@@ -3,6 +3,7 @@ import { View, Pressable } from 'react-native';
 import { Text } from '../ui/text';
 import { useTheme } from '@/hooks/useTheme';
 import { getColorForSelectedItem } from '@/utils/selectedColors';
+import { useTranslation } from 'react-i18next';
 
 interface CategoryOption {
   value: string;
@@ -26,19 +27,20 @@ export default function CategoriesFilter({
   isDark,
 }: CategoriesFilterProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <View className="px-5 mb-6">
       <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
-        Categories
+        {t('productFilter.titles.categories')}
       </Text>
       {isLoading ? (
         <View className="h-10 justify-center items-center">
-          <Text className="text-sm" style={{ color: colors.textSecondary }}>Loading categories...</Text>
+          <Text className="text-sm" style={{ color: colors.textSecondary }}>{t('productFilter.loading.loadingCategories')}</Text>
         </View>
       ) : categories.length === 0 ? (
         <View className="h-10 justify-center items-center">
-          <Text className="text-sm" style={{ color: colors.textSecondary }}>No categories available</Text>
+          <Text className="text-sm" style={{ color: colors.textSecondary }}>{t('productFilter.loading.noCategories')}</Text>
         </View>
       ) : (
         <View className="flex-row flex-wrap gap-2">

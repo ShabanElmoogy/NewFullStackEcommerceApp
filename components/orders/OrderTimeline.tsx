@@ -16,6 +16,7 @@ import {
 } from 'lucide-react-native';
 import { 
   ORDER_STATUS_COLORS, 
+  ORDER_TIMELINE_STEPS,
   getStatusIndex, 
   isStatusCompleted,
   getTranslatedTimelineSteps,

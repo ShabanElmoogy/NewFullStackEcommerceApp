@@ -4,6 +4,7 @@ import { Text } from '../ui/text';
 import { Badge, BadgeText } from '../ui/badge';
 import { SlidersHorizontal, ChevronDownIcon } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface FilterButtonProps {
   onPress: () => void;
@@ -12,6 +13,7 @@ interface FilterButtonProps {
 
 export default function FilterButton({ onPress, activeFilterCount }: FilterButtonProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Pressable
@@ -31,7 +33,7 @@ export default function FilterButton({ onPress, activeFilterCount }: FilterButto
         <SlidersHorizontal color={colors.textSecondary} size={20} />
       </View>
       <Text className="text-sm font-semibold flex-1" style={{ color: colors.text }}>
-        Filter & Sort
+        {t('productFilter.titles.filterAndSort')}
       </Text>
       {activeFilterCount > 0 && (
         <Badge

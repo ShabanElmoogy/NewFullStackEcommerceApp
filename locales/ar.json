@@ -31,7 +31,8 @@
     "back": "رجوع",
     "next": "التالي",
     "done": "تم",
-    "shop": "متجر"
+    "shop": "متجر",
+    "refresh": "تحديث"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -61,7 +62,30 @@
   "products": {
     "addToCart": "أضف إلى السلة",
     "addToWishlist": "أضف إلى المفضلة",
-    "removeFromWishlist": "إزالة من المفضلة"
+    "removeFromWishlist": "إزالة من المفضلة",
+    "browseCategory": "تصفح المنتجات في هذه الفئة",
+    "categoryProducts": "منتجات الفئة",
+    "loading": {
+      "title": "اكتشاف المنتجات",
+      "subtitle": "البحث عن أفضل العروض لك..."
+    },
+    "error": {
+      "title": "حدث خطأ ما",
+      "tryAgain": "حاول مرة أخرى"
+    },
+    "empty": {
+      "noProducts": "لا توجد منتجات متاحة",
+      "noProductsSubtitle": "تحقق مرة أخرى لاحقاً للمنتجات الجديدة",
+      "noResults": "لم يتم العثور على منتجات",
+      "noResultsSubtitle": "حاول تعديل البحث أو المرشحات",
+      "clearSearch": "مسح البحث",
+      "resetFilters": "إعادة تعيين المرشحات",
+      "startShopping": "ابدأ التسوق"
+    },
+    "refresh": {
+      "pullToRefresh": "اسحب للتحديث",
+      "refreshing": "جاري التحديث..."
+    }
   },
   "settings": {
     "languageSelection": "اختيار اللغة",
@@ -92,6 +116,26 @@
       "delivered": "تم التسليم",
       "cancelled": "ملغي",
       "returned": "مرتجع"
+    },
+    "statusTitles": {
+      "new": "تم تقديم الطلب",
+      "confirmed": "تم تأكيد الطلب",
+      "processing": "قيد المعالجة",
+      "shipped": "تم الشحن",
+      "outForDelivery": "في طريقه للتسليم",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي",
+      "returned": "مرتجع"
+    },
+    "statusDescriptions": {
+      "new": "تم تقديم طلبك بنجاح",
+      "confirmed": "تم تأكيد طلبك وجاري التحضير",
+      "processing": "جاري معالجة طلبك وتعبئته",
+      "shipped": "تم شحن طلبك وهو في الطريق",
+      "outForDelivery": "طلبك في طريقه للتسليم",
+      "delivered": "تم تسليم طلبك بنجاح",
+      "cancelled": "تم إلغاء طلبك",
+      "returned": "تم إرجاع طلبك"
     }
   },
   "heroCarousel": {
@@ -110,10 +154,53 @@
       },
       "techDeals": {
         "title": "عروض التكنولوجيا",
-        "subtitle": "توفير ذ��ي",
+        "subtitle": "توفير ذكي",
         "description": "أحدث الأجهزة بأفضل الأسعار",
         "buttonText": "تصفح"
       }
+    }
+  },
+  "productFilter": {
+    "titles": {
+      "filterAndSort": "تصفية وفرز",
+      "filterProducts": "تصفية المنتجات",
+      "categories": "الفئات",
+      "brands": "العلامات التجارية",
+      "priceRange": "نطاق السعر",
+      "minimumRating": "التقييم الأدنى",
+      "availabilityOffers": "التوفر والعروض",
+      "stockStatus": "حالة المخزون",
+      "sortBy": "الفرز حسب"
+    },
+    "price": {
+      "minPrice": "السعر الأدنى",
+      "maxPrice": "السعر الأقصى"
+    },
+    "availability": {
+      "onSaleOnly": "عروض فقط",
+      "stockOptions": {
+        "all": "الكل",
+        "inStock": "متوفر",
+        "outOfStock": "غير متوفر"
+      }
+    },
+    "sortOptions": {
+      "nameAZ": "الاسم (أ-ي)",
+      "priceLowHigh": "السعر: من الأقل إلى الأعلى",
+      "priceHighLow": "السعر: من الأعلى إلى الأقل",
+      "newestFirst": "الأحدث أولاً",
+      "highestRated": "الأعلى تقييماً",
+      "mostPopular": "الأكثر شعبية"
+    },
+    "results_one": "{{count}} منتج تم العثور عليه",
+    "results_other": "{{count}} منتجات تم العثور عليها",
+    "loading": {
+      "loadingCategories": "جاري تحميل الفئات...",
+      "noCategories": "لا توجد فئات متاحة"
+    },
+    "actions": {
+      "reset": "إعادة تعيين",
+      "applyFilters": "تطبيق التصفية"
     }
   }
 }

@@ -5,6 +5,7 @@ import { useCategories } from '@/hooks/useCategories';
 import { useSubCategories } from '@/hooks/useSubCategories';
 import { getCategoriesForFilter, getSubCategoriesForFilter } from '@/utils/categoryUtils';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 // Import filter components
 import FilterButton from '../../filters/FilterButton';
@@ -34,13 +35,13 @@ interface ProductFilterProps {
   productCount: number;
 }
 
-const sortOptions = [
-  { value: 'name', label: 'Name (A-Z)' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'rating', label: 'Highest Rated' },
-  { value: 'popularity', label: 'Most Popular' },
+const sortOptionsEN = [
+  { value: 'name', labelKey: 'productFilter.sortOptions.nameAZ' },
+  { value: 'price-low', labelKey: 'productFilter.sortOptions.priceLowHigh' },
+  { value: 'price-high', labelKey: 'productFilter.sortOptions.priceHighLow' },
+  { value: 'newest', labelKey: 'productFilter.sortOptions.newestFirst' },
+  { value: 'rating', labelKey: 'productFilter.sortOptions.highestRated' },
+  { value: 'popularity', labelKey: 'productFilter.sortOptions.mostPopular' },
 ];
 
 const brandOptions = [
@@ -55,14 +56,16 @@ const brandOptions = [
 export default function ProductFilter({ onFilterChange, activeFilters, productCount }: ProductFilterProps) {
   const [isVisible, setIsVisible] = useState(false);
   const { colors, isDark } = useTheme();
+  const { i18n } = useTranslation();
   
   // Fetch real category and subcategory data
   const { data: categoriesData, isLoading: categoriesLoading } = useCategories();
   const { data: subCategoriesData, isLoading: subCategoriesLoading } = useSubCategories();
   
   // Transform categories for filter options - only use real API data
-  const realCategoryOptions = categoriesData ? getCategoriesForFilter(categoriesData, 'en') : [];
-  const realSubCategoryOptions = subCategoriesData ? getSubCategoriesForFilter(subCategoriesData, 'en') : [];
+  const language = i18n.language === 'ar' ? 'ar' : 'en';
+  const realCategoryOptions = categoriesData ? getCategoriesForFilter(categoriesData, language) : [];
+  const realSubCategoryOptions = subCategoriesData ? getSubCategoriesForFilter(subCategoriesData, language) : [];
 
     
   // Default filter values to prevent undefined errors
@@ -231,7 +234,7 @@ export default function ProductFilter({ onFilterChange, activeFilters, productCo
         <SortFilter
           sortBy={localFilters.sortBy}
           onSortChange={(value) => setLocalFilters(prev => ({ ...prev, sortBy: value as any }))}
-          sortOptions={sortOptions}
+          sortOptions={sortOptionsEN.map(o => ({ value: o.value, label: i18n.t(o.labelKey) }))}
         />
       </FilterModal>
     </>

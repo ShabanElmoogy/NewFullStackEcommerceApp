@@ -36,7 +36,12 @@ export default function WishlistButton({
   // Animations
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
-  const colorProgress = useSharedValue(inWishlist ? 1 : 0);
+  const colorProgress = useSharedValue(0);
+
+  // Update color progress when wishlist status changes
+  React.useEffect(() => {
+    colorProgress.value = withTiming(inWishlist ? 1 : 0, { duration: 300 });
+  }, [inWishlist]);
 
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
     const backgroundColor = interpolateColor(

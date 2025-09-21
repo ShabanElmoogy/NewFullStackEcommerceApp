@@ -4,6 +4,7 @@ import { Text } from '../ui/text';
 import { HStack } from '../ui/hstack';
 import { Switch } from '../ui/switch';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface AvailabilityFilterProps {
   inStock: boolean | null;
@@ -19,23 +20,24 @@ export default function AvailabilityFilter({
   onSaleChange,
 }: AvailabilityFilterProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const stockOptions = [
-    { value: null, label: 'All' },
-    { value: true, label: 'In Stock' },
-    { value: false, label: 'Out of Stock' }
+    { value: null, label: t('productFilter.availability.stockOptions.all') },
+    { value: true, label: t('productFilter.availability.stockOptions.inStock') },
+    { value: false, label: t('productFilter.availability.stockOptions.outOfStock') }
   ];
 
   return (
     <View className="px-5 mb-6">
       <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
-        Availability & Offers
+        {t('productFilter.titles.availabilityOffers')}
       </Text>
       
       {/* Stock Status */}
       <View className="mb-4">
         <Text className="text-sm font-semibold mb-2" style={{ color: colors.textSecondary }}>
-          Stock Status
+          {t('productFilter.titles.stockStatus')}
         </Text>
         <HStack className="gap-2">
           {stockOptions.map((option) => {
@@ -68,7 +70,7 @@ export default function AvailabilityFilter({
       {/* On Sale */}
       <HStack className="justify-between items-center">
         <Text className="text-sm font-semibold" style={{ color: colors.text }}>
-          On Sale Only
+          {t('productFilter.availability.onSaleOnly')}
         </Text>
         <Switch
           value={onSale}

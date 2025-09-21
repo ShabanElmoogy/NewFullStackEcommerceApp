@@ -45,7 +45,7 @@ export default function CompareButton({
   // Enhanced animations to match wishlist button
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
-  const colorProgress = useSharedValue((isComparing || isMaxReached) ? 1 : 0);
+  const colorProgress = useSharedValue(0);
 
   // Update color animation when compare state or max count changes
   React.useEffect(() => {

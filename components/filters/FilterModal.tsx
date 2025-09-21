@@ -5,6 +5,7 @@ import { HStack } from '../ui/hstack';
 import { Button, ButtonText } from '../ui/button';
 import { XIcon, RotateCcwIcon, CheckIcon } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -28,6 +29,7 @@ export default function FilterModal({
   children,
 }: FilterModalProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const handleScroll = (event: any) => {
     // Handle scroll events if needed
@@ -50,7 +52,7 @@ export default function FilterModal({
         {/* Header */}
         <HStack className="justify-between items-center px-5 mb-5">
           <Text className="text-xl font-extrabold" style={{ color: colors.text }}>
-            Filter Products
+            {t('productFilter.titles.filterProducts')}
           </Text>
           <Pressable onPress={onClose} className="p-1">
             <XIcon color={colors.textSecondary} size={24} />
@@ -82,7 +84,7 @@ export default function FilterModal({
               style={{ backgroundColor: colors.backgroundSecondary }}
             >
               <Text className="text-sm text-center" style={{ color: colors.textSecondary }}>
-                {productCount} product{productCount !== 1 ? 's' : ''} found
+                {t('productFilter.results', { count: productCount })}
               </Text>
             </View>
             
@@ -109,7 +111,7 @@ export default function FilterModal({
             >
               <HStack className="items-center gap-2">
                 <RotateCcwIcon color={colors.text} size={16} />
-                <ButtonText style={{ color: colors.text }}>Reset</ButtonText>
+                <ButtonText style={{ color: colors.text }}>{t('productFilter.actions.reset')}</ButtonText>
               </HStack>
             </Button>
             <Button
@@ -120,7 +122,7 @@ export default function FilterModal({
               <HStack className="items-center gap-2">
                 <CheckIcon color={colors.textInverse} size={18} />
                 <ButtonText className="font-semibold" style={{ color: colors.textInverse }}>
-                  Apply Filters
+                  {t('productFilter.actions.applyFilters')}
                 </ButtonText>
               </HStack>
             </Button>

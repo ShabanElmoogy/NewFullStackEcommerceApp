@@ -4,6 +4,7 @@ import { Text } from '../ui/text';
 import { HStack } from '../ui/hstack';
 import { Input, InputField } from '../ui/input';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface PriceRangeFilterProps {
   minPrice: string;
@@ -21,6 +22,7 @@ export default function PriceRangeFilter({
   scrollViewRef,
 }: PriceRangeFilterProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const handleScroll = () => {
     setTimeout(() => {
@@ -34,13 +36,13 @@ export default function PriceRangeFilter({
   return (
     <View className="px-5 mb-6">
       <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
-        Price Range
+        {t('productFilter.titles.priceRange')}
       </Text>
       <HStack className="gap-3">
         <View className="flex-1">
           <Input>
             <InputField
-              placeholder="Min price"
+              placeholder={t('productFilter.price.minPrice')}
               value={minPrice}
               onChangeText={onMinPriceChange}
               keyboardType="numeric"
@@ -51,7 +53,7 @@ export default function PriceRangeFilter({
         <View className="flex-1">
           <Input>
             <InputField
-              placeholder="Max prices"
+              placeholder={t('productFilter.price.maxPrice')}
               value={maxPrice}
               onChangeText={onMaxPriceChange}
               keyboardType="numeric"
