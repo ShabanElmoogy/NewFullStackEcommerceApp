@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
@@ -21,6 +21,7 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
   const { colors, isDark } = useTheme();
   const { isRTL, getFlexDirection } = useRTL();
   const { t, i18n } = useTranslation();
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Fetch real categories from API
   const { data: categoriesData, isLoading, isError } = useCategories();
@@ -38,6 +39,23 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
       getName
     );
   }, [categoriesData, colors, isDark, language]);
+
+  // Handle scroll position - ensure first item shows properly in both RTL and LTR
+  useEffect(() => {
+    if (scrollViewRef.current && displayCategories.length > 0) {
+      // Small delay to ensure content is rendered
+      const timer = setTimeout(() => {
+        if (isRTL) {
+          // In RTL with direction: 'rtl', we need to scroll to the end to show the first item properly
+          scrollViewRef.current?.scrollToEnd({ animated: false });
+        } else {
+          // In LTR, scroll to beginning
+          scrollViewRef.current?.scrollTo({ x: 0, animated: false });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isRTL, displayCategories.length]);
 
   return (
     <Animated.View
@@ -68,16 +86,17 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
         </HStack>
 
         <ScrollView 
+          ref={scrollViewRef}
           horizontal 
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ 
             paddingHorizontal: 4, 
-            paddingRight: isRTL ? 4 : 20,
-            paddingLeft: isRTL ? 20 : 4
+            paddingRight: 20,
+            paddingLeft: 20
           }}
           style={{ direction: isRTL ? 'rtl' : 'ltr' }}
         >
-          <View style={{ flexDirection: getFlexDirection('row'), gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             {isLoading && (
               Array.from({ length: 6 }).map((_, index) => (
                 <View

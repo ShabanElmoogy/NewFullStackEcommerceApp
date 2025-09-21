@@ -108,7 +108,7 @@ export default function OrderTrackingCard({ onNavigate }: OrderTrackingCardProps
               <View className="px-2 py-1 rounded-full min-w-6 items-center" style={{
                 backgroundColor: statusColor,
               }}>
-                <Text className="text-xs font-bold" style={{ color: colors.textInverse }}>
+                <Text className="text-xs font-bold" style={{ color: 'white' }}>
                   {count}
                 </Text>
               </View>
