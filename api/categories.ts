@@ -6,6 +6,7 @@ export interface Category {
   id: number;
   nameAr: string;
   nameEn: string;
+  image?: string | null;
   subCategories: SubCategory[];
   createdOn: string;
   updatedOn: string;
@@ -23,6 +24,7 @@ export interface CategoryRequest {
   id?: number;
   nameAr: string;
   nameEn: string;
+  image?: string | null;
 }
 
 // Category API functions using the new API service

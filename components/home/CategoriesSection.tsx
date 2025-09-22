@@ -1,15 +1,14 @@
 import React, { useRef, useEffect } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView, Pressable, Image } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
-import { Icon, RTLChevronRight } from '@/components/ui/icon';
+import { RTLChevronRight } from '@/components/ui/icon';
 import { useTheme } from '@/hooks/useTheme';
 import { useRTL } from '@/hooks/useRTL';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 import { useCategories } from '@/hooks/useCategories';
-import { getCategoryConfigs } from '@/utils/categoryUtils';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -28,17 +27,11 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
 
   const language: 'en' | 'ar' = i18n.language === 'ar' ? 'ar' : 'en';
 
-  // Prepare categories with icons/colors
+  // Prepare categories from API (no icons, use real image)
   const displayCategories = React.useMemo(() => {
     if (!categoriesData) return [] as any[];
-    const getName = (c: any) => language === 'ar' ? (c.nameAr || c.nameEn || '') : (c.nameEn || c.nameAr || '');
-    return getCategoryConfigs(
-      categoriesData.filter((c: any) => !c.isDeleted),
-      colors,
-      isDark,
-      getName
-    );
-  }, [categoriesData, colors, isDark, language]);
+    return categoriesData.filter((c: any) => !c.isDeleted);
+  }, [categoriesData]);
 
   // Handle scroll position - ensure first item shows properly in both RTL and LTR
   useEffect(() => {
@@ -127,7 +120,6 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
 
             {!isLoading && displayCategories.map((category: any, index: number) => {
               const label = language === 'ar' ? (category.nameAr || category.nameEn || '') : (category.nameEn || category.nameAr || '');
-              const IconComp = category.icon;
               return (
                 <AnimatedPressable
                   key={category.id ?? index}
@@ -149,26 +141,15 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
                 >
                   <View style={{ 
                     height: 90, 
-                    backgroundColor: category.lightColor || colors.backgroundSecondary, 
-                    position: 'relative',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    backgroundColor: colors.backgroundSecondary
                   }}>
-                    <View
-                      style={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        width: 28,
-                        height: 28,
-                        backgroundColor: category.color,
-                        borderRadius: 14,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Icon as={IconComp} size="sm" style={{ color: colors.textInverse }} />
-                    </View>
+                    {category.image ? (
+                      <Image
+                        source={{ uri: category.image }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                      />
+                    ) : null}
                   </View>
 
                   <VStack style={{ padding: 16 }}>
