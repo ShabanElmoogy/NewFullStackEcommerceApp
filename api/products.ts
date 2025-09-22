@@ -15,6 +15,11 @@ export interface Product {
   brand?: string;
   stock: number;
   isActive: boolean;
+  // Flags from API to categorize products
+  isTrend?: boolean;
+  isFeature?: boolean;
+  isNew?: boolean;
+  isComingSoon?: boolean;
   rating?: number;
   reviewCount?: number;
   specifications?: Record<string, any>;
@@ -41,6 +46,11 @@ export interface ProductFilters {
   sortOrder?: 'asc' | 'desc';
   pageNumber?: number;
   pageSize?: number;
+  // Optional flag filters (may be ignored by API; used client-side)
+  isTrend?: boolean;
+  isFeature?: boolean;
+  isNew?: boolean;
+  isComingSoon?: boolean;
 }
 
 export interface CreateProductRequest {
@@ -103,4 +113,25 @@ export async function getProductsByCategory(categoryId: string | number, filters
 
 export async function uploadProductImage(productId: string | number, imageFile: FormData): Promise<{ imageUrl: string }> {
   return await apiService.uploadFile<{ imageUrl: string }>(`/Products/UploadImage/${productId}`, imageFile, { requiresAuth: true });
+}
+
+// Convenience helpers to retrieve sections by flags
+export async function listTrendingProducts(): Promise<Product[]> {
+  const res = await listProducts();
+  return (res.products || []).filter(p => p.isTrend);
+}
+
+export async function listFeaturedProducts(): Promise<Product[]> {
+  const res = await listProducts();
+  return (res.products || []).filter(p => p.isFeature);
+}
+
+export async function listNewProducts(): Promise<Product[]> {
+  const res = await listProducts();
+  return (res.products || []).filter(p => p.isNew);
+}
+
+export async function listComingSoonProducts(): Promise<Product[]> {
+  const res = await listProducts();
+  return (res.products || []).filter(p => p.isComingSoon);
 }

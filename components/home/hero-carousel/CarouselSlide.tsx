@@ -11,16 +11,15 @@ import { CarouselSlideData } from './types';
 import Animated, { 
   FadeIn,
   FadeOut,
+  AnimatedStyle,
 } from 'react-native-reanimated';
 
 interface CarouselSlideProps {
   slide: CarouselSlideData;
   onPress: () => void;
-  sparkleAnimatedStyle?: any;
+  sparkleAnimatedStyle?: AnimatedStyle;
   isSparkleSlide?: boolean;
 }
-
-const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 export default function CarouselSlide({ 
   slide, 
@@ -31,7 +30,7 @@ export default function CarouselSlide({
   const { colors } = useTheme();
   const { t } = useTranslation();
 
-  // Get translated text, fallback to direct text if translation key not provided
+  // ترجمة النصوص مع fallback لو مفيش مفتاح ترجمة
   const getTranslatedText = (key?: string, fallback?: string) => {
     if (key) {
       return t(key);
@@ -45,10 +44,10 @@ export default function CarouselSlide({
   const buttonText = getTranslatedText(slide.buttonTextKey, slide.buttonText);
 
   return (
-    <AnimatedBox
+    <Animated.View
       entering={FadeIn.duration(500)} 
       exiting={FadeOut.duration(300)}
-      className="w-full h-full"
+      style={{ flex: 1, width: '100%', height: '100%' }}
     >
       <Pressable
         onPress={onPress}
@@ -103,34 +102,40 @@ export default function CarouselSlide({
             >
               {title}
             </Text>
-            <Text 
-              className="text-lg font-semibold drop-shadow-md"
-              style={{ color: '#FFFFFF' }}
-            >
-              {subtitle}
-            </Text>
-            <Text 
-              className="text-sm mb-3 drop-shadow-sm leading-relaxed opacity-90"
-              style={{ color: '#FFFFFF' }}
-            >
-              {description}
-            </Text>
-
-            <Pressable
-              onPress={onPress}
-              className="px-5 py-2.5 rounded-full self-start shadow-lg active:scale-95 transition-transform duration-150"
-              style={{ backgroundColor: colors.surface }}
-            >
+            {subtitle && (
               <Text 
-                className="font-bold text-sm"
-                style={{ color: colors.text }}
+                className="text-lg font-semibold drop-shadow-md"
+                style={{ color: '#FFFFFF' }}
               >
-                {buttonText}
+                {subtitle}
               </Text>
-            </Pressable>
+            )}
+            {description && (
+              <Text 
+                className="text-sm mb-3 drop-shadow-sm leading-relaxed opacity-90"
+                style={{ color: '#FFFFFF' }}
+              >
+                {description}
+              </Text>
+            )}
+
+            {buttonText && (
+              <Pressable
+                onPress={onPress}
+                className="px-5 py-2.5 rounded-full self-start shadow-lg active:scale-95 transition-transform duration-150"
+                style={{ backgroundColor: colors.surface }}
+              >
+                <Text 
+                  className="font-bold text-sm"
+                  style={{ color: colors.text }}
+                >
+                  {buttonText}
+                </Text>
+              </Pressable>
+            )}
           </VStack>
         </Box>
       </Pressable>
-    </AnimatedBox>
+    </Animated.View>
   );
 }

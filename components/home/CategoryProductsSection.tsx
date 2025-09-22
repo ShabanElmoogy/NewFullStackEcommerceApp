@@ -38,8 +38,21 @@ export default function CategoryProductsSection({
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: allProducts, isLoading: productsLoading } = useProducts();
   
+  // Normalize products shape
+  const allProductsArray = Array.isArray(allProducts) ? allProducts : allProducts?.products ?? [];
+
+  // Featured products and their categories
+  const featuredProducts = React.useMemo(() =>
+    (allProductsArray as any[]).filter((p: any) => p?.isFeature),
+    [allProductsArray]
+  );
+  const featuredCategoryIds = React.useMemo(() =>
+    new Set(featuredProducts.map((p: any) => String(p?.categoryId))),
+    [featuredProducts]
+  );
+  
   // Filter products by selected category
-  const { filteredProducts } = useProductFilter(allProducts || [], {
+  const { filteredProducts } = useProductFilter(allProductsArray, {
     categories: selectedCategoryId ? [selectedCategoryId.toString()] : [],
     searchQuery: '',
     brands: [],
@@ -51,6 +64,12 @@ export default function CategoryProductsSection({
     sortBy: 'popularity'
   });
 
+  // Only featured items for the selected category
+  const featuredFilteredProducts = React.useMemo(() =>
+    (filteredProducts as any[]).filter((p: any) => p?.isFeature),
+    [filteredProducts]
+  );
+
   // Get category name based on language
   const getCategoryName = (category: any) => {
     return language === 'ar' ? category.nameAr : category.nameEn;
@@ -61,21 +80,26 @@ export default function CategoryProductsSection({
     setSelectedCategoryId(categoryId === selectedCategoryId ? null : categoryId);
   };
 
-  // Get products to display (filtered or trending)
-  const productsToShow = selectedCategoryId ? filteredProducts : (allProducts?.slice(0, 8) || []);
+  // Get products to display (featured when no category is selected)
+  const productsToShow = selectedCategoryId ? featuredFilteredProducts : featuredProducts.slice(0, 8);
 
   // Build category tabs using the generic utility
   const categoryTabs: TabItem[] = React.useMemo(() => {
     if (!categories) return [];
+
+    // Only categories that contain featured products
+    const categoriesForFeatured = (categories as any[]).filter(
+      (c: any) => featuredCategoryIds.has(String(c?.id))
+    );
     
     return createCategoryTabs(
-      categories,
+      categoriesForFeatured,
       colors,
       isDark,
       getCategoryName,
       (category) => String(category.id)
     );
-  }, [categories, colors, isDark, language]);
+  }, [categories, featuredCategoryIds, colors, isDark, language]);
 
   const activeTabKey = selectedCategoryId === null ? 'all' : String(selectedCategoryId);
 
@@ -88,6 +112,13 @@ export default function CategoryProductsSection({
     });
     return () => task.cancel();
   }, [activeTabKey, productsToShow.length]);
+
+  // Ensure selected category remains valid (must contain featured products)
+  useEffect(() => {
+    if (selectedCategoryId !== null && !featuredCategoryIds.has(String(selectedCategoryId))) {
+      setSelectedCategoryId(null);
+    }
+  }, [selectedCategoryId, featuredCategoryIds]);
 
   
   if (categoriesLoading || productsLoading) {
