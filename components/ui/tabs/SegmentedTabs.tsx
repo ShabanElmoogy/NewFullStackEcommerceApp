@@ -48,13 +48,7 @@ export default function SegmentedTabs({ tabs, activeKey, onChange, scrollable = 
   }, [activeKey, scrollable]);
 
   const Container = ({ children }: { children: React.ReactNode }) => (
-    <View
-      style={{
-        backgroundColor: colors.surfaceSecondary,
-        borderRadius: 12,
-        padding: 4,
-      }}
-    >
+    <View className="rounded-xl p-1" style={{ backgroundColor: colors.surfaceSecondary }}>
       {children}
     </View>
   );
@@ -81,14 +75,8 @@ export default function SegmentedTabs({ tabs, activeKey, onChange, scrollable = 
       >
         <Pressable
           onPress={() => onChange(tab.key)}
+          className={`${scrollable ? '' : 'flex-1'} flex-row items-center justify-center py-3 px-4 rounded-xl`}
           style={{
-            flex: scrollable ? undefined : 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            borderRadius: 12,
             backgroundColor: isActive ? colors.card : 'transparent',
             marginRight: scrollable && index < tabs.length - 1 ? 8 : 0,
             shadowColor: isActive ? colors.shadow : 'transparent',
@@ -101,14 +89,9 @@ export default function SegmentedTabs({ tabs, activeKey, onChange, scrollable = 
         >
         {tab.icon ? (
             <View
+              className="h-8 w-8 rounded-full items-center justify-center me-2.5"
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
                 backgroundColor: iconBgColor,
-                marginRight: 10,
                 shadowColor: iconColor,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: isActive ? 0.15 : 0.08,
@@ -126,11 +109,9 @@ export default function SegmentedTabs({ tabs, activeKey, onChange, scrollable = 
             </View>
           ) : null}
           <Text
+            className={`text-sm ${isActive ? 'font-bold' : 'font-semibold'} text-center`}
             style={{
               color: isActive ? (isDark ? '#FFFFFF' : '#000000') : colors.textSecondary,
-              fontSize: 14,
-              fontWeight: isActive ? '700' : '600',
-              textAlign: 'center',
             }}
             numberOfLines={1}
           >
@@ -158,7 +139,7 @@ export default function SegmentedTabs({ tabs, activeKey, onChange, scrollable = 
 
   return (
     <Container>
-      <View style={{ flexDirection: 'row' }}>
+      <View className="flex-row">
         {tabs.map(renderTab)}
       </View>
     </Container>

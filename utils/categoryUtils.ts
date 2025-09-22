@@ -449,6 +449,7 @@ export function getCategoryConfigs(
  * @param isDark - Whether dark theme is active
  * @param getNameFn - Function to extract category name
  * @param getKeyFn - Function to extract category key/id
+ * @param allLabel - Translated label for "All" tab
  * @returns Array of tab items with icons and colors
  */
 export function createCategoryTabs(
@@ -456,7 +457,8 @@ export function createCategoryTabs(
   colors: any,
   isDark: boolean,
   getNameFn: (category: any) => string = (cat) => cat.name || cat.nameEn || cat.nameAr || '',
-  getKeyFn: (category: any) => string = (cat) => String(cat.id || cat.key || '')
+  getKeyFn: (category: any) => string = (cat) => String(cat.id || cat.key || ''),
+  allLabel: string = 'All'
 ) {
   // Vibrant color palette for attractive UI
   const vibrantColors = [
@@ -480,7 +482,7 @@ export function createCategoryTabs(
   // Add "All" tab with gradient-like effect
   const allTab = {
     key: 'all',
-    label: 'All',
+    label: allLabel,
     icon: Sparkles,
     iconColor: isDark ? '#FFD700' : '#FF6B6B', // Gold in dark, coral in light
     iconBgColor: isDark ? '#FFD70025' : '#FF6B6B25'

@@ -2,6 +2,7 @@
   "home": {
     "welcome": "مرحباً",
     "featuredProducts": "المنتجات المميزة",
+    "categoryProducts": "منتجات الفئة",
     "categories": "الفئات",
     "newArrivals": "وصل حديثاً",
     "bestSellers": "الأكثر مبيعاً",
@@ -16,7 +17,13 @@
     "refreshing": "جاري التحديث...",
     "seeMore": "المزيد",
     "trendingNow": "الأكثر رواجاً",
-    "hot": "ساخن"
+    "hot": "ساخن",
+    "featuredProductsSubtitle": "منتجات مختارة خصيصاً لك",
+    "categoryProductsSubtitle": "اكتشف المنتجات في هذه الفئة",
+    "exploreAllProducts": "استكشف جميع المنتجات",
+    "tryDifferentCategory": "جرب اختيار فئة مختلفة",
+    "checkBackLater": "تحقق مرة أخرى لاحقاً للمنتجات الجديدة",
+    "all": "الكل"
   },
   "common": {
     "loading": "جاري التحميل...",

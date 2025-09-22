@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/icon';
 import { FlatList } from 'react-native'
 import { Sparkles, Gift } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 import { useCategories } from '@/hooks/useCategories';
 import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
@@ -32,6 +33,7 @@ export default function CategoryProductsSection({
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const { language, isRTL } = useLanguageStore();
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const listRef = React.useRef<FlatList<any> | null>(null);
   
   // Fetch categories and products
@@ -97,9 +99,10 @@ export default function CategoryProductsSection({
       colors,
       isDark,
       getCategoryName,
-      (category) => String(category.id)
+      (category) => String(category.id),
+      t('home.all')
     );
-  }, [categories, featuredCategoryIds, colors, isDark, language]);
+  }, [categories, featuredCategoryIds, colors, isDark, language, t]);
 
   const activeTabKey = selectedCategoryId === null ? 'all' : String(selectedCategoryId);
 
@@ -124,8 +127,8 @@ export default function CategoryProductsSection({
   if (categoriesLoading || productsLoading) {
     return (
       <AppLoader 
-        message="Discovering Products"
-        subtitle="Finding the best deals just for you..."
+        message={t('products.loading.title')}
+        subtitle={t('products.loading.subtitle')}
       />
     );
   }
@@ -138,17 +141,17 @@ export default function CategoryProductsSection({
         {/* Section Title */}
         <View className="px-5">
           <VStack space="sm">
-            <Text style={{ fontSize: 24, fontWeight: 'bold', color: colors.text }}>
-              {selectedCategoryId ? 'Category Products' : 'Featured Products'}
+            <Text className="text-2xl font-bold" style={{ color: colors.text }}>
+              {selectedCategoryId ? t('home.categoryProducts') : t('home.featuredProducts')}
             </Text>
             <Text style={{ color: colors.textSecondary }}>
-              {selectedCategoryId ? 'Discover products in this category' : 'Handpicked items just for you'}
+              {selectedCategoryId ? t('home.categoryProductsSubtitle') : t('home.featuredProductsSubtitle')}
             </Text>
           </VStack>
         </View>
 
         {/* Categories as Segmented Tabs */}
-        <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+        <View className="mx-4 mb-2">
           <SegmentedTabs
             tabs={categoryTabs}
             activeKey={activeTabKey}
@@ -173,11 +176,10 @@ export default function CategoryProductsSection({
                 paddingLeft: isRTL ? 20 : 0
               }}
               renderItem={({ item }) => (
-                <View style={{ 
-                  width: screenWidth - 56, 
-                  marginRight: isRTL ? 0 : 16,
-                  marginLeft: isRTL ? 16 : 0
-                }}>
+                <View 
+                  className={isRTL ? "ml-4" : "mr-4"}
+                  style={{ width: screenWidth - 56 }}
+                >
                   <ProductCard product={item} viewMode="list" />
                 </View>
               )}
@@ -185,11 +187,9 @@ export default function CategoryProductsSection({
           ) : (
             <Animated.View 
               entering={FadeInUp.delay(1400)}
+              className="rounded-3xl p-10 items-center shadow-lg"
               style={{
                 backgroundColor: colors.card,
-                borderRadius: 24,
-                padding: 40,
-                alignItems: 'center',
                 shadowColor: colors.shadow,
                 shadowOffset: { width: 0, height: 8 },
                 shadowOpacity: 0.1,
@@ -197,32 +197,23 @@ export default function CategoryProductsSection({
                 elevation: 10,
               }}
             >
-              <View style={{
-                width: 80,
-                height: 80,
-                backgroundColor: colors.backgroundSecondary,
-                borderRadius: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
+              <View 
+                className="w-20 h-20 rounded-full items-center justify-center"
+                style={{ backgroundColor: colors.backgroundSecondary }}
+              >
                 <Icon as={Gift} size="xl" style={{ color: colors.textTertiary }} />
               </View>
-              <Text style={{ 
-                color: colors.text, 
-                textAlign: 'center', 
-                fontWeight: 'bold', 
-                fontSize: 20, 
-                marginBottom: 8,
-                marginTop: 16 
-              }}>
-                {selectedCategoryId ? 'No products found' : 'No products available'}
+              <Text 
+                className="text-center font-bold text-xl mb-2 mt-4"
+                style={{ color: colors.text }}
+              >
+                {selectedCategoryId ? t('products.empty.noResults') : t('products.empty.noProducts')}
               </Text>
-              <Text style={{ 
-                color: colors.textSecondary, 
-                textAlign: 'center', 
-                fontSize: 16 
-              }}>
-                {selectedCategoryId ? 'Try selecting a different category' : 'Check back later for new arrivals'}
+              <Text 
+                className="text-center text-base"
+                style={{ color: colors.textSecondary }}
+              >
+                {selectedCategoryId ? t('home.tryDifferentCategory') : t('home.checkBackLater')}
               </Text>
             </Animated.View>
           )}
@@ -230,7 +221,7 @@ export default function CategoryProductsSection({
 
         {/* Enhanced Show More Button */}
         {productsToShow.length > 0 && (
-          <View style={{ alignItems: 'center' }}>
+          <View className="items-center">
             <Pressable
               onPress={() => {
                 if (selectedCategoryId) {
@@ -241,15 +232,9 @@ export default function CategoryProductsSection({
                   onNavigate('/products');
                 }
               }}
+              className="flex-row items-center justify-center rounded-3xl py-3.5 px-7 min-w-[180px] shadow-md"
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
                 backgroundColor: colors.primary,
-                borderRadius: 24,
-                paddingVertical: 14,
-                paddingHorizontal: 28,
-                minWidth: 180,
                 elevation: 2,
                 shadowColor: colors.primary,
                 shadowOffset: { width: 0, height: 4 },
@@ -257,14 +242,9 @@ export default function CategoryProductsSection({
                 shadowRadius: 8,
               }}
             >
-              <Icon as={Sparkles} size="md" style={{ color: colors.textInverse, marginRight: 10 }} />
-              <Text style={{ 
-                color: "white", 
-                fontWeight: 'bold', 
-                fontSize: 16, 
-                letterSpacing: 0.5 
-              }}>
-                Explore All Products
+              <Icon as={Sparkles} size="md" className="mr-2.5" style={{ color: colors.textInverse }} />
+              <Text className="text-white font-bold text-base tracking-wide">
+                {t('home.exploreAllProducts')}
               </Text>
             </Pressable>
           </View>

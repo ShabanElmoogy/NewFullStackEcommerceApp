@@ -2,6 +2,7 @@
   "home": {
     "welcome": "Welcome",
     "featuredProducts": "Featured Products",
+    "categoryProducts": "Category Products",
     "categories": "Categories",
     "newArrivals": "New Arrivals",
     "bestSellers": "Best Sellers",
@@ -19,7 +20,13 @@
     "newArrivals": "New Arrivals",
     "specialOffers": "Special Offers",
     "trendingNow": "Trending Now",
-    "hot": "Hot"
+    "hot": "Hot",
+    "featuredProductsSubtitle": "Handpicked items just for you",
+    "categoryProductsSubtitle": "Discover products in this category",
+    "exploreAllProducts": "Explore All Products",
+    "tryDifferentCategory": "Try selecting a different category",
+    "checkBackLater": "Check back later for new arrivals",
+    "all": "All"
   },
   "common": {
     "loading": "Loading...",
