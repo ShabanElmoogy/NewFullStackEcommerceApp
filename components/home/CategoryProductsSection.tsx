@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Pressable, Dimensions, InteractionManager } from 'react-native';
+import { View, Pressable, Dimensions, FlatList } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Icon } from '@/components/ui/icon';
-import { FlatList } from 'react-native'
 import { Sparkles, Gift } from 'lucide-react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +11,14 @@ import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTheme } from '@/hooks/useTheme';
+import { useRTL } from '@/hooks/useRTL';
 import ProductCard from '@/components/products/productCard/ProductCard';
 import SegmentedTabs, { TabItem } from '@/components/ui/tabs/SegmentedTabs';
 import { createCategoryTabs } from '@/utils/categoryUtils';
 import AppLoader from '@/components/AppLoader';
+import { useRTLFlatList } from '@/hooks/useRTLFlatList';
 
 const { width: screenWidth } = Dimensions.get('window');
-
 interface CategoryProductsSectionProps {
   onNavigate: (route: string) => void;
   onProductPress?: (productId: number) => void;
@@ -33,8 +33,9 @@ export default function CategoryProductsSection({
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const { language, isRTL } = useLanguageStore();
   const { colors, isDark } = useTheme();
+  const { getFlexDirection } = useRTL();
   const { t } = useTranslation();
-  const listRef = React.useRef<FlatList<any> | null>(null);
+  const flatListRef = React.useRef<FlatList>(null);
   
   // Fetch categories and products
   const { data: categories, isLoading: categoriesLoading } = useCategories();
@@ -85,6 +86,10 @@ export default function CategoryProductsSection({
   // Get products to display (featured when no category is selected)
   const productsToShow = selectedCategoryId ? featuredFilteredProducts : featuredProducts.slice(0, 8);
 
+  // Use RTL FlatList hook
+  const { flatListRef: rtlFlatListRef, getRTLProps } = useRTLFlatList(productsToShow);
+  const rtlProps = getRTLProps(true); // true for horizontal
+
   // Build category tabs using the generic utility
   const categoryTabs: TabItem[] = React.useMemo(() => {
     if (!categories) return [];
@@ -105,16 +110,6 @@ export default function CategoryProductsSection({
   }, [categories, featuredCategoryIds, colors, isDark, language, t]);
 
   const activeTabKey = selectedCategoryId === null ? 'all' : String(selectedCategoryId);
-
-  // Reset list to start when active tab or data changes
-  useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
-      try {
-        listRef.current?.scrollToOffset({ offset: 0, animated: false });
-      } catch {}
-    });
-    return () => task.cancel();
-  }, [activeTabKey, productsToShow.length]);
 
   // Ensure selected category remains valid (must contain featured products)
   useEffect(() => {
@@ -164,25 +159,27 @@ export default function CategoryProductsSection({
         <View className="px-5">
           {productsToShow.length > 0 ? (
             <FlatList
-              key={`${activeTabKey}-${isRTL}`}
-              ref={listRef}
+              {...rtlProps}
+              ref={rtlFlatListRef}
               data={productsToShow}
-              keyExtractor={item => item.id?.toString()}
+              keyExtractor={(item) => item.id?.toString() || ''}
               horizontal
-              showsHorizontalScrollIndicator={false}
-              inverted={isRTL}
               contentContainerStyle={{ 
-                paddingRight: isRTL ? 0 : 20,
-                paddingLeft: isRTL ? 20 : 0
+                paddingHorizontal: 4,
+                paddingRight: 20,
+                paddingLeft: 20
               }}
+              ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
               renderItem={({ item }) => (
-                <View 
-                  className={isRTL ? "ml-4" : "mr-4"}
-                  style={{ width: screenWidth - 56 }}
-                >
+                <View style={{ width: screenWidth - 56 }}>
                   <ProductCard product={item} viewMode="list" />
                 </View>
               )}
+              // Performance optimizations
+              removeClippedSubviews={true}
+              maxToRenderPerBatch={3}
+              windowSize={5}
+              initialNumToRender={2}
             />
           ) : (
             <Animated.View 

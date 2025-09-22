@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { View, ScrollView, Pressable, Image } from 'react-native';
+import { View, FlatList, Pressable, Image, I18nManager } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
@@ -9,6 +9,7 @@ import { useRTL } from '@/hooks/useRTL';
 import { useTranslation } from 'react-i18next';
 import Animated, { FadeInUp, FadeInRight } from 'react-native-reanimated';
 import { useCategories } from '@/hooks/useCategories';
+import { useRTLFlatList } from '@/hooks/useRTLFlatList';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -20,7 +21,6 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
   const { colors, isDark } = useTheme();
   const { isRTL, getFlexDirection } = useRTL();
   const { t, i18n } = useTranslation();
-  const scrollViewRef = useRef<ScrollView>(null);
 
   // Fetch real categories from API
   const { data: categoriesData, isLoading, isError } = useCategories();
@@ -30,25 +30,13 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
   // Prepare categories from API (no icons, use real image)
   const displayCategories = React.useMemo(() => {
     if (!categoriesData) return [] as any[];
-    return categoriesData.filter((c: any) => !c.isDeleted);
+    const filteredCategories = categoriesData.filter((c: any) => !c.isDeleted);
+    return filteredCategories;
   }, [categoriesData]);
 
-  // Handle scroll position - ensure first item shows properly in both RTL and LTR
-  useEffect(() => {
-    if (scrollViewRef.current && displayCategories.length > 0) {
-      // Small delay to ensure content is rendered
-      const timer = setTimeout(() => {
-        if (isRTL) {
-          // In RTL with direction: 'rtl', we need to scroll to the end to show the first item properly
-          scrollViewRef.current?.scrollToEnd({ animated: false });
-        } else {
-          // In LTR, scroll to beginning
-          scrollViewRef.current?.scrollTo({ x: 0, animated: false });
-        }
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isRTL, displayCategories.length]);
+  // Use RTL FlatList hook
+  const { flatListRef, getRTLProps } = useRTLFlatList(displayCategories);
+  const rtlProps = getRTLProps(true); // true for horizontal
 
   return (
     <Animated.View
@@ -78,22 +66,22 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
           </Pressable>
         </HStack>
 
-        <ScrollView 
-          ref={scrollViewRef}
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ 
-            paddingHorizontal: 4, 
-            paddingRight: 20,
-            paddingLeft: 20
-          }}
-          style={{ direction: isRTL ? 'rtl' : 'ltr' }}
-        >
-          <View style={{ flexDirection: 'row', gap: 12 }}>
-            {isLoading && (
-              Array.from({ length: 6 }).map((_, index) => (
+        <View>
+          {isLoading ? (
+            <FlatList
+              horizontal
+              key={`skeleton-${isRTL}`}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ 
+                paddingHorizontal: 4, 
+                paddingRight: 20,
+                paddingLeft: 20
+              }}
+              data={Array.from({ length: 6 })}
+              keyExtractor={(_, index) => `skeleton-${index}`}
+              ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+              renderItem={({ index }) => (
                 <View
-                  key={`skeleton-${index}`}
                   style={{
                     width: 140,
                     backgroundColor: colors.surface,
@@ -109,63 +97,79 @@ export default function CategoriesSection({ onNavigate }: CategoriesSectionProps
                     <View style={{ height: 12, backgroundColor: colors.border, borderRadius: 6, width: '50%' }} />
                   </VStack>
                 </View>
-              ))
-            )}
+              )}
+            />
+          ) : !isError && displayCategories.length === 0 ? (
+            <Text style={{ color: colors.textSecondary, paddingHorizontal: 20 }}>
+              {t('productFilter.loading.noCategories')}
+            </Text>
+          ) : (
+            <FlatList
+              {...rtlProps}
+              ref={flatListRef}
+              data={displayCategories}
+              keyExtractor={(item) => item.id?.toString() || ''}
+              horizontal
+              contentContainerStyle={{ 
+                paddingHorizontal: 4, 
+                paddingRight: 20,
+                paddingLeft: 20
+              }}
+              ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+              renderItem={({ item: category, index }) => {
+                const label = language === 'ar' ? (category.nameAr || category.nameEn || '') : (category.nameEn || category.nameAr || '');
+                return (
+                  <AnimatedPressable
+                    entering={FadeInRight.delay(1000 + index * 100)}
+                    onPress={() => onNavigate(`/products?categoryId=${category.id}&categoryName=${encodeURIComponent(label)}`)}
+                    style={{
+                      width: 140,
+                      backgroundColor: colors.surface,
+                      borderRadius: 20,
+                      overflow: 'hidden',
+                      shadowColor: colors.shadow,
+                      shadowOffset: { width: 0, height: 6 },
+                      shadowOpacity: 0.1,
+                      shadowRadius: 16,
+                      elevation: 6,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}
+                  >
+                    <View style={{ 
+                      height: 90, 
+                      backgroundColor: colors.backgroundSecondary
+                    }}>
+                      {category.image ? (
+                        <Image
+                          source={{ uri: category.image }}
+                          style={{ width: '100%', height: '100%' }}
+                          resizeMode="cover"
+                        />
+                      ) : null}
+                    </View>
 
-            {!isLoading && !isError && displayCategories.length === 0 && (
-              <Text style={{ color: colors.textSecondary }}>
-                {t('productFilter.loading.noCategories')}
-              </Text>
-            )}
-
-            {!isLoading && displayCategories.map((category: any, index: number) => {
-              const label = language === 'ar' ? (category.nameAr || category.nameEn || '') : (category.nameEn || category.nameAr || '');
-              return (
-                <AnimatedPressable
-                  key={category.id ?? index}
-                  entering={FadeInRight.delay(1000 + index * 100)}
-                  onPress={() => onNavigate(`/products?categoryId=${category.id}&categoryName=${encodeURIComponent(label)}`)}
-                  style={{
-                    width: 140,
-                    backgroundColor: colors.surface,
-                    borderRadius: 20,
-                    overflow: 'hidden',
-                    shadowColor: colors.shadow,
-                    shadowOffset: { width: 0, height: 6 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 16,
-                    elevation: 6,
-                    borderWidth: 1,
-                    borderColor: colors.border,
-                  }}
-                >
-                  <View style={{ 
-                    height: 90, 
-                    backgroundColor: colors.backgroundSecondary
-                  }}>
-                    {category.image ? (
-                      <Image
-                        source={{ uri: category.image }}
-                        style={{ width: '100%', height: '100%' }}
-                        resizeMode="cover"
-                      />
-                    ) : null}
-                  </View>
-
-                  <VStack style={{ padding: 16 }}>
-                    <Text style={{
-                      fontWeight: 'bold',
-                      color: colors.text,
-                      fontSize: 14
-                    }} numberOfLines={1}>
-                      {label}
-                    </Text>
-                  </VStack>
-                </AnimatedPressable>
-              );
-            })}
-          </View>
-        </ScrollView>
+                    <VStack style={{ padding: 16 }}>
+                      <Text style={{
+                        fontWeight: 'bold',
+                        color: colors.text,
+                        fontSize: 14,
+                        textAlign: isRTL ? 'right' : 'left'
+                      }} numberOfLines={1}>
+                        {label}
+                      </Text>
+                    </VStack>
+                  </AnimatedPressable>
+                );
+              }}
+              // Performance optimizations
+              removeClippedSubviews={true}
+              maxToRenderPerBatch={5}
+              windowSize={7}
+              initialNumToRender={3}
+            />
+          )}
+        </View>
       </VStack>
     </Animated.View>
   );

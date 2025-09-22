@@ -12,6 +12,7 @@ import { ProductRating } from "./ProductRating";
 import { ProductPrice } from "./ProductPrice";
 import { Product } from "./types";
 import { useProductCard } from "./useProductCard";
+import { useRTL } from "@/hooks/useRTL";
 
 interface ProductCardListViewProps {
   product: Product;
@@ -28,13 +29,13 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
     reviewCount,
     discount,
     stock,
-    isRTL,
     isOutOfStock,
     isLowStock,
     hasDiscount,
   } = useProductCard(product);
   
   const { colors } = useTheme();
+  const { isRTL, getFlexDirection } = useRTL();
 
   return (
     <View
@@ -55,7 +56,7 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
       <ProductLinkWrapper product={product} onPress={onPress}>
         <View style={{ padding: 16 }}>
           {/* Top Section - Image and Action Buttons */}
-          <View style={{ flexDirection: "row", gap: 16, marginBottom: 12 }}>
+          <View style={{ flexDirection: getFlexDirection("row"), gap: 16, marginBottom: 12 }}>
             {/* IMAGE CONTAINER */}
             <View
               style={{
@@ -84,7 +85,7 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
                   style={{
                     position: 'absolute',
                     top: 6,
-                    left: 6,
+                    ...(isRTL ? { right: 6 } : { left: 6 }),
                     backgroundColor: '#FF4757',
                     paddingHorizontal: 6,
                     paddingVertical: 2,
@@ -132,11 +133,15 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
             <View style={{ flex: 1, minWidth: 0 }}>
               {/* Title and Action Buttons Row */}
               <View style={{ 
-                flexDirection: "row", 
+                flexDirection: getFlexDirection("row"), 
                 alignItems: "flex-start",
                 marginBottom: 8,
               }}>
-                <View style={{ flex: 1, minWidth: 0, marginRight: 8 }}>
+                <View style={{ 
+                  flex: 1, 
+                  minWidth: 0, 
+                  ...(isRTL ? { marginLeft: 8 } : { marginRight: 8 })
+                }}>
                   <Text 
                     style={{ 
                       fontSize: 16, 
@@ -202,7 +207,7 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
 
           {/* Bottom Section - Price and Add to Cart */}
           <View style={{ 
-            flexDirection: "row", 
+            flexDirection: getFlexDirection("row"), 
             alignItems: "center", 
             justifyContent: "space-between",
             paddingTop: 12,
@@ -228,7 +233,9 @@ export default function ProductCardListView({ product, onPress }: ProductCardLis
               )}
             </View>
             
-            <View style={{ marginLeft: 12 }}>
+            <View style={{ 
+              ...(isRTL ? { marginRight: 12 } : { marginLeft: 12 })
+            }}>
               <AddToCartButton 
                 product={product} 
                 variant="compact"
