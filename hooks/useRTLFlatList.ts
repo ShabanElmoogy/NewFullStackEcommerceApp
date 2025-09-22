@@ -65,7 +65,7 @@ export function useRTLFlatList<T>(data: T[] | null | undefined) {
         onLayout: handleLayout,
         onContentSizeChange: handleContentSizeChange,
         // Disable momentum scrolling to prevent unwanted scroll behavior
-        decelerationRate: 'fast',
+        decelerationRate: 'fast' as const,
         // Ensure consistent behavior
         showsHorizontalScrollIndicator: false,
       };

@@ -11,7 +11,6 @@ import { useProducts } from '@/hooks/useProducts';
 import { useProductFilter } from '@/hooks/useProductFilter';
 import { useLanguageStore } from '@/store/languageStore';
 import { useTheme } from '@/hooks/useTheme';
-import { useRTL } from '@/hooks/useRTL';
 import ProductCard from '@/components/products/productCard/ProductCard';
 import SegmentedTabs, { TabItem } from '@/components/ui/tabs/SegmentedTabs';
 import { createCategoryTabs } from '@/utils/categoryUtils';
@@ -33,7 +32,6 @@ export default function CategoryProductsSection({
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const { language, isRTL } = useLanguageStore();
   const { colors, isDark } = useTheme();
-  const { getFlexDirection } = useRTL();
   const { t } = useTranslation();
   const flatListRef = React.useRef<FlatList>(null);
   
@@ -42,7 +40,9 @@ export default function CategoryProductsSection({
   const { data: allProducts, isLoading: productsLoading } = useProducts();
   
   // Normalize products shape
-  const allProductsArray = Array.isArray(allProducts) ? allProducts : allProducts?.products ?? [];
+  const allProductsArray = Array.isArray(allProducts) 
+    ? allProducts 
+    : (allProducts as any)?.products ?? [];
 
   // Featured products and their categories
   const featuredProducts = React.useMemo(() =>
@@ -76,11 +76,6 @@ export default function CategoryProductsSection({
   // Get category name based on language
   const getCategoryName = (category: any) => {
     return language === 'ar' ? category.nameAr : category.nameEn;
-  };
-
-  // Handle category selection
-  const handleCategoryPress = (categoryId: number) => {
-    setSelectedCategoryId(categoryId === selectedCategoryId ? null : categoryId);
   };
 
   // Get products to display (featured when no category is selected)

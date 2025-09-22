@@ -19,7 +19,7 @@ interface CategoriesSectionProps {
 
 export default function CategoriesSection({ onNavigate }: CategoriesSectionProps) {
   const { colors, isDark } = useTheme();
-  const { isRTL, getFlexDirection } = useRTL();
+  const { isRTL } = useRTL();
   const { t, i18n } = useTranslation();
 
   // Fetch real categories from API
