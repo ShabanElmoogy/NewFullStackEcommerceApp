@@ -75,6 +75,10 @@
     "removeFromWishlist": "Remove from Wishlist",
     "browseCategory": "Browse products in this category",
     "categoryProducts": "Category Products",
+    "outOfStock": "OUT OF\nSTOCK",
+    "lowStock": "Only {{count}} left in stock",
+    "discount": "-{{percent}}%",
+    "noImage": "No Image",
     "loading": {
       "title": "Discovering Products",
       "subtitle": "Finding the best deals just for you..."

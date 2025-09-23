@@ -72,6 +72,10 @@
     "removeFromWishlist": "إزالة من المفضلة",
     "browseCategory": "تصفح المنتجات في هذه الفئة",
     "categoryProducts": "منتجات الفئة",
+    "outOfStock": "غير متوفر\nفي المخزون",
+    "lowStock": "متبقي {{count}} فقط في المخزون",
+    "discount": "-{{percent}}%",
+    "noImage": "لا توجد صورة",
     "loading": {
       "title": "اكتشاف المنتجات",
       "subtitle": "البحث عن أفضل العروض لك..."
@@ -84,7 +88,7 @@
       "noProducts": "لا توجد منتجات متاحة",
       "noProductsSubtitle": "تحقق مرة أخرى لاحقاً للمنتجات الجديدة",
       "noResults": "لم يتم العثور على منتجات",
-      "noResultsSubtitle": "حاول تعديل البحث أو المرشحات",
+      "noResultsSubtitle": "حاول تعديل البحث أو المرشح��ت",
       "clearSearch": "مسح البحث",
       "resetFilters": "إعادة تعيين المرشحات",
       "startShopping": "ابدأ التسوق"

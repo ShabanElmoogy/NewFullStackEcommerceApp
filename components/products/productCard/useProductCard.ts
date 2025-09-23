@@ -42,7 +42,7 @@ export function useProductCard(product: Product): UseProductCardReturn {
     discount = 3, 
     isNew, 
     isTrending, 
-    stock = 10 
+    stock = 0
   } = product;
 
   // Get RTL state from language store

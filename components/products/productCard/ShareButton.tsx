@@ -121,7 +121,7 @@ export default function ShareButton({ product }: ShareButtonProps) {
       accessibilityRole="button"
       accessibilityLabel={`Share ${product.name}`}
     >
-      <Icon as={Share2} size="xs" className="text-typography-700" />
+      <Icon as={Share2} size="sm" className="text-typography-700" />
     </Pressable>
   );
 }

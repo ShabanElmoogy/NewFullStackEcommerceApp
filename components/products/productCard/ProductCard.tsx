@@ -1,6 +1,6 @@
 import React from "react";
 import ProductCardGridView from "./ProductCardGridView";
-import ProductCardListView from "./ProductCardListView";
+import ProductCardListView from "./ProductCardListView/ProductCardListView";
 import { Product } from "./types";
 
 interface ProductCardProps {
